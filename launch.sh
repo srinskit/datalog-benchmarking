@@ -7,21 +7,18 @@ SRC=/usr/local/src
 
 HOST=$1
 SSH_KEY=$2
-BENCH_SCRIPT=$3
-PAYLOAD=${4%/} # Strip trailing slash to create new dest dir with rsync
+PAYLOAD=${3%/} # Strip trailing slash to create new dest dir with rsync
 
-BENCH_FILE=$(basename $BENCH_SCRIPT)
+PAYLOAD_DIR=$(basename $PAYLOAD)
 
 ssh-add $SSH_KEY
 
-# Copy benchmark and PAYLOAD script to host working dir
-rsync --rsync-path="sudo rsync" $BENCH_SCRIPT $HOST:$WORK_DIR
-
-if [ -n "$PAYLOAD" ]; then
-	rsync -a --rsync-path="sudo rsync" $PAYLOAD $HOST:$WORK_DIR
-fi
+echo "[Launch] syncing host with src payload"
+rsync -a --rsync-path="sudo rsync" $PAYLOAD $HOST:$WORK_DIR
 
 # Execute benchmark script in host
-ssh -A $HOST "cd $WORK_DIR; sudo ./$BENCH_FILE"
+ssh -A $HOST "cd $WORK_DIR/$PAYLOAD_DIR; sudo ./run_bench.sh"
 
-# TODO: copy .log files from HOST to local
+# Sync local payload from host payload, except the run_bench.sh file
+echo "[Launch] syncing src with host payload"
+rsync -a --rsync-path="sudo rsync" --exclude "run_bench.sh" $HOST:$WORK_DIR/$PAYLOAD_DIR/ $PAYLOAD 

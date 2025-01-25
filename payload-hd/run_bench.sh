@@ -3,9 +3,9 @@
 # Exit script on error
 set -e
 
-source rust_env
+source ../rust_env
 
-WORK_DIR=$(pwd)
+PAYLOAD_DIR=$(pwd)
 build=1
 project=FlowLogTest
 build_workers=$(nproc)
@@ -14,8 +14,7 @@ exe=executing
 
 killall cargo || true
 
-if [[ $build == 1 ]];
-then
+if [[ $build == 1 ]]; then
 	# If obtaining src from local machine
 	# unzip $project-main.zip
 	# mv $project-main $project
@@ -23,8 +22,8 @@ then
 	export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no"
 
 	# Update or clone the project
-	if [[ -d $project ]];
-	then
+	if [[ -d $project ]]; then
+		chown -R $USER $project
 		pushd $project
 		git pull origin main
 	else
@@ -33,14 +32,23 @@ then
 	fi
 
 	echo "Build workers: " $build_workers
+	cargo fetch
 
 	# Patch DD
-	patch_path=$(find $CARGO_HOME -path "*/differential-dataflow-0.13.2/src/collection.rs")
-	chmod a+w $patch_path
-	echo $patch_path
-	cp $WORK_DIR/hd/collection.rs $patch_path
-	cargo clean -p differential-dataflow --release
-	cargo build -p differential-dataflow --release
+
+	patch_dst=$(find $CARGO_HOME -path "*/differential-dataflow-0.13.2/src/collection.rs")
+	patch_src=$PAYLOAD_DIR/collection.rs
+
+	if cmp -s $patch_src $patch_dst; then
+		echo "[run_bench] DD already patched"
+	else
+		echo "[run_bench] Patching DD"
+
+		chmod a+w $patch_dst
+		cp $patch_src $patch_dst
+		cargo clean -p differential-dataflow --release
+		cargo build -p differential-dataflow --release
+	fi
 
 	# Build the project
 	cargo build --release -j $build_workers
