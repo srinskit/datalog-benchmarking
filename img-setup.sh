@@ -15,8 +15,8 @@ cd $WORK_DIR
 if command -v pip3 >/dev/null 2>&1; then
 	echo "[img-setup] pip exists, skipping install."
 else
-	apt update
-	apt install python3-pip -y
+	apt -qq update
+	apt -qq install python3-pip -y
 fi
 
 # Install DL Bench
@@ -32,6 +32,7 @@ dlbench --help
 
 # Install Rust into our workspace
 
+source $WORK_DIR/rust_env
 if command -v cargo >/dev/null 2>&1; then
 	echo "[img-setup] rust exists, skipping install."
 else
@@ -59,9 +60,9 @@ else
 	echo "[img-setup] installing Souffle"
 
 	wget https://souffle-lang.github.io/ppa/souffle-key.public -O /usr/share/keyrings/souffle-archive-keyring.gpg
-	echo "deb [signed-by=/usr/share/keyrings/souffle-archive-keyring.gpg] https://souffle-lang.github.io/ppa/ubuntu/ stable main" | tee /etc/apt/sources.list.d/souffle.list
-	apt update
-	apt install souffle
+	echo "deb [signed-by=/usr/share/keyrings/souffle-archive-keyring.gpg] https://souffle-lang.github.io/ppa/ubuntu/ stable main" | tee /etc/apt -qq/sources.list.d/souffle.list
+	apt -qq update
+	apt -qq install souffle -y
 fi
 
 souffle --version

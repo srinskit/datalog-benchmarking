@@ -3,3 +3,5 @@
 **/*.txt
 payload-hd/*
 !payload-hd/run_bench.sh
+payload-souffle/*
+!payload-souffle/run_bench.sh

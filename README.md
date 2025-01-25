@@ -75,3 +75,6 @@ CPU Time: 25.17
 ## deploy-dist.sh
 
 TODO: `deploy.sh` but for a cluster of VMs.
+
+
+ssh-add $SSH_KEY

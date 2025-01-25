@@ -11,17 +11,16 @@ project=FlowLogTest
 build_workers=$(nproc)
 workers=$(nproc)
 exe=executing
+dl_program=csda.dl
 
 killall cargo || true
 
 if [[ $build == 1 ]]; then
-	# If obtaining src from local machine
-	# unzip $project-main.zip
-	# mv $project-main $project
+
+	# Update or clone the project
 
 	export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no"
 
-	# Update or clone the project
 	if [[ -d $project ]]; then
 		chown -R $USER $project
 		pushd $project
@@ -56,11 +55,11 @@ if [[ $build == 1 ]]; then
 
 	# Extract the binaries and data
 	mkdir -p experiment
-	cp $project/examples/programs/java.dl experiment
+	cp $project/examples/programs/$dl_program experiment
 	cp -r $project/examples/facts experiment
 	cp $project/target/release/$exe experiment
 fi
 
 pushd experiment
 
-./$exe --program java.dl --facts facts --csvs output --workers 4
+dlbench run "./$exe --program $dl_program --facts facts --csvs output --workers $workers"

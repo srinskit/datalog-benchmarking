@@ -6,12 +6,9 @@ WORK_DIR=/opt
 SRC=/usr/local/src
 
 HOST=$1
-SSH_KEY=$2
-PAYLOAD=${3%/} # Strip trailing slash to create new dest dir with rsync
+PAYLOAD=${2%/} # Strip trailing slash to create new dest dir with rsync
 
 PAYLOAD_DIR=$(basename $PAYLOAD)
-
-ssh-add $SSH_KEY
 
 echo "[Launch] syncing host with src payload"
 rsync -a --rsync-path="sudo rsync" $PAYLOAD $HOST:$WORK_DIR
