@@ -42,13 +42,14 @@ else
 	RUST_OPS="-q -y --profile minimal"
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- $RUST_OPS
 
-	# TODO: install a specific toolchain
-
 	# Save rust env for load during login
 	echo "export CARGO_HOME=$SRC/rust" >$WORK_DIR/rust_env
 	echo "export RUSTUP_HOME=$SRC/rust" >>$WORK_DIR/rust_env
 	echo "export PATH=$CARGO_HOME/bin:\$PATH" >>$WORK_DIR/rust_env
 	source $WORK_DIR/rust_env
+
+	# For DDLog
+	rustup toolchain install 1.76
 fi
 
 rustc --version
@@ -81,9 +82,63 @@ else
 	wget -q https://github.com/vmware/differential-datalog/releases/download/v1.2.3/ddlog-v1.2.3-20211213235218-Linux.tar.gz
 	tar -xf ddlog-v1.2.3-20211213235218-Linux.tar.gz -C $SRC
 
-	echo "export DDLOG_HOME=$SRC/ddlog" > $WORK_DIR/ddlog_env
-	echo "export PATH=$PATH:$SRC/ddlog/bin" >> $WORK_DIR/ddlog_env
+	echo "export DDLOG_HOME=$SRC/ddlog" >$WORK_DIR/ddlog_env
+	echo "export PATH=$PATH:$SRC/ddlog/bin" >>$WORK_DIR/ddlog_env
 	source $WORK_DIR/ddlog_env
 fi
 
 ddlog --version
+
+# Install RecStep
+
+## Install GRPC
+
+apt -qq update -y
+apt -qq install -y clang
+apt -qq install -y clang++
+apt -qq install -y cmake
+
+export CC=/usr/bin/clang
+export CXX=/usr/bin/clang++
+
+if [[ ! -d $SRC/grpc ]]; then
+	git clone --depth=1 -b v1.28.1 https://github.com/grpc/grpc $SRC/grpc
+
+	cd $SRC/grpc
+	git submodule update --init
+
+	make --silent -j $build_workers
+	make --silent install
+
+	cd third_party/protobuf
+	make --silent install
+fi
+
+## Install QuickStep by copying build from Ubuntu 18 LTS manually as a folder $SRC/quickstep
+
+## Install RecStep
+
+if [[ ! -d $SRC/RecStep ]]; then
+	apt -qq install -y python3-pip python-dev build-essential libjpeg-dev zlib1g-dev
+	pip3 install --upgrade pip
+	pip3 install cython
+	pip3 install matplotlib
+	pip3 install psutil
+	pip3 install antlr4-python3-runtime==4.8
+	pip3 install networkx
+
+	git clone --depth=1 https://github.com/Hacker0912/RecStep $SRC/RecStep
+
+	# Point config to quickstep
+	sed -i "s|/fastdisk/quickstep-datalog/build|$SRC/quickstep|" $SRC/RecStep/Config.json
+
+	# Install CLI and env
+	echo "#! $(which python3)" > recstep
+	cat interpreter.py >> recstep
+	chmod +x recstep
+	echo "export CONFIG_FILE_DIR=$SRC/RecStep" >$WORK_DIR/recstep_env
+	echo "export PATH=$PATH:$SRC/RecStep" >>$WORK_DIR/recstep_env
+	source $WORK_DIR/recstep_env
+fi
+
+recstep --help

@@ -15,7 +15,7 @@ dl_program=csda.dl
 
 killall cargo || true
 
-if [[ $build == 1 ]]; then
+if [[ $build == 0 ]]; then
 
 	# Update or clone the project
 

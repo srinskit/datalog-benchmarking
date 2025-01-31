@@ -69,7 +69,7 @@ else
 	cd $SRC/RecStep
 
 	# Point config to quickstep
-	sed -i "s|/fastdisk/quickstep-datalog/build|$SRC/quickstep|" $SRC/RecStep/Config.json
+	sed -i "s|/fastdisk/quickstep-datalog/build|$SRC/quickstep/build|" $SRC/RecStep/Config.json
 
 	# Install CLI and env
 	echo "#! $(which python3)" >recstep
