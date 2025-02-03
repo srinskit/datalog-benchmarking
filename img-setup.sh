@@ -22,11 +22,16 @@ fi
 # Install DL Bench
 
 if command -v dlbench >/dev/null 2>&1; then
-	echo "[img-setup] dlbench exists, skipping install."
+	echo "[img-setup] dlbench exists, attempting update."
+	chown -R $USER $SRC/dlbench
+	pushd $SRC/dlbench
+	git pull origin main
+	popd
 else
 	git clone --depth=1 https://github.com/srinskit/dlbench $SRC/dlbench
-	pip install $SRC/dlbench/
 fi
+
+pip install $SRC/dlbench/
 
 dlbench --help
 
@@ -93,15 +98,14 @@ ddlog --version
 
 ## Install GRPC
 
-apt -qq update -y
-apt -qq install -y clang
-apt -qq install -y clang++
-apt -qq install -y cmake
-
-export CC=/usr/bin/clang
-export CXX=/usr/bin/clang++
-
 if [[ ! -d $SRC/grpc ]]; then
+	export CC=/usr/bin/clang
+	export CXX=/usr/bin/clang++
+	apt -qq update -y
+	apt -qq install -y clang
+	apt -qq install -y clang++
+	apt -qq install -y cmake
+
 	git clone --depth=1 -b v1.28.1 https://github.com/grpc/grpc $SRC/grpc
 
 	cd $SRC/grpc
@@ -119,6 +123,7 @@ fi
 ## Install RecStep
 
 if [[ ! -d $SRC/RecStep ]]; then
+	apt -qq update -y
 	apt -qq install -y python3-pip python-dev build-essential libjpeg-dev zlib1g-dev
 	pip3 install --upgrade pip
 	pip3 install cython
@@ -141,4 +146,5 @@ if [[ ! -d $SRC/RecStep ]]; then
 	source $WORK_DIR/recstep_env
 fi
 
+source $WORK_DIR/recstep_env
 recstep --help
