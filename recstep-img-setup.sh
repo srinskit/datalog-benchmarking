@@ -52,32 +52,32 @@ else
 		make --silent -j $build_workers quickstep_cli_shell quickstep_client
 	fi
 
-	# https://github.com/Hacker0912/RecStep
+	# # https://github.com/Hacker0912/RecStep
 
-	apt -qq install -y python3-pip python-dev build-essential libjpeg-dev zlib1g-dev
-	pip3 install --upgrade pip
-	pip3 install cython
-	pip3 install matplotlib
-	pip3 install psutil
-	pip3 install antlr4-python3-runtime==4.8
-	pip3 install networkx
+	# apt -qq install -y python3-pip python-dev build-essential libjpeg-dev zlib1g-dev
+	# pip3 install --upgrade pip
+	# pip3 install cython
+	# pip3 install matplotlib
+	# pip3 install psutil
+	# pip3 install antlr4-python3-runtime==4.8
+	# pip3 install networkx
 
-	if [[ ! -d $SRC/RecStep ]]; then
-		git clone --depth=1 https://github.com/Hacker0912/RecStep $SRC/RecStep
-	fi
+	# if [[ ! -d $SRC/RecStep ]]; then
+	# 	git clone --depth=1 https://github.com/Hacker0912/RecStep $SRC/RecStep
+	# fi
 
-	cd $SRC/RecStep
+	# cd $SRC/RecStep
 
-	# Point config to quickstep
-	sed -i "s|/fastdisk/quickstep-datalog/build|$SRC/quickstep/build|" $SRC/RecStep/Config.json
+	# # Point config to quickstep
+	# sed -i "s|/fastdisk/quickstep-datalog/build|$SRC/quickstep/build|" $SRC/RecStep/Config.json
 
-	# Install CLI and env
-	echo "#! $(which python3)" >recstep
-	cat interpreter.py >>recstep
-	chmod +x recstep
-	echo "export CONFIG_FILE_DIR=$SRC/RecStep" > $WORK_DIR/recstep_env
-	echo "export PATH=$PATH:$SRC/RecStep" >> $WORK_DIR/recstep_env
-	source $WORK_DIR/recstep_env
+	# # Install CLI and env
+	# echo "#! $(which python3)" >recstep
+	# cat interpreter.py >>recstep
+	# chmod +x recstep
+	# echo "export CONFIG_FILE_DIR=$SRC/RecStep" > $WORK_DIR/recstep_env
+	# echo "export PATH=$PATH:$SRC/RecStep" >> $WORK_DIR/recstep_env
+	# source $WORK_DIR/recstep_env
 fi
 
-recstep --help
+# recstep --help

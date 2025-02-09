@@ -6,7 +6,6 @@
 set -e
 
 WORK_DIR=/opt
-SRC=/usr/local/src
 
 cd $WORK_DIR
 
@@ -23,15 +22,15 @@ fi
 
 if command -v dlbench >/dev/null 2>&1; then
 	echo "[img-setup] dlbench exists, attempting update."
-	chown -R $USER $SRC/dlbench
-	pushd $SRC/dlbench
+	chown -R $USER $WORK_DIR/dlbench
+	pushd $WORK_DIR/dlbench
 	git pull origin main
 	popd
 else
-	git clone --depth=1 https://github.com/srinskit/dlbench $SRC/dlbench
+	git clone --depth=1 https://github.com/srinskit/dlbench $WORK_DIR/dlbench
 fi
 
-pip install $SRC/dlbench/
+pip install $WORK_DIR/dlbench/
 
 dlbench --help
 
@@ -42,14 +41,14 @@ source $WORK_DIR/rust_env || true
 if command -v cargo >/dev/null 2>&1; then
 	echo "[img-setup] rust exists, skipping install."
 else
-	export CARGO_HOME=$SRC/rust
-	export RUSTUP_HOME=$SRC/rust
+	export CARGO_HOME=$WORK_DIR/rust
+	export RUSTUP_HOME=$WORK_DIR/rust
 	RUST_OPS="-q -y --profile minimal"
 	curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- $RUST_OPS
 
 	# Save rust env for load during login
-	echo "export CARGO_HOME=$SRC/rust" >$WORK_DIR/rust_env
-	echo "export RUSTUP_HOME=$SRC/rust" >>$WORK_DIR/rust_env
+	echo "export CARGO_HOME=$WORK_DIR/rust" >$WORK_DIR/rust_env
+	echo "export RUSTUP_HOME=$WORK_DIR/rust" >>$WORK_DIR/rust_env
 	echo "export PATH=$CARGO_HOME/bin:\$PATH" >>$WORK_DIR/rust_env
 	source $WORK_DIR/rust_env
 
@@ -85,10 +84,10 @@ else
 	echo "[img-setup] installing ddlog"
 	pushd $HOME
 	wget -q https://github.com/vmware/differential-datalog/releases/download/v1.2.3/ddlog-v1.2.3-20211213235218-Linux.tar.gz
-	tar -xf ddlog-v1.2.3-20211213235218-Linux.tar.gz -C $SRC
+	tar -xf ddlog-v1.2.3-20211213235218-Linux.tar.gz -C $WORK_DIR
 
-	echo "export DDLOG_HOME=$SRC/ddlog" >$WORK_DIR/ddlog_env
-	echo "export PATH=$PATH:$SRC/ddlog/bin" >>$WORK_DIR/ddlog_env
+	echo "export DDLOG_HOME=$WORK_DIR/ddlog" >$WORK_DIR/ddlog_env
+	echo "export PATH=$PATH:$WORK_DIR/ddlog/bin" >>$WORK_DIR/ddlog_env
 	source $WORK_DIR/ddlog_env
 fi
 
@@ -98,17 +97,18 @@ ddlog --version
 
 ## Install GRPC
 
-if [[ ! -d $SRC/grpc ]]; then
-	export CC=/usr/bin/clang
-	export CXX=/usr/bin/clang++
+if [[ ! -d $WORK_DIR/grpc ]]; then
 	apt -qq update -y
 	apt -qq install -y clang
-	apt -qq install -y clang++
+	apt -qq install -y clang++ || true
 	apt -qq install -y cmake
 
-	git clone --depth=1 -b v1.28.1 https://github.com/grpc/grpc $SRC/grpc
+	export CC=/usr/bin/clang
+	export CXX=/usr/bin/clang++
 
-	cd $SRC/grpc
+	git clone --depth=1 -b v1.28.1 https://github.com/grpc/grpc $WORK_DIR/grpc
+
+	cd $WORK_DIR/grpc
 	git submodule update --init
 
 	make --silent -j $build_workers
@@ -118,11 +118,11 @@ if [[ ! -d $SRC/grpc ]]; then
 	make --silent install
 fi
 
-## Install QuickStep by copying build from Ubuntu 18 LTS manually as a folder $SRC/quickstep
+## Install QuickStep by copying build from Ubuntu 18 LTS manually as a folder $WORK_DIR/quickstep
 
 ## Install RecStep
 
-if [[ ! -d $SRC/RecStep ]]; then
+if [[ ! -d $WORK_DIR/RecStep ]]; then
 	apt -qq update -y
 	apt -qq install -y python3-pip python-dev build-essential libjpeg-dev zlib1g-dev
 	pip3 install --upgrade pip
@@ -132,19 +132,75 @@ if [[ ! -d $SRC/RecStep ]]; then
 	pip3 install antlr4-python3-runtime==4.8
 	pip3 install networkx
 
-	git clone --depth=1 https://github.com/Hacker0912/RecStep $SRC/RecStep
+	git clone --depth=1 https://github.com/Hacker0912/RecStep $WORK_DIR/RecStep
+
+	pushd $WORK_DIR/RecStep
 
 	# Point config to quickstep
-	sed -i "s|/fastdisk/quickstep-datalog/build|$SRC/quickstep|" $SRC/RecStep/Config.json
+	sed -i "s|/fastdisk/quickstep-datalog/build|$WORK_DIR/quickstep|" $WORK_DIR/RecStep/Config.json
 
 	# Install CLI and env
 	echo "#! $(which python3)" > recstep
 	cat interpreter.py >> recstep
 	chmod +x recstep
-	echo "export CONFIG_FILE_DIR=$SRC/RecStep" >$WORK_DIR/recstep_env
-	echo "export PATH=$PATH:$SRC/RecStep" >>$WORK_DIR/recstep_env
+	echo "export CONFIG_FILE_DIR=$WORK_DIR/RecStep" > $WORK_DIR/recstep_env
+	echo "export PATH=$PATH:$WORK_DIR/RecStep" >> $WORK_DIR/recstep_env
 	source $WORK_DIR/recstep_env
+
+	popd
 fi
 
 source $WORK_DIR/recstep_env
 recstep --help
+
+project=FlowLogTest
+eclair_exe=$WORK_DIR/$project/target/release/executing
+
+if [[ ! -f $eclair_exe ]]; then
+	build_workers=$(nproc)
+	source $WORK_DIR/rust_env
+	killall cargo || true
+
+	# Update or clone the project
+
+	export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no"
+
+	if [[ -d $project ]]; then
+		chown -R $USER $project
+		pushd $project
+		git pull origin main
+	else
+		git clone git@github.com:hdz284/$project.git
+		pushd $project
+	fi
+
+	echo "Build workers: " $build_workers
+	cargo fetch
+	# cargo update differential-dataflow
+
+	# Patch DD
+
+	wget https://raw.githubusercontent.com/srinskit/cloudlab-auto/refs/heads/main/collection.rs
+	patch_dst=$(find $CARGO_HOME -path "*/differential-dataflow-0.13.3/src/collection.rs")
+	patch_src=collection.rs
+
+	# Test DD crate exists
+	[ -f $patch_dst ]
+
+	if cmp -s $patch_src $patch_dst; then
+		echo "[run_bench] DD already patched"
+	else
+		echo "[run_bench] Patching DD"
+
+		chmod a+w $patch_dst
+		cp $patch_src $patch_dst
+		cargo clean -p differential-dataflow --release
+		cargo build -p differential-dataflow --release
+	fi
+
+	rm collection.rs*
+
+	# Build the project
+	cargo build --release -j $build_workers
+	popd
+fi
