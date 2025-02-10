@@ -3,19 +3,12 @@
 # Exit script on error
 set -e
 
-source ../rust_env
-
-PAYLOAD_DIR=$(pwd)
-SRC=/usr/local/src
-DATA=$SRC/data
-build=1
+DATA=/data/input/souffle
 build_workers=$(nproc)
+# workers=$(nproc)
 workers=4
 exe=souffle_cmpl
 dl_program=sg.dl
 
-if [[ $build == 1 ]]; then
-	souffle -o $exe $dl_program -j $build_workers -v
-fi
-
-dlbench run "./$exe -F $DATA/livejournal -D . -j $workers"
+souffle -o $exe $dl_program -j $build_workers -v
+dlbench run "./$exe -F $DATA/G5K-0.001 -D . -j $workers" "souffle-cmpl-sg"

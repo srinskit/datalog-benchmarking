@@ -3,16 +3,19 @@
 # Exit script on error
 set -e
 
-source ../rust_env
-source ../ddlog_env
 
-PAYLOAD_DIR=$(pwd)
+SRC=/opt
+DATA=/data/input/ddlog
 build=1
 build_workers=$(nproc)
-workers=$(nproc)
-dl_program=csda.dl
-exe=csda_cli
+workers=4
+dl=sg
+dl_program="$dl".dl
+exe="$dl"_ddlog/target/release/"$dl"_cli
 rust_v=1.76
+
+source $SRC/rust_env
+source $SRC/ddlog_env
 
 killall cargo || true
 
@@ -20,16 +23,9 @@ if [[ $build == 1 ]]; then
 	rustup toolchain install $rust_v
 
 	ddlog -i $dl_program
-	pushd csda_ddlog
+	pushd "$dl"_ddlog
 	cargo +$rust_v build --release --quiet
 	popd
-
-	mkdir -p experiment
-	cp csda_ddlog/target/release/$exe experiment
-	cp postgresql/input.prog experiment
 fi
 
-# TODO: don't duplicate input
-
-pushd experiment
-dlbench run "./$exe -w $workers < input.prog"
+dlbench run "./$exe -w $workers < $DATA/G5K-0.001/arc.in" "ddlog-sg"
