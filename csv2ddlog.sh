@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Exit script on error
+set -e
+
 # Check if there are at least two arguments and an even number of parameters
 if [ $# -lt 4 ] || [ $(($# % 2)) -ne 0 ]; then
 	echo "[csv2ddlog] Usage: $0 output_file shuf|noshuf edb1 src1 [edb2 SRC2 ...]"
