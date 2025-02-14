@@ -1,0 +1,7 @@
+typedef int = bit<32>
+
+input relation Arc(x: int, y: int)
+output relation Sg(x: int, y: int)
+
+Sg(x, y) :- Arc(a, x), Arc(a, y), x != y.
+Sg(x, y) :- Arc(a, x), Sg(a, b), Arc(b, y).

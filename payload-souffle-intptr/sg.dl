@@ -1,0 +1,9 @@
+.decl arc(src: number, dest: number)
+.input arc(IO="file", filename="arc.csv", delimiter=",")
+
+.decl sg(src: number, dest: number)
+
+sg(x, y) :- arc(a, x), arc(a, y), x != y.
+sg(x, y) :- arc(a, x), sg(a, b), arc(b, y).
+
+.printsize sg

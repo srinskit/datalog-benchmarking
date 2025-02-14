@@ -1,0 +1,13 @@
+typedef node = signed<32>
+
+input relation AddressOf(x: node, y: node) 
+input relation Assign(x: node, y: node)
+input relation Load(x: node, y: node)
+input relation Store(x: node, y: node)
+
+output relation PointsTo(x: node, y: node)
+
+PointsTo(y, x) :- AddressOf(y, x).
+PointsTo(y, x) :- Assign(y, z), PointsTo(z, x).
+PointsTo(y, w) :- Load(y, x), PointsTo(x, z), PointsTo(z, w).
+PointsTo(z, w) :- Store(y, x), PointsTo(y, z), PointsTo(x, w). 
