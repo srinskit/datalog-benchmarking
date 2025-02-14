@@ -8,7 +8,8 @@ SRC=/opt
 DATA=/data/input/ddlog
 build=1
 build_workers=$(nproc)
-workers=4
+workers_low=4
+workers_high=64
 dl=sg
 dl_program="$dl".dl
 exe="$dl"_ddlog/target/release/"$dl"_cli
@@ -28,4 +29,5 @@ if [[ $build == 1 ]]; then
 	popd
 fi
 
-dlbench run "./$exe -w $workers < $DATA/G5K-0.001/arc.in" "ddlog-sg"
+dlbench run "./$exe -w $workers_low < $DATA/G5K-0.001/arc.in" "sg-$workers_low-ddlog"
+dlbench run "./$exe -w $workers_high < $DATA/G5K-0.001/arc.in" "sg-$workers_high-ddlog"
