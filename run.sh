@@ -1,9 +1,21 @@
 host=$1
 
-./launch.sh $host payload-eclair/
-./launch.sh $host payload-souffle-cmpl/
-./launch.sh $host payload-souffle-intptr/
-./launch.sh $host payload-recstep/
-./launch.sh $host payload-ddlog/
+# Exit script on error
+set -e
 
-dlbench plot --last 5
+basedir=$(pwd)
+launcher="$basedir/launch.sh"
+ts=$(date +"%m-%d-%H-%M-%S")
+folder=result"$ts"
+mkdir -p $folder
+
+pushd $folder
+$launcher $host $basedir/payload-eclair/
+$launcher $host $basedir/payload-souffle-cmpl/
+$launcher $host $basedir/payload-souffle-intptr/
+$launcher $host $basedir/payload-recstep/
+$launcher $host $basedir/payload-ddlog/
+# dlbench plot --last 5
+popd
+
+$basedir/log2sheet.sh $folder

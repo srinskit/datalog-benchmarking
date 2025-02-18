@@ -1,14 +1,7 @@
 **/*.log
 **/*.zip
 **/*.txt
-payload-hd/*
-payload-souffle-cmpl/*
-payload-souffle-intptr/*
-payload-recstep/*
-payload-ddlog/*
-!payload-hd/run_bench.sh
-!payload-souffle-cmpl/run_bench.sh
-!payload-souffle-intptr/run_bench.sh
-!payload-recstep/run_bench.sh
-!payload-ddlog/run_bench.sh
+payload-*/*
+!payload-*/run_bench.sh
+!payload-*/*.dl
 *.png

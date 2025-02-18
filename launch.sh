@@ -13,7 +13,7 @@ PAYLOAD=${2%/} # Strip trailing slash to create new dest dir with rsync
 
 PAYLOAD_DIR=$(basename $PAYLOAD)
 
-RSYNC="rsync -a --info=progress2 --info=name0"
+RSYNC="rsync -ah --info=progress2 --info=name0 --delete"
 
 echo "[Launch] syncing host with src payload"
 $RSYNC --rsync-path="sudo rsync" $PAYLOAD $HOST:$WORK_DIR
