@@ -23,6 +23,5 @@ ssh -A $HOST "cd $WORK_DIR/$PAYLOAD_DIR; sudo ./run_bench.sh"
 
 # Sync local payload from host payload, except the run_bench.sh file
 echo "[Launch] syncing src with host payload"
-# $RSYNC --rsync-path="sudo rsync" --exclude "run_bench.sh" $HOST:$WORK_DIR/$PAYLOAD_DIR/ $PAYLOAD 
 $RSYNC --rsync-path="sudo rsync" --include="*.log" --exclude="*" $HOST:$WORK_DIR/$PAYLOAD_DIR/ $PAYLOAD 
 mv $PAYLOAD/*.log . || true

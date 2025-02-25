@@ -5,13 +5,16 @@ set -e
 
 SRC=/opt
 DATA=/data/input/souffle
-workers_low=4
-workers_high=64
 
 source $SRC/recstep_env
+source bench_targets.sh
 
-dlbench run "recstep --program sg.dl --input $DATA/G5K-0.001 --jobs $workers_low" "sg-G5K-$workers_low-recstep" -m quickstep_cli_shell
-dlbench run "recstep --program sg.dl --input $DATA/G5K-0.001 --jobs $workers_high" "sg-G5K-$workers_high-recstep" -m quickstep_cli_shell
+for target in "${targets[@]}"; do
+	read -r dl dd ds <<<"$target"
 
-dlbench run "recstep --program andersen.dl --input $DATA/andersen/500000 --jobs $workers_low" "andersen-500000-$workers_low-recstep" -m quickstep_cli_shell
-dlbench run "recstep --program andersen.dl --input $DATA/andersen/500000 --jobs $workers_high" "andersen-500000-$workers_high-recstep" -m quickstep_cli_shell
+	for w in "${workers[@]}"; do
+		echo "[run_bench] program: $dl, dataset: $dd/$ds, workers: $w"
+		cmd="recstep --program $dl.dl --input $DATA/$dd/$ds --jobs $w"
+		dlbench run "$cmd" "$dl"_"$ds"_"$w"_recstep -m quickstep_cli_shell
+	done
+done

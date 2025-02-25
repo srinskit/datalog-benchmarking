@@ -5,12 +5,16 @@ set -e
 
 SRC=/opt
 DATA=/data/input/souffle
-workers_low=4
-workers_high=64
 exe=$SRC/FlowLogTest/target/release/executing
 
-dlbench run "$exe --program sg.dl --facts $DATA/G5K-0.001 --csvs output --workers $workers_low" "sg-G5K-$workers_low-eclair"
-dlbench run "$exe --program sg.dl --facts $DATA/G5K-0.001 --csvs output --workers $workers_high" "sg-G5K-$workers_high-eclair"
+source bench_targets.sh
 
-dlbench run "$exe --program andersen.dl --facts $DATA/andersen/500000 --csvs output --workers $workers_low" "andersen-500000-$workers_low-eclair"
-dlbench run "$exe --program andersen.dl --facts $DATA/andersen/500000 --csvs output --workers $workers_high" "andersen-500000-$workers_high-eclair"
+for target in "${targets[@]}"; do
+	read -r dl dd ds <<<"$target"
+
+	for w in "${workers[@]}"; do
+		echo "[run_bench] program: $dl, dataset: $dd/$ds, workers: $w"
+		cmd="$exe --program $dl.dl --facts $DATA/$dd/$ds --csvs output --workers $w"
+		dlbench run "$cmd" "$dl"_"$ds"_"$w"_eclair
+	done
+done

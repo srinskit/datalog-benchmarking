@@ -7,10 +7,14 @@ DATA=/data/input/souffle
 workers_low=4
 workers_high=64
 
-dl=sg
-dlbench run "souffle "$dl.dl" -F $DATA/G5K-0.001 -D . -j $workers_low" "$dl-$workers_low-souffle-intptr"
-dlbench run "souffle "$dl.dl" -F $DATA/G5K-0.001 -D . -j $workers_high" "$dl-$workers_high-souffle-intptr"
+source bench_targets.sh
 
-dl=andersen
-dlbench run "souffle $dl.dl -F $DATA/andersen/500000 -D . -j $workers_low" "andersen-500000-$workers_low-souffle-intptr"
-dlbench run "souffle $dl.dl -F $DATA/andersen/500000 -D . -j $workers_high" "andersen-500000-$workers_high-souffle-intptr"
+for target in "${targets[@]}"; do
+	read -r dl dd ds <<<"$target"
+
+	for w in "${workers[@]}"; do
+		echo "[run_bench] program: $dl, dataset: $dd/$ds, workers: $w"
+		cmd="souffle "$dl.dl" -F $DATA/$dd/$ds -D . -j $w"
+		dlbench run "$cmd" "$dl"_"$ds"_"$w"_souffle-intptr
+	done
+done

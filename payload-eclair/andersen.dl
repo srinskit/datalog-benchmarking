@@ -15,19 +15,7 @@
 .decl PointsTo(y: number, x: number)
 
 .rule
-PointsTo(y, x) :-
- AddressOf(y, x).
-
-PointsTo(y, x) :-
- Assign(y, z),
- PointsTo(z, x).
-
-PointsTo(y, w) :-
- Load(y, x),
- PointsTo(x, z),
- PointsTo(z, w).
-
-PointsTo(z, w) :-
- Store(y, x),
- PointsTo(y, z),
- PointsTo(x, w).
+PointsTo(y, x) :- AddressOf(y, x).
+PointsTo(y, x) :- Assign(y, z), PointsTo(z, x).
+PointsTo(y, w) :- Load(y, x), PointsTo(x, z), PointsTo(z, w).
+PointsTo(z, w) :- Store(y, x), PointsTo(y, z), PointsTo(x, w).

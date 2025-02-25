@@ -21,15 +21,12 @@ fi
 # Install DL Bench
 
 if command -v dlbench >/dev/null 2>&1; then
-	echo "[img-setup] dlbench exists, attempting update."
-	chown -R $USER $WORK_DIR/dlbench
-	pushd $WORK_DIR/dlbench
-	git pull origin main
-	popd
-else
-	git clone --depth=1 https://github.com/srinskit/dlbench $WORK_DIR/dlbench
+	echo "[img-setup] dlbench exists, re-installing latest."
+	pip uninstall -y dlbench
+	rm -rf $WORK_DIR/dlbench
 fi
 
+git clone --depth=1 https://github.com/srinskit/dlbench $WORK_DIR/dlbench
 pip install $WORK_DIR/dlbench/
 
 dlbench --help

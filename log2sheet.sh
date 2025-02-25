@@ -2,6 +2,7 @@
 
 workers=(4 64)
 engines=("eclair" "souffle-cmpl" "souffle-intptr" "recstep" "ddlog")
+delim="_"
 
 get_runtime() {
 	local rfile="$1"
@@ -14,7 +15,7 @@ print_runtimes() {
 	local stat_line=""
 	local dl_program dataset
 
-	IFS='-' read -r dl_program dataset _ <<<"$prefix"
+	IFS=$delim read -r dl_program dataset _ <<<"$prefix"
 
 	if [[ -n "$dl_program" && -n "$dataset" ]]; then
 		stat_line="$dl_program\t$dataset"
@@ -25,7 +26,7 @@ print_runtimes() {
 
 	for e in "${engines[@]}"; do
 		for n in "${workers[@]}"; do
-			local rfile_pattern="$prefix-${n}-${e}"
+			local rfile_pattern="$prefix$delim${n}$delim${e}"
 			local rfiles=($(find $rdir -type f -name "*$rfile_pattern*.log"))
 			local nfiles=${#rfiles[@]}
 
@@ -50,7 +51,7 @@ for dir in "$@"; do
 	for rdir in $dir; do
 		# Check if it's a valid directory
 		if [[ -d "$rdir" ]]; then
-			for batch_prefix in $(find $rdir -type f -name "*.log" -printf "%f\n" | cut -d '-' -f 1,2 | sort | uniq); do
+			for batch_prefix in $(find $rdir -type f -name "*.log" -printf "%f\n" | cut -d $delim -f 1,2 | sort | uniq); do
 				print_runtimes $rdir $batch_prefix
 			done
 		else

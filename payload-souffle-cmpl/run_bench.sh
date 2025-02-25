@@ -5,14 +5,24 @@ set -e
 
 DATA=/data/input/souffle
 build_workers=$(nproc)
-workers_low=4
-workers_high=64
 exe=souffle_cmpl
+prev_dl=""
 
-souffle -o $exe sg.dl -j $build_workers
-dlbench run "./$exe -F $DATA/G5K-0.001 -D . -j $workers_low" "sg-G5K-$workers_low-souffle-cmpl"
-dlbench run "./$exe -F $DATA/G5K-0.001 -D . -j $workers_high" "sg-G5K-$workers_high-souffle-cmpl"
+source bench_targets.sh
 
-souffle -o $exe andersen.dl -j $build_workers
-dlbench run "./$exe -F $DATA/andersen/500000 -D . -j $workers_low" "andersen-500000-$workers_low-souffle-cmpl"
-dlbench run "./$exe -F $DATA/andersen/500000 -D . -j $workers_high" "andersen-500000-$workers_high-souffle-cmpl"
+for target in "${targets[@]}"; do
+	read -r dl dd ds <<<"$target"
+
+	# Build program
+	if [ "$prev_dl" != "$dl" ]; then
+		souffle -o $exe "$dl".dl -j $build_workers
+		prev_dl="$dl"
+	fi
+
+	for w in "${workers[@]}"; do
+		killall $exe || true
+		echo "[run_bench] program: $dl, dataset: $dd/$ds, workers: $w"
+		cmd="./$exe -F $DATA/$dd/$ds -D . -j $w"
+		dlbench run "$cmd" "$dl"_"$ds"_"$w"_souffle-cmpl
+	done
+done

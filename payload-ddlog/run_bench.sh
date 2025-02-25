@@ -2,37 +2,41 @@
 
 # Exit script on error
 set -e
-
+PS4=':$LINENO+'
 SRC=/opt
 DATA=/data/input/ddlog
-build=1
 build_workers=$(nproc)
-workers_low=4
-workers_high=64
-
+prev_dl=""
+exe=""
 rust_v=1.76
 
 source $SRC/rust_env
 source $SRC/ddlog_env
-
-killall cargo || true
-rustup toolchain install $rust_v
+source bench_targets.sh
 
 ddlog_prog_build() {
 	local dl_prog="$1"
 	ddlog -i "$dl".dl
 	pushd "$dl"_ddlog
-	cargo +$rust_v build --release --quiet
+	killall cargo || true
+	RUSTFLAGS=-Awarnings cargo +$rust_v build --release --quiet -j $build_workers
 	popd
 	echo "$dl"_ddlog/target/release/"$dl"_cli
 }
 
-dl=sg
-exe=$(ddlog_prog_build $dl)
-dlbench run "./$exe -w $workers_low < $DATA/G5K-0.001/arc.in" "sg-G5K-$workers_low-ddlog"
-dlbench run "./$exe -w $workers_high < $DATA/G5K-0.001/arc.in" "sg-G5K-$workers_high-ddlog"
+for target in "${targets[@]}"; do
+	read -r dl dd ds <<<"$target"
 
-dl=andersen
-exe=$(ddlog_prog_build $dl)
-dlbench run "./$exe -w $workers_low < $DATA/andersen/500000/data.ddin" "andersen-500000-$workers_low-ddlog"
-dlbench run "./$exe -w $workers_high < $DATA/andersen/500000/data.ddin" "andersen-500000-$workers_high-ddlog"
+	# Build program
+	if [ "$prev_dl" != "$dl" ]; then
+		exe=$(ddlog_prog_build $dl)
+		prev_dl="$dl"
+	fi
+
+	for w in "${workers[@]}"; do
+		killall $exe || true
+		echo "[run_bench] program: $dl, dataset: $dd/$ds, workers: $w"
+		cmd="./$exe -w $w < $DATA/$dd/$ds/data.ddin"
+		dlbench run "$cmd" "$dl"_"$ds"_"$w"_ddlog
+	done
+done
