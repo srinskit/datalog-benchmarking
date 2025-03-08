@@ -1,0 +1,9 @@
+typedef node = signed<32>
+
+input relation NullEdge(x: node, y: node)
+input relation Edge(x: node, y: node)
+
+output relation Null(x: node, y: node)
+
+Null(x, y) :- NullEdge(x, y).
+Null(x, y) :- Null(x, w), Edge(w, y).

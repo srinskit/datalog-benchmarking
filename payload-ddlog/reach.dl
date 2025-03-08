@@ -1,0 +1,10 @@
+typedef node = signed<32> 
+
+input relation Source(id: node)
+input relation Arc(x: node, y: node)
+
+output relation Reach(id: node)
+
+Reach(y) :- Source(y).
+Reach(y) :- Reach(x), Arc(x,y).
+

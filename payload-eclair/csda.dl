@@ -1,0 +1,14 @@
+.in
+.decl NullEdge(x: number, y: number)
+.input NullEdge.csv
+
+.decl Edge(x: number, y: number)
+.input Edge.csv
+
+.printsize 
+.decl Null(x: number, y: number)
+
+.rule
+Null(x, y) :- NullEdge(x, y).
+Null(x, y) :-Null(x, w), Edge(w, y).
+

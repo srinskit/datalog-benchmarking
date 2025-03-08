@@ -1,0 +1,12 @@
+.decl NullEdge(x: number, y: number)
+.input NullEdge(IO="file", filename="NullEdge.csv", delimiter=",")
+
+.decl Edge(x: number, y: number)
+.input Edge(IO="file", filename="Edge.csv", delimiter=",")
+
+.decl Null(x: number, y: number)
+
+Null(x, y) :- NullEdge(x, y).
+Null(x, y) :-Null(x, w), Edge(w, y).
+
+.printsize Null

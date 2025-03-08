@@ -153,7 +153,7 @@ recstep --help
 project=FlowLogTest
 eclair_exe=$WORK_DIR/$project/target/release/executing
 
-if [[ ! -f $eclair_exe ]]; then
+if [[ 1 ]]; then
 	build_workers=$(nproc)
 	source $WORK_DIR/rust_env
 	killall cargo || true
@@ -162,14 +162,9 @@ if [[ ! -f $eclair_exe ]]; then
 
 	export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no"
 
-	if [[ -d $project ]]; then
-		chown -R $USER $project
-		pushd $project
-		git pull origin main
-	else
-		git clone git@github.com:hdz284/$project.git
-		pushd $project
-	fi
+	rm -rf $project
+	git clone --branch benchmark --single-branch --depth 1 git@github.com:hdz284/$project.git
+	pushd $project
 
 	echo "Build workers: " $build_workers
 	cargo fetch

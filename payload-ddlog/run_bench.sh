@@ -25,18 +25,25 @@ ddlog_prog_build() {
 }
 
 for target in "${targets[@]}"; do
-	read -r dl dd ds <<<"$target"
+	read -r dl dd ds key charmap <<<"$target"
 
-	# Build program
-	if [ "$prev_dl" != "$dl" ]; then
-		exe=$(ddlog_prog_build $dl)
-		prev_dl="$dl"
+	if [[ "$charmap" == *"D"* ]]; then
+		for w in "${workers[@]}"; do
+			echo "[run_bench] program: $dl, dataset: $dd/$ds, workers: $w"
+
+			# Build program
+			if [ "$prev_dl" != "$dl" ]; then
+				rm -rf *_ddlog || true
+				exe=$(ddlog_prog_build $dl)
+				prev_dl="$dl"
+			fi
+
+			killall $exe || true
+			cmd="./$exe -w $w < $DATA/$dd/$ds/data.ddin"
+			dlbench run "$cmd" "$dl"_"$ds"_"$w"_ddlog
+		done
 	fi
 
-	for w in "${workers[@]}"; do
-		killall $exe || true
-		echo "[run_bench] program: $dl, dataset: $dd/$ds, workers: $w"
-		cmd="./$exe -w $w < $DATA/$dd/$ds/data.ddin"
-		dlbench run "$cmd" "$dl"_"$ds"_"$w"_ddlog
-	done
 done
+
+rm -rf *_ddlog || true

@@ -2,6 +2,7 @@
 
 workers=(4 64)
 engines=("eclair" "souffle-cmpl" "souffle-intptr" "recstep" "ddlog")
+corr_engines=("eclair" "souffle-cmpl")
 delim="_"
 
 get_runtime() {
@@ -42,7 +43,33 @@ print_runtimes() {
 		done
 	done
 
-	echo -e "$stat_line\t$rdir"
+	for e in "${corr_engines[@]}"; do
+		for n in "${workers[@]}"; do
+			local rfile_pattern="$prefix$delim${n}$delim${e}"
+			local rfiles=($(find $rdir -type f -name "*$rfile_pattern*.info"))
+			local nfiles=${#rfiles[@]}
+
+			# Check the number of matching files
+			if [[ $nfiles == 1 ]]; then
+				corr_val=$(head -n 1 "${rfiles[0]}")
+
+				if [[ "$corr_val" == "" ]]; then
+					corr_val="DNF"
+				fi
+
+				stat_line="$stat_line\t"$corr_val
+
+			elif [[ $nfiles == 0 ]]; then
+				stat_line="$stat_line\tN/A"
+			else
+				echo "Error: Found ${#rfiles[@]} file matching the pattern $rfile_pattern. Expected exactly one."
+				exit 1
+			fi
+		done
+	done
+
+	base_rdir=$(basename $rdir)
+	echo -e "$stat_line\t$base_rdir"
 }
 
 # Iterate over all arguments (directories/patterns)

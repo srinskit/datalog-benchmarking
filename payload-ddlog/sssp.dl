@@ -1,0 +1,18 @@
+typedef node = signed<32>
+typedef distance = signed<32>
+
+input relation Id(y: node)
+input relation Arc(x: node, y: node)
+
+relation Arcwts(x: node, y:node, d: distance)
+
+relation Sssp2(x: node, y: node) 
+
+output relation Sssp(x: node, y: node) 
+
+Sssp2(y, 0) :- Id(y).
+Arcwts(x,y,1) :- Arc(x,y).
+Sssp2(y, min_d1_d2) :- Sssp2(x, d1), Arcwts(x, y, d2), var min_d1_d2 = Aggregate((y), group_min(d1 + d2)). 
+Sssp(x, min_d) :- Sssp2(x, d), var min_d = Aggregate((x), group_min(d)).  
+
+ 

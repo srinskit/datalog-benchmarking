@@ -1,7 +1,9 @@
 **/*.log
+**/*.out
+**/*.info
 **/*.zip
 **/*.txt
 payload-*/*
-!payload-*/run_bench.sh
+!payload-*/*.sh
 !payload-*/*.dl
 *.png

@@ -10,11 +10,13 @@ source $SRC/recstep_env
 source bench_targets.sh
 
 for target in "${targets[@]}"; do
-	read -r dl dd ds <<<"$target"
+	read -r dl dd ds key charmap <<<"$target"
 
-	for w in "${workers[@]}"; do
-		echo "[run_bench] program: $dl, dataset: $dd/$ds, workers: $w"
-		cmd="recstep --program $dl.dl --input $DATA/$dd/$ds --jobs $w"
-		dlbench run "$cmd" "$dl"_"$ds"_"$w"_recstep -m quickstep_cli_shell
-	done
+	if [[ "$charmap" == *"R"* ]]; then
+		for w in "${workers[@]}"; do
+			echo "[run_bench] program: $dl, dataset: $dd/$ds, workers: $w"
+			cmd="recstep --program $dl.dl --input $DATA/$dd/$ds --jobs $w"
+			dlbench run "$cmd" "$dl"_"$ds"_"$w"_recstep -m quickstep_cli_shell
+		done
+	fi
 done
