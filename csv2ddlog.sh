@@ -4,14 +4,16 @@
 set -e
 
 # Check if there are at least two arguments and an even number of parameters
-if [ $# -lt 4 ] || [ $(($# % 2)) -ne 0 ]; then
-	echo "[csv2ddlog] Usage: $0 output_file shuf|noshuf edb1 src1 [edb2 SRC2 ...]"
-	echo "[csv2ddlog] Example: ./csv2ddlog.sh andersen.ddin shuf AddressOf addressOf.csv Assign assign.csv Load load.csv Store store.csv"
+if [ $# -lt 3 ] || [ $(($# % 2)) -ne 1 ]; then
+	echo "[csv2ddlog] Usage: $0 output_file shuf|noshuf auto|manual [edb1 src1 edb2 SRC2 ...]"
+	echo "[csv2ddlog] Example: ./csv2ddlog.sh andersen.ddin shuf auto"
+	echo "[csv2ddlog] Example: ./csv2ddlog.sh andersen.ddin shuf manual AddressOf addressOf.csv Assign assign.csv Load load.csv Store store.csv"
 	exit 1
 fi
 
 op_file=$1
 shuf_mode=$2
+detect_mode=$3
 tmp_file=csv2ddlog.tmp
 
 # Validate shuffle mode
@@ -20,34 +22,56 @@ if [[ "$shuf_mode" != "shuf" && "$shuf_mode" != "noshuf" ]]; then
 	exit 1
 fi
 
-# Move to the next paramter pair
-shift 2
+# Validate detect mode
+if [[ "$detect_mode" != "auto" && "$detect_mode" != "manual" ]]; then
+	echo "[csv2ddlog] Error: detect mode (argument 3) must be 'auto' or 'manual'"
+	exit 1
+fi
 
 # Clear the output file
 truncate --size 0 $tmp_file
 
 list_of_csv=""
 
-# Iterate through the parameters two at a time
-while [ $# -gt 1 ]; do
-	edb=$1
-	src=$2
-	echo "[csv2ddlog] Processing: $edb, $src"
-	sed "s/\(.*\)/insert $edb(\1),/" $src >> $tmp_file
-	list_of_csv="$list_of_csv $src"
-
+if [[ "$detect_mode" == "auto" ]]; then
+	# Iterate through all .csv and .facts files in the current directory
+	for src in *.csv *.facts; do
+		# Check if the file actually exists (in case there are no matching files)
+		if [ -f "$src" ]; then
+			# Extract the filename without the extension
+			edb="${src%.*}"
+			# Capitalize the first character
+			edb="${edb^}"
+			echo "[csv2ddlog] Processing: $edb, $src"
+			sed "s/\(.*\)/insert $edb(\1),/" $src >>$tmp_file
+			list_of_csv="$list_of_csv $src"
+		fi
+	done
+else
 	# Move to the next paramter pair
-	shift 2
-done
+	shift 3
+
+	# Iterate through the parameters two at a time
+	while [ $# -gt 1 ]; do
+		edb=$1
+		src=$2
+		echo "[csv2ddlog] Processing: $edb, $src"
+		sed "s/\(.*\)/insert $edb(\1),/" $src >>$tmp_file
+		list_of_csv="$list_of_csv $src"
+
+		# Move to the next paramter pair
+		shift 2
+	done
+fi
 
 # Write "start" into the output file
-echo "start;" > $op_file
+echo "start;" >$op_file
 
 # Shuffle output if requested
 if [[ "$shuf_mode" == "shuf" ]]; then
-	shuf $tmp_file >> $op_file
+	shuf $tmp_file >>$op_file
 else
-	cat $tmp_file >> $op_file
+	cat $tmp_file >>$op_file
 fi
 
 rm $tmp_file
@@ -56,7 +80,7 @@ rm $tmp_file
 sed -i '$ s/.$/;/' $op_file
 
 # Write "commit" into the output file
-echo "commit;" >> $op_file
+echo "commit;" >>$op_file
 
 echo
 echo "[csv2ddlog] Number of lines in inputs:"
