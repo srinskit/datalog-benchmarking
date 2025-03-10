@@ -22,3 +22,4 @@ MemoryAlias(x, x) :- Assign(x, y).
 .printsize ValueFlow
 // .printsize MemoryAlias
 // .printsize ValueAlias
+// TODO: allow print of multiple

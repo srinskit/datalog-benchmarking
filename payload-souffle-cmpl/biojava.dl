@@ -131,7 +131,7 @@ ThisVar(method, var) :- _ThisVar(method, var).
 
 isType(type) :- _NormalHeap(_, type).
 // HeapAllocation_Type(id, type) :- _NormalHeap(id, type).
-// HeapAllocation_Type(id, 682809) :- _StringConstant(id).
+// HeapAllocation_Type(id, 1127085) :- _StringConstant(id).
 
 Instruction_Method(instruction, method) :-
   _AssignHeapAllocation(instruction, index, heap, to, method, linenumber).
@@ -326,12 +326,12 @@ StaticMethodInvocation(invocation, signature, inmethod) :-
   MethodInvocation_Method(invocation, signature).
 // HeapAllocation_Type(heap, type),
 // MainMethodArgArray(heap) :-
-//   heap = 2547954,
-//   type = 548718.
+//   heap = 4271541,
+//   type = 922666.
 // HeapAllocation_Type(heap, type),
 // MainMethodArgArrayContent(heap) :-
-//   heap = 2547645,
-//   type = 682809.
+//   heap = 4269990,
+//   type = 1127085.
 VirtualMethodInvocation_SimpleName(invocation, simplename) :-
   isVirtualMethodInvocation_Insn(invocation),
   MethodInvocation_Method(invocation, signature),
@@ -384,17 +384,17 @@ MethodImplemented(simplename, descriptor, type, method) :-
   Method_SimpleName(method, simplename),
   Method_Descriptor(method, descriptor),
   Method_DeclaringType(method, type),
-  ! Method_Modifier(971366, method).
+  ! Method_Modifier(779558, method).
 MainMethodDeclaration(method) :-
   MainClass(type),
   Method_DeclaringType(method, type),
-  method != 566701,
-  method != 1314186,
-  method != 977029,
-  Method_SimpleName(method, 979988),
-  Method_Descriptor(method, 3021702),
-  Method_Modifier(925397, method),
-  Method_Modifier(836310, method).
+  method != 1045470,
+  method != 2357714,
+  method != 1614718,
+  Method_SimpleName(method, 780495),
+  Method_Descriptor(method, 5097637),
+  Method_Modifier(1347650, method),
+  Method_Modifier(1347648, method).
 
 DirectSubclass(a, c) :-
   DirectSuperclass(a, c).
@@ -428,11 +428,11 @@ SubtypeOf(s, t) :-
 SubtypeOf(s, t) :-
   isInterfaceType(s),
   isType(t),
-  t = 685168.
+  t = 1168277.
 SubtypeOf(s, t) :-
   isArrayType(s),
   isType(t),
-  t = 685168.
+  t = 1168277.
 SubtypeOf(s, t) :-
   isInterfaceType(s),
   Superinterface(t, s).
@@ -453,12 +453,12 @@ SubtypeOf(s, t) :-
   isArrayType(s),
   isInterfaceType(t),
   isType(t),
-  t = 971368.
+  t = 1875761.
 SubtypeOf(s, t) :-
   isArrayType(s),
   isInterfaceType(t),
   isType(t),
-  t = 691907.
+  t = 1132248.
 
 SupertypeOf(s, t) :-
   SubtypeOf(t, s).
@@ -482,7 +482,7 @@ SubtypeOfDifferent(s, t) :-
 
 // .rule
 ClassInitializer(type, method) :-
-   MethodImplemented(799448, 3020761, type, method).
+   MethodImplemented(1386348, 5096596, type, method).
 InitializedClass(superclass) :-
    InitializedClass(class),
    DirectSuperclass(class, superclass).
