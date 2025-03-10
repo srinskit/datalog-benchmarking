@@ -173,26 +173,32 @@ if [[ 1 ]]; then
 	# Patch DD
 
 	wget https://raw.githubusercontent.com/srinskit/cloudlab-auto/refs/heads/main/collection.rs
-	patch_dst=$(find $CARGO_HOME -path "*/differential-dataflow-0.13.3/src/collection.rs")
+	wget https://raw.githubusercontent.com/srinskit/cloudlab-auto/refs/heads/main/iterate.rs
+	patch_dst=$(find $CARGO_HOME -path "*/differential-dataflow-0.13.7/src")
 	patch_src=collection.rs
 
 	# Test DD crate exists
-	[ -f $patch_dst ]
+	[ -d $patch_dst ]
 
-	if cmp -s $patch_src $patch_dst; then
-		echo "[run_bench] DD already patched"
-	else
+	# if cmp -s $patch_src $patch_dst; then
+	# 	echo "[run_bench] DD already patched"
+	# else
 		echo "[run_bench] Patching DD"
 
-		chmod a+w $patch_dst
-		cp $patch_src $patch_dst
+		chmod a+w $patch_dst/collection.rs
+		chmod a+w $patch_dst/operators/iterate.rs
+		cp collection.rs $patch_dst/collection.rs
+		cp iterate.rs $patch_dst/operators/iterate.rs
 		cargo clean -p differential-dataflow --release
 		cargo build -p differential-dataflow --release
-	fi
+	# fi
 
 	rm collection.rs*
+	rm iterate.rs*
 
 	# Build the project
 	cargo build --release -j $build_workers
 	popd
 fi
+
+echo "SUCCESS"

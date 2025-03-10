@@ -17,10 +17,10 @@ source bench_targets.sh
 ddlog_prog_build() {
 	local dl_prog="$1"
 	ddlog -i "$dl".dl
-	pushd "$dl"_ddlog
+	pushd "$dl"_ddlog > /dev/null
 	killall cargo || true
 	RUSTFLAGS=-Awarnings cargo +$rust_v build --release --quiet -j $build_workers
-	popd
+	popd > /dev/null
 	echo "$dl"_ddlog/target/release/"$dl"_cli
 }
 
@@ -40,7 +40,20 @@ for target in "${targets[@]}"; do
 
 			killall $exe || true
 			cmd="./$exe -w $w < $DATA/$dd/$ds/data.ddin"
-			dlbench run "$cmd" "$dl"_"$ds"_"$w"_ddlog
+			tag="$dl"_"$ds"_"$w"_ddlog
+
+			set +e
+			timeout 600s dlbench run "$cmd" "$tag"
+			ret=$?
+			set -e
+
+			if [[ $ret == 0 ]]; then
+				echo CMP >$tag.info
+			elif [[ $ret == 127 || $ret == 137 ]]; then
+				echo T/O >$tag.info
+			else
+				echo DNF >$tag.info
+			fi
 		done
 	fi
 

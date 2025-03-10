@@ -14,19 +14,31 @@ for target in "${targets[@]}"; do
 	read -r dl dd ds key charmap <<<"$target"
 
 	if [[ "$charmap" == *"Sc"* ]]; then
-		# Build program
-		if [ "$prev_dl" != "$dl" ]; then
-			souffle -o $exe "$dl".dl -j $build_workers
-			prev_dl="$dl"
-		fi
-
 		for w in "${workers[@]}"; do
-			killall $exe || true
 			echo "[run_bench] program: $dl, dataset: $dd/$ds, workers: $w"
-			cmd="./$exe -F $DATA/$dd/$ds -D . -j $w"
 			tag="$dl"_"$ds"_"$w"_souffle-cmpl
-			dlbench run "$cmd" "$tag"
-			sed -n "s/$key[[:space:]]*\([0-9]*\)/\1/p" $tag*.out >$tag.info
+
+			# Build program
+			if [ "$prev_dl" != "$dl" ]; then
+				souffle -o $exe "$dl".dl -j $build_workers &>$tag.compile
+				prev_dl="$dl"
+			fi
+
+			killall $exe || true
+			cmd="./$exe -F $DATA/$dd/$ds -D . -j $w"
+
+			set +e
+			timeout 600s dlbench run "$cmd" "$tag"
+			ret=$?
+			set -e
+
+			if [[ $ret == 0 ]]; then
+				sed -n "s/$key[[:space:]]*\([0-9]*\)/\1/p" $tag*.out >$tag.info
+			elif [[ $ret == 127 || $ret == 137 ]]; then
+				echo T/O >$tag.info
+			else
+				echo DNF >$tag.info
+			fi
 		done
 	fi
 done
