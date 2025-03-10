@@ -28,17 +28,21 @@ for target in "${targets[@]}"; do
 			cmd="./$exe -F $DATA/$dd/$ds -D . -j $w"
 
 			set +e
-			timeout 600s dlbench run "$cmd" "$tag"
+			/usr/bin/time -f "LinuxRT: %e" timeout 600s dlbench run "$cmd" "$tag" 2>$tag.info
 			ret=$?
 			set -e
 
+			# Evaluate result
 			if [[ $ret == 0 ]]; then
-				sed -n "s/$key[[:space:]]*\([0-9]*\)/\1/p" $tag*.out >$tag.info
+				echo "Status: CMP" >>$tag.info
 			elif [[ $ret == 127 || $ret == 137 ]]; then
-				echo T/O >$tag.info
+				echo "Status: TOUT" >>$tag.info
 			else
-				echo DNF >$tag.info
+				echo "Status: DNF" >>$tag.info
 			fi
+
+			sed -n "s/$key[[:space:]]\([0-9]*\)/DLOut: \1/p" $tag*.out >>$tag.info
+			echo "DLBenchRT:" $(tail -n 1 $tag*.log | cut -d ',' -f 1) >>$tag.info
 		done
 	fi
 done
