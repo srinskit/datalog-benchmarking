@@ -81,6 +81,7 @@ sed -i '$ s/.$/;/' $op_file
 
 # Write "commit" into the output file
 echo "commit;" >>$op_file
+echo "dump RelationSizes;" >>$op_file
 
 echo
 echo "[csv2ddlog] Number of lines in inputs:"
