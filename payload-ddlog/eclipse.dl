@@ -391,8 +391,6 @@ MainMethodDeclaration(method) :-
   MainClass(mod_type),
   Method_DeclaringType(method, mod_type),
   method != 486241,
-  method != 11111111,
-  method != 11111111,
   Method_SimpleName(method, 1552149),
   Method_Descriptor(method, 1577746),
   Method_Modifier(233753, method),
