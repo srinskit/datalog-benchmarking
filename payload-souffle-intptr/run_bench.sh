@@ -18,6 +18,7 @@ for target in "${targets[@]}"; do
 			cmd="souffle "$dl.dl" -F $DATA/$dd/$ds -D . -j $w"
 			tag="$dl"_"$ds"_"$w"_souffle-intptr
 
+			sync && sysctl vm.drop_caches=3
 			set +e
 			/usr/bin/time -f "LinuxRT: %e" timeout 600s dlbench run "$cmd" "$tag" 2>$tag.info
 			ret=$?

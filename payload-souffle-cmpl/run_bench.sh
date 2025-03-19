@@ -27,6 +27,7 @@ for target in "${targets[@]}"; do
 			killall $exe || true
 			cmd="./$exe -F $DATA/$dd/$ds -D . -j $w"
 
+			sync && sysctl vm.drop_caches=3
 			set +e
 			/usr/bin/time -f "LinuxRT: %e" timeout 600s dlbench run "$cmd" "$tag" 2>$tag.info
 			ret=$?

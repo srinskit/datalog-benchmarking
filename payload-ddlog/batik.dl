@@ -2,23 +2,14 @@ typedef number = signed<32>
 
 // .in
 input relation DirectSuperclass(class:number, superclass:number)
-//.input DirectSuperclass(IO="file", filename="DirectSuperclass.facts", delimiter=",")
 input relation DirectSuperinterface(mod_ref:number, interface:number)
-//.input DirectSuperinterface(IO="file", filename="DirectSuperinterface.facts", delimiter=",")
 input relation MainClass(class:number)
-//.input MainClass(IO="file", filename="MainClass.facts", delimiter=",")
 input relation FormalParam(index:number, method:number, mod_var:number)
-//.input FormalParam(IO="file", filename="FormalParam.facts", delimiter=",")
 input relation ComponentType(arrayType:number, componentType:number)
-//.input ComponentType(IO="file", filename="ComponentType.facts", delimiter=",")
 input relation AssignReturnValue(invocation:number, to:number)
-//.input AssignReturnValue(IO="file", filename="AssignReturnValue.facts", delimiter=",")
 input relation ActualParam(index:number, invocation:number, mod_var:number)
-//.input ActualParam(IO="file", filename="ActualParam.facts", delimiter=",")
 input relation Method_Modifier(mod_mod:number, method:number)
-//.input Method_Modifier(IO="file", filename="Method-Modifier.facts", delimiter=",")
 input relation Var_Type(mod_var:number, mod_type:number)
-//.input Var_Type(IO="file", filename="Var-Type.facts", delimiter=",")
 input relation HeapAllocation_Type(heap:number, mod_type:number)
 //.input HeapAllocation_Type(IO="file", filename="HeapAllocation_Type.csv", delimiter=",") // modified to be an EDB now
 
@@ -86,29 +77,18 @@ output relation OutStaticMethodInvocation(invocation:number, signature:number, i
 // imports
 // .in
 input relation ClassType(class:number)
-//.input ClassType(IO="file", filename="ClassType.facts", delimiter=",")
 input relation ArrayType(arrayType:number)
-//.input ArrayType(IO="file", filename="ArrayType.facts", delimiter=",")
 input relation InterfaceType(interface:number)
-//.input InterfaceType(IO="file", filename="InterfaceType.facts", delimiter=",")
 input relation Var_DeclaringMethod(mod_var:number, method:number)
-//.input Var_DeclaringMethod(IO="file", filename="Var-DeclaringMethod.facts", delimiter=",")
 input relation ApplicationClass(mod_type:number)
-//.input ApplicationClass(IO="file", filename="OutApplicationClass.facts", delimiter=",")
 input relation ThisVar(method:number, mod_var:number)
-//.input ThisVar(IO="file", filename="OutThisVar.facts", delimiter=",")
 input relation NormalHeap(id:number, mod_type:number)
-//.input NormalHeap(IO="file", filename="OutNormalHeap.facts", delimiter=",")
 input relation StringConstant(id:number)
-//.input StringConstant(IO="file", filename="StringConstant.facts", delimiter=",")
 input relation AssignHeapAllocation(instruction:number, index:number, heap:number, to:number, inmethod:number, linenumber: number)
-//.input AssignHeapAllocation(IO="file", filename="OutAssignHeapAllocation.facts", delimiter=",")
 input relation AssignLocal(instruction:number, index:number, from:number, to:number, inmethod:number)
-//.input AssignLocal(IO="file", filename="OutAssignLocal.facts", delimiter=",")
 input relation AssignCast(instruction:number, index:number, from:number, to:number, mod_type:number, inmethod:number)
-//.input AssignCast(IO="file", filename="OutAssignCast.facts", delimiter=",")
 input relation Field(signature:number, declaringClass:number, simplename:number, mod_type:number)
-//.input Field(IO="file", filename="Field.facts", delimiter=",")
+//.input Field(IO="file", filename="Field.csv", delimiter=",")
 
 // .rule
 IsType(class) :- ClassType(class).
@@ -168,29 +148,18 @@ MethodInvocation_Base(invocation, base) :- SpecialMethodInvocation_Base(invocati
 
 // .in
 input relation StaticMethodInvocation(instruction:number, index:number, signature:number, method:number)
-//.input StaticMethodInvocation(IO="file", filename="OutStaticMethodInvocation.facts", delimiter=",")
 input relation SpecialMethodInvocation(instruction:number, index:number, signature:number, base:number, method:number)
-//.input SpecialMethodInvocation(IO="file", filename="SpecialMethodInvocation.facts", delimiter=",")
 input relation VirtualMethodInvocation(instruction:number, index:number, signature:number, base:number, method:number)
-//.input VirtualMethodInvocation(IO="file", filename="VirtualMethodInvocation.facts", delimiter=",")
 input relation Method(method:number, simplename:number, params:number, declaringType:number, returnType:number, jvmDescriptor:number, arity:number)
-//.input Method(IO="file", filename="Method.facts", delimiter=",")
 input relation Method_Descriptor(method:number, descriptor:number)
-//.input Method_Descriptor(IO="file", filename="Method_Descriptor.csv", delimiter=",")
 input relation StoreInstanceField(instruction:number, index:number, from:number, base:number, signature:number, method:number)
-//.input StoreInstanceField(IO="file", filename="OutStoreInstanceField.facts", delimiter=",")
 input relation LoadInstanceField(instruction:number, index:number, to:number, base:number, signature:number, method:number)
-//.input LoadInstanceField(IO="file", filename="OutLoadInstanceField.facts", delimiter=",")
 input relation StoreStaticField(instruction:number, index:number, from:number, signature:number, method:number)
-//.input StoreStaticField(IO="file", filename="OutStoreStaticField.facts", delimiter=",")
 input relation LoadStaticField(instruction:number, index:number, to:number, signature:number, method:number)
-//.input LoadStaticField(IO="file", filename="OutLoadStaticField.facts", delimiter=",")
 input relation StoreArrayIndex(instruction:number, index:number, from:number, base:number, method:number)
-//.input StoreArrayIndex(IO="file", filename="OutStoreArrayIndex.facts", delimiter=",")
 input relation LoadArrayIndex(instruction:number, index:number, to:number, base:number, method:number)
-//.input LoadArrayIndex(IO="file", filename="OutLoadArrayIndex.facts", delimiter=",")
 input relation Return(instruction:number, index:number, mod_var:number, method:number)
-//.input Return(IO="file", filename="Return.facts", delimiter=",")
+//.input Return(IO="file", filename="Return.csv", delimiter=",")
 
 // .rule
 Instruction_Method(instruction, method) :-

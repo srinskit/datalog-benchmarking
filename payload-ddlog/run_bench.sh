@@ -42,6 +42,7 @@ for target in "${targets[@]}"; do
 			cmd="./$exe -w $w < $DATA/$dd/$ds/data.ddin"
 			tag="$dl"_"$ds"_"$w"_ddlog
 
+			sync && sysctl vm.drop_caches=3
 			set +e
 			/usr/bin/time -f "LinuxRT: %e" timeout 600s dlbench run "$cmd" "$tag" 2>$tag.info
 			ret=$?

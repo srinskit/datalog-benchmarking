@@ -18,6 +18,8 @@ RSYNC="rsync -ah --info=progress2 --info=name0 --delete"
 echo "[launch] Setting up local dataset"
 /usr/bin/time -f "Local dataset setup took: %E" ssh -A $HOST "sudo cp -an /remote/. /data/"
 
+ssh -A $HOST "sudo swapoff -a"
+
 echo
 echo "[launch] moving payload: local ---> host"
 $RSYNC --rsync-path="sudo rsync" $PAYLOAD $HOST:$WORK_DIR

@@ -17,3 +17,8 @@ ValueFlow(x, x) :- Assign(x, y).
 ValueFlow(x, x) :- Assign(y, x).
 MemoryAlias(x, x) :- Assign(y, x).
 MemoryAlias(x, x) :- Assign(x, y).
+
+output relation RelationSizes(rel: string, size:bit<64>)
+RelationSizes("ValueFlow", size) :- ValueFlow(x, y),  var size = (x, y).group_by(()).count_distinct().
+RelationSizes("MemoryAlias", size) :- MemoryAlias(x, y),  var size = (x, y).group_by(()).count_distinct().
+RelationSizes("ValueAlias", size) :- ValueAlias(x, y),  var size = (x, y).group_by(()).count_distinct().

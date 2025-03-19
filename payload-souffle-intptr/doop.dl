@@ -12,12 +12,12 @@
 .decl isClassType(?t:ClassType)
 .decl isInterfaceType(?t:InterfaceType)
 .decl DirectSuperclass(?class:ClassType, ?superclass:ClassType)
-.input DirectSuperclass(IO="file", filename="DirectSuperclass.facts", delimiter=",")
+.input DirectSuperclass(IO="file", filename="DirectSuperclass.csv", delimiter=",")
 .decl DirectSuperinterface(?ref:ReferenceType, ?interface:InterfaceType)
-.input DirectSuperinterface(IO="file", filename="DirectSuperinterface.facts", delimiter=",")
+.input DirectSuperinterface(IO="file", filename="DirectSuperinterface.csv", delimiter=",")
 .decl ApplicationClass(?ref:ReferenceType)
 .decl MainClass(?class:ClassType)
-.input MainClass(IO="file", filename="MainClass.facts", delimiter=",")
+.input MainClass(IO="file", filename="MainClass.csv", delimiter=",")
 .type Field
 .decl Field_DeclaringType(?field:Field, ?declaringClass:ReferenceType)
 .type MethodDescriptor
@@ -28,13 +28,13 @@
 .decl Method_Params(?method:Method, ?params:symbol)
 .decl Method_Descriptor(?method:Method, ?descriptor:MethodDescriptor)
 .decl Method_Modifier(?mod:Modifier, ?method:Method)
-.input Method_Modifier(IO="file", filename="Method-Modifier.facts", delimiter=",")
+.input Method_Modifier(IO="file", filename="Method_Modifier.csv", delimiter=",")
 .decl FormalParam(?index:number, ?method:Method, ?var:Var)
-.input FormalParam(IO="file", filename="FormalParam.facts", delimiter=",")
+.input FormalParam(IO="file", filename="FormalParam.csv", delimiter=",")
 .decl ThisVar(?method:Method, ?var:Var)
 .type Var
 .decl Var_Type(?var:Var, ?type:Type)
-.input Var_Type(IO="file", filename="Var-Type.facts", delimiter=",")
+.input Var_Type(IO="file", filename="Var_Type.csv", delimiter=",")
 .decl Var_DeclaringMethod(?var:Var, ?method:Method)
 .type HeapAllocation
 .decl HeapAllocation_Type(?heap:HeapAllocation, ?type:Type)
@@ -69,7 +69,7 @@
 .decl LoadStaticField_To(?insn:LoadStaticField_Insn, ?var:Var)
 .decl StoreStaticField_From(?insn:StoreStaticField_Insn, ?var:Var)
 .decl ComponentType(?arrayType:ArrayType, ?componentType:Type)
-.input ComponentType(IO="file", filename="ComponentType.facts", delimiter=",")
+.input ComponentType(IO="file", filename="ComponentType.csv", delimiter=",")
 .decl LoadArrayIndex_Base(?insn:LoadArrayIndex_Insn, ?var:Var)
 .decl LoadArrayIndex_To(?insn:LoadArrayIndex_Insn, var:Var)
 .decl StoreArrayIndex_From(?insn:StoreArrayIndex_Insn, ?var:Var)
@@ -82,9 +82,9 @@
 .decl ReturnNonvoid_Var(?return:ReturnNonvoid_Insn, ?var:Var)
 .decl MethodInvocation_Method(?invocation:MethodInvocation, ?signature:Method)
 .decl AssignReturnValue(?invocation:MethodInvocation, ?to:Var)
-.input AssignReturnValue(IO="file", filename="AssignReturnValue.facts", delimiter=",")
+.input AssignReturnValue(IO="file", filename="AssignReturnValue.csv", delimiter=",")
 .decl ActualParam(?index:number, ?invocation:MethodInvocation, ?var:Var)
-.input ActualParam(IO="file", filename="ActualParam.facts", delimiter=",")
+.input ActualParam(IO="file", filename="ActualParam.csv", delimiter=",")
 .decl VirtualMethodInvocation_Base(?invocation:VirtualMethodInvocation_Insn, ?base:Var)
 .decl VirtualMethodInvocation_SimpleName(?invocation:MethodInvocation, ?simplename:symbol)
 .decl VirtualMethodInvocation_Descriptor(?invocation:MethodInvocation, ?descriptor:MethodDescriptor)
@@ -106,93 +106,93 @@
 
 // imports
 .decl _ClassType(?class:symbol)
-.input _ClassType(IO="file", filename="ClassType.facts", delimiter=",")
+.input _ClassType(IO="file", filename="ClassType.csv", delimiter=",")
 isType(?class),
 isReferenceType(?class),
 isClassType(?class) :-
   _ClassType(?class).
 .decl _ArrayType(?arrayType:symbol)
-.input _ArrayType(IO="file", filename="ArrayType.facts", delimiter=",")
+.input _ArrayType(IO="file", filename="ArrayType.csv", delimiter=",")
 isType(?arrayType),
 isReferenceType(?arrayType),
 isArrayType(?arrayType) :-
   _ArrayType(?arrayType).
 .decl _InterfaceType(?interface:symbol)
-.input _InterfaceType(IO="file", filename="InterfaceType.facts", delimiter=",")
+.input _InterfaceType(IO="file", filename="InterfaceType.csv", delimiter=",")
 isType(?interface),
 isReferenceType(?interface),
 isInterfaceType(?interface) :-
   _InterfaceType(?interface).
 .decl _Var_DeclaringMethod(?var:symbol, ?method:symbol)
-.input _Var_DeclaringMethod(IO="file", filename="Var-DeclaringMethod.facts", delimiter=",")
+.input _Var_DeclaringMethod(IO="file", filename="Var_DeclaringMethod.csv", delimiter=",")
 Var_DeclaringMethod(?var, ?method) :-
   _Var_DeclaringMethod(?var, ?method).
 .decl _ApplicationClass(?type:symbol)
-.input _ApplicationClass(IO="file", filename="ApplicationClass.facts", delimiter=",")
+.input _ApplicationClass(IO="file", filename="ApplicationClass.csv", delimiter=",")
 isType(?type),
 isReferenceType(?type),
 ApplicationClass(?type) :-
   _ApplicationClass(?type).
 .decl _ThisVar(?method:symbol, ?var:symbol)
-.input _ThisVar(IO="file", filename="ThisVar.facts", delimiter=",")
+.input _ThisVar(IO="file", filename="ThisVar.csv", delimiter=",")
 ThisVar(?method, ?var) :-
   _ThisVar(?method, ?var).
 .decl _NormalHeap(?id:symbol, ?type:symbol)
-.input _NormalHeap(IO="file", filename="NormalHeap.facts", delimiter=",")
+.input _NormalHeap(IO="file", filename="NormalHeap.csv", delimiter=",")
 isType(?type),
 HeapAllocation_Type(?id, ?type) :-
   _NormalHeap(?id, ?type).
 .decl _StringConstant(?id:symbol)
-.input _StringConstant(IO="file", filename="StringConstant.facts", delimiter=",")
+.input _StringConstant(IO="file", filename="StringConstant.csv", delimiter=",")
 HeapAllocation_Type(?id, "java.lang.String") :-
   _StringConstant(?id).
 .decl _AssignHeapAllocation(?instruction:symbol, ?index:number, ?heap:symbol, ?to:symbol, ?inmethod:symbol, ?linenumber:number)
-.input _AssignHeapAllocation(IO="file", filename="AssignHeapAllocation.facts", delimiter=",")
+.input _AssignHeapAllocation(IO="file", filename="AssignHeapAllocation.csv", delimiter=",")
 Instruction_Method(?instruction, ?method),
 AssignInstruction_To(?instruction, ?to),
 AssignHeapAllocation_Heap(?instruction, ?heap) :-
   _AssignHeapAllocation(?instruction, ?index, ?heap, ?to, ?method, ?linenumber).
 .decl _AssignLocal(?instruction:symbol, ?index:number, ?from:symbol, ?to:symbol, ?inmethod:symbol)
-.input _AssignLocal(IO="file", filename="AssignLocal.facts", delimiter=",")
+.input _AssignLocal(IO="file", filename="AssignLocal.csv", delimiter=",")
 Instruction_Method(?instruction, ?method),
 AssignLocal_From(?instruction, ?from),
 AssignInstruction_To(?instruction, ?to) :-
   _AssignLocal(?instruction, ?index, ?from, ?to, ?method).
 .decl _AssignCast(?instruction:symbol, ?index:number, ?from:symbol, ?to:symbol, ?type:symbol, ?inmethod:symbol)
-.input _AssignCast(IO="file", filename="AssignCast.facts", delimiter=",")
+.input _AssignCast(IO="file", filename="AssignCast.csv", delimiter=",")
 Instruction_Method(?instruction, ?method),
 AssignCast_Type(?instruction, ?type),
 AssignCast_From(?instruction, ?from),
 AssignInstruction_To(?instruction, ?to) :-
   _AssignCast(?instruction, ?index, ?from, ?to, ?type, ?method).
 .decl _Field(?signature:symbol, ?declaringClass:symbol, ?simplename:symbol, ?type:symbol)
-.input _Field(IO="file", filename="Field.facts", delimiter=",")
+.input _Field(IO="file", filename="Field.csv", delimiter=",")
 Field_DeclaringType(?signature, ?declaringType) :-
   _Field(?signature, ?declaringType, _, _).
 MethodInvocation_Base(?invocation, ?base) :-
   VirtualMethodInvocation_Base(?invocation, ?base) ;
   SpecialMethodInvocation_Base(?invocation, ?base).
 .decl _StaticMethodInvocation(?instruction:symbol, ?index:number, ?signature:symbol, ?method:symbol)
-.input _StaticMethodInvocation(IO="file", filename="StaticMethodInvocation.facts", delimiter=",")
+.input _StaticMethodInvocation(IO="file", filename="StaticMethodInvocation.csv", delimiter=",")
 Instruction_Method(?instruction, ?method),
 isStaticMethodInvocation_Insn(?instruction),
 MethodInvocation_Method(?instruction, ?signature) :-
   _StaticMethodInvocation(?instruction, ?index, ?signature, ?method).
 .decl _SpecialMethodInvocation(?instruction:symbol, ?index:number, ?signature:symbol, ?base:symbol, ?method:symbol)
-.input _SpecialMethodInvocation(IO="file", filename="SpecialMethodInvocation.facts", delimiter=",")
+.input _SpecialMethodInvocation(IO="file", filename="SpecialMethodInvocation.csv", delimiter=",")
 Instruction_Method(?instruction, ?method),
 SpecialMethodInvocation_Base(?instruction, ?base),
 MethodInvocation_Method(?instruction, ?signature) :-
   _SpecialMethodInvocation(?instruction, ?index, ?signature, ?base, ?method).
 .decl _VirtualMethodInvocation(?instruction:symbol, ?index:number, ?signature:symbol, ?base:symbol, ?method:symbol)
-.input _VirtualMethodInvocation(IO="file", filename="VirtualMethodInvocation.facts", delimiter=",")
+.input _VirtualMethodInvocation(IO="file", filename="VirtualMethodInvocation.csv", delimiter=",")
 Instruction_Method(?instruction, ?method),
 isVirtualMethodInvocation_Insn(?instruction),
 VirtualMethodInvocation_Base(?instruction, ?base),
 MethodInvocation_Method(?instruction, ?signature) :-
   _VirtualMethodInvocation(?instruction, ?index, ?signature, ?base, ?method).
 .decl _Method(?method:symbol, ?simplename:symbol, ?descriptor:symbol, ?declaringType:symbol, ?returnType:symbol, ?jvmDescriptor:symbol, ?arity:number)
-.input _Method(IO="file", filename="Method.facts", delimiter=",")
+.input _Method(IO="file", filename="Method.csv", delimiter=",")
 Method_SimpleName(?method, ?simplename),
 Method_Params(?method, ?params),
 Method_DeclaringType(?method, ?declaringType),
@@ -203,45 +203,45 @@ Method_Descriptor(?method, ?descriptor) :-
   Method_Params(?method, ?params),
   ?descriptor = cat(?returnType, ?params).
 .decl _StoreInstanceField(?instruction:symbol, ?index:number, ?from:symbol, ?base:symbol, ?signature:symbol, ?method:symbol)
-.input _StoreInstanceField(IO="file", filename="StoreInstanceField.facts", delimiter=",")
+.input _StoreInstanceField(IO="file", filename="StoreInstanceField.csv", delimiter=",")
 Instruction_Method(?instruction, ?method),
 FieldInstruction_Signature(?instruction, ?signature),
 StoreInstanceField_Base(?instruction, ?base),
 StoreInstanceField_From(?instruction, ?from) :-
   _StoreInstanceField(?instruction, ?index, ?from, ?base, ?signature, ?method).
 .decl _LoadInstanceField(?instruction:symbol, ?index:number, ?to:symbol, ?base:symbol, ?signature:symbol, ?method:symbol)
-.input _LoadInstanceField(IO="file", filename="LoadInstanceField.facts", delimiter=",")
+.input _LoadInstanceField(IO="file", filename="LoadInstanceField.csv", delimiter=",")
 Instruction_Method(?instruction, ?method),
 FieldInstruction_Signature(?instruction, ?signature),
 LoadInstanceField_Base(?instruction, ?base),
 LoadInstanceField_To(?instruction, ?to) :-
   _LoadInstanceField(?instruction, ?index, ?to, ?base, ?signature, ?method).
 .decl _StoreStaticField(?instruction:symbol, ?index:number, ?from:symbol, ?signature:symbol, ?method:symbol)
-.input _StoreStaticField(IO="file", filename="StoreStaticField.facts", delimiter=",")
+.input _StoreStaticField(IO="file", filename="StoreStaticField.csv", delimiter=",")
 Instruction_Method(?instruction, ?method),
 FieldInstruction_Signature(?instruction, ?signature),
 StoreStaticField_From(?instruction, ?from) :-
   _StoreStaticField(?instruction, ?index, ?from, ?signature, ?method).
 .decl _LoadStaticField(?instruction:symbol, ?index:number, ?to:symbol, ?signature:symbol, ?method:symbol)
-.input _LoadStaticField(IO="file", filename="LoadStaticField.facts", delimiter=",")
+.input _LoadStaticField(IO="file", filename="LoadStaticField.csv", delimiter=",")
 Instruction_Method(?instruction, ?method),
 FieldInstruction_Signature(?instruction, ?signature),
 LoadStaticField_To(?instruction, ?to) :-
   _LoadStaticField(?instruction, ?index, ?to, ?signature, ?method).
 .decl _StoreArrayIndex(?instruction:symbol, ?index:number, ?from:symbol, ?base:symbol, ?method:symbol)
-.input _StoreArrayIndex(IO="file", filename="StoreArrayIndex.facts", delimiter=",")
+.input _StoreArrayIndex(IO="file", filename="StoreArrayIndex.csv", delimiter=",")
 Instruction_Method(?instruction, ?method),
 StoreArrayIndex_Base(?instruction, ?base),
 StoreArrayIndex_From(?instruction, ?from) :-
   _StoreArrayIndex(?instruction, ?index, ?from, ?base, ?method).
 .decl _LoadArrayIndex(?instruction:symbol, ?index:number, ?to:symbol, ?base:symbol, ?method:symbol)
-.input _LoadArrayIndex(IO="file", filename="LoadArrayIndex.facts", delimiter=",")
+.input _LoadArrayIndex(IO="file", filename="LoadArrayIndex.csv", delimiter=",")
 Instruction_Method(?instruction, ?method),
 LoadArrayIndex_Base(?instruction, ?base),
 LoadArrayIndex_To(?instruction, ?to) :-
   _LoadArrayIndex(?instruction, ?index, ?to, ?base, ?method).
 .decl _Return(?instruction:symbol, ?index:number, ?var:symbol, ?method:symbol)
-.input _Return(IO="file", filename="Return.facts", delimiter=",")
+.input _Return(IO="file", filename="Return.csv", delimiter=",")
 Instruction_Method(?instruction, ?method),
 ReturnNonvoid_Var(?instruction, ?var) :-
   _Return(?instruction, ?index, ?var, ?method).

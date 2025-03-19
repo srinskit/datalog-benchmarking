@@ -1,22 +1,29 @@
 .in
 .decl DirectSuperclass(class:number, superclass:number)
+.input DirectSuperclass.csv
 
 .decl DirectSuperinterface(ref:number, interface:number)
+.input DirectSuperinterface.csv
 
 .decl MainClass(class:number)
+.input MainClass.csv
 
 .decl FormalParam(index:number, method:number, var:number)
+.input FormalParam.csv
 
 .decl ComponentType(arrayType:number, componentType:number)
+.input ComponentType.csv
 
 .decl AssignReturnValue(invocation:number, to:number)
+.input AssignReturnValue.csv
 
 .decl ActualParam(index:number, invocation:number, var:number)
+.input ActualParam.csv
 
 .decl Method_Modifier(mod:number, method:number)
-.input Method-Modifier.facts
+.input Method_Modifier.csv
 .decl Var_Type(var:number, type:number)
-.input Var-Type.facts
+.input Var_Type.csv
 .decl HeapAllocation_Type(heap:number, type:number)
 .input HeapAllocation_Type.csv # modified to be an EDB now
 
@@ -84,29 +91,29 @@
 # imports
 .in
 .decl _ClassType(class:number)
-.input ClassType.facts
+.input ClassType.csv
 .decl _ArrayType(arrayType:number)
-.input ArrayType.facts
+.input ArrayType.csv
 .decl _InterfaceType(interface:number)
-.input InterfaceType.facts
+.input InterfaceType.csv
 .decl _Var_DeclaringMethod(var:number, method:number)
-.input Var-DeclaringMethod.facts 
+.input Var_DeclaringMethod.csv 
 .decl _ApplicationClass(type:number)
-.input ApplicationClass.facts
+.input ApplicationClass.csv
 .decl _ThisVar(method:number, var:number)
-.input ThisVar.facts
+.input ThisVar.csv
 .decl _NormalHeap(id:number, type:number)
-.input NormalHeap.facts
+.input NormalHeap.csv
 .decl _StringConstant(id:number)
-.input StringConstant.facts
+.input StringConstant.csv
 .decl _AssignHeapAllocation(instruction:number, index:number, heap:number, to:number, inmethod:number, linenumber:number)
-.input AssignHeapAllocation.facts
+.input AssignHeapAllocation.csv
 .decl _AssignLocal(instruction:number, index:number, from:number, to:number, inmethod:number)
-.input AssignLocal.facts
+.input AssignLocal.csv
 .decl _AssignCast(instruction:number, index:number, from:number, to:number, type:number, inmethod:number)
-.input AssignCast.facts
+.input AssignCast.csv
 .decl _Field(signature:number, declaringClass:number, simplename:number, type:number)
-.input Field.facts
+.input Field.csv
 
 .rule
 isType(class) :- _ClassType(class).
@@ -166,29 +173,29 @@ MethodInvocation_Base(invocation, base) :- SpecialMethodInvocation_Base(invocati
 
 .in
 .decl _StaticMethodInvocation(instruction:number, index:number, signature:number, method:number)
-.input StaticMethodInvocation.facts
+.input StaticMethodInvocation.csv
 .decl _SpecialMethodInvocation(instruction:number, index:number, signature:number, base:number, method:number)
-.input SpecialMethodInvocation.facts
+.input SpecialMethodInvocation.csv
 .decl _VirtualMethodInvocation(instruction:number, index:number, signature:number, base:number, method:number)
-.input VirtualMethodInvocation.facts
+.input VirtualMethodInvocation.csv
 .decl _Method(method:number, simplename:number, params:number, declaringType:number, returnType:number, jvmDescriptor:number, arity:number)
-.input Method.facts
+.input Method.csv
 .decl Method_Descriptor(method:number, descriptor:number)
 .input Method_Descriptor.csv
 .decl _StoreInstanceField(instruction:number, index:number, from:number, base:number, signature:number, method:number)
-.input StoreInstanceField.facts
+.input StoreInstanceField.csv
 .decl _LoadInstanceField(instruction:number, index:number, to:number, base:number, signature:number, method:number)
-.input LoadInstanceField.facts
+.input LoadInstanceField.csv
 .decl _StoreStaticField(instruction:number, index:number, from:number, signature:number, method:number)
-.input StoreStaticField.facts
+.input StoreStaticField.csv
 .decl _LoadStaticField(instruction:number, index:number, to:number, signature:number, method:number)
-.input LoadStaticField.facts
+.input LoadStaticField.csv
 .decl _StoreArrayIndex(instruction:number, index:number, from:number, base:number, method:number)
-.input StoreArrayIndex.facts
+.input StoreArrayIndex.csv
 .decl _LoadArrayIndex(instruction:number, index:number, to:number, base:number, method:number)
-.input LoadArrayIndex.facts
+.input LoadArrayIndex.csv
 .decl _Return(instruction:number, index:number, var:number, method:number)
-.input Return.facts
+.input Return.csv
 
 .rule
 Instruction_Method(instruction, method) :-
