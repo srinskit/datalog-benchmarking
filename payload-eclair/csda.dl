@@ -6,9 +6,9 @@
 .input Edge.csv
 
 .printsize 
-.decl Null(x: number, y: number)
+.decl NullNode(x: number, y: number)
 
 .rule
-Null(x, y) :- NullEdge(x, y).
-Null(x, y) :-Null(x, w), Edge(w, y).
+NullNode(x, y) :- NullEdge(x, y).
+NullNode(x, y) :-NullNode(x, w), Edge(w, y).
 
