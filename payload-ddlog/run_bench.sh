@@ -12,7 +12,7 @@ rust_v=1.76
 
 source $SRC/rust_env
 source $SRC/ddlog_env
-source bench_targets.sh
+source targets.sh
 
 ddlog_prog_build() {
 	local dl_prog="$1"

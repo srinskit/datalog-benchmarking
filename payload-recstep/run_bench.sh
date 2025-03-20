@@ -7,7 +7,9 @@ SRC=/opt
 DATA=/data/input/souffle
 
 source $SRC/recstep_env
-source bench_targets.sh
+source targets.sh
+
+swapon -a
 
 for target in "${targets[@]}"; do
 	read -r dl dd ds key charmap <<<"$target"
@@ -19,6 +21,15 @@ for target in "${targets[@]}"; do
 			tag="$dl"_"$ds"_"$w"_recstep
 
 			set +e
+
+
+			
+			sleep 2
+			rm -rf qsstor log
+			sync && sysctl vm.drop_caches=3
+
+			# Prime the benchmark
+			timeout 5s $cmd > /dev/null 2>&1
 			/usr/bin/time -f "LinuxRT: %e" timeout 600s dlbench run "$cmd" "$tag" -m quickstep_cli_shell 2>$tag.info
 			ret=$?
 			set -e
@@ -26,13 +37,24 @@ for target in "${targets[@]}"; do
 			# Evaluate result
 			if [[ $ret == 0 ]]; then
 				echo "Status: CMP" >>$tag.info
+
+				set +e
+				cp $SRC/RecStep/Config.json .
+				IFS=',' read -ra key_arr <<<$key
+				for k in "${key_arr[@]}"; do
+					echo skip
+					python3 $SRC/RecStep/quickstep_shell.py --mode interactive <<<"select '$k' as Rel, count(*) from $k;" >>$tag.out 2>&1
+					sed -n "s/[| ]*$k[| ]*\([0-9]\+\)[| ]*/DLOut: \1/p" $tag.out >>$tag.info
+				done
+				rm Config.json
+				set -e
+
 			elif [[ $ret == 127 || $ret == 137 ]]; then
 				echo "Status: TOUT" >>$tag.info
 			else
 				echo "Status: DNF" >>$tag.info
 			fi
 
-			# sed -n "s/Delta of.*\[$key\]: ((), (), \([0-9]*\))/DLOut: \1/p" $tag*.out >>$tag.info
 			echo "DLBenchRT:" $(tail -n 1 $tag*.log | cut -d ',' -f 1) >>$tag.info
 		done
 	fi

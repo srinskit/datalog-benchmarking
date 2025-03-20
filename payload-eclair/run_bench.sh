@@ -7,7 +7,7 @@ SRC=/opt
 DATA=/data/input/souffle
 exe=$SRC/FlowLogTest/target/release/executing
 
-source bench_targets.sh
+source targets.sh
 
 for target in "${targets[@]}"; do
 	read -r dl dd ds key charmap <<<"$target"

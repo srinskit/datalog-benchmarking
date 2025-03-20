@@ -8,7 +8,7 @@ build_workers=$(nproc)
 exe=souffle_cmpl
 prev_dl=""
 
-source bench_targets.sh
+source targets.sh
 
 for target in "${targets[@]}"; do
 	read -r dl dd ds key charmap <<<"$target"
