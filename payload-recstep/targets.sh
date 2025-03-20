@@ -1,10 +1,10 @@
 targets=(
 	# Fast
-	# "xalan doop xalan SubtypeOf DEScSi"
-	# "batik doop batik SubtypeOf DEScSi"
-	# "zxing doop zxing SubtypeOf DEScSi"
-	# "biojava doop biojava SubtypeOf DEScSi"
-	# "eclipse doop eclipse SubtypeOf DEScSi"
+	"xalan doop xalan SubtypeOf DERScSi"
+	"batik doop batik SubtypeOf DERScSi"
+	"zxing doop zxing SubtypeOf DERScSi"
+	"biojava doop biojava SubtypeOf DERScSi"
+	"eclipse doop eclipse SubtypeOf DERScSi"
 
 	# "sg gt G10K-0.001 Sg DERScSi"
 	# "sg gt G5K-0.001 Sg DERScSi"
@@ -15,9 +15,9 @@ targets=(
 	# "reach ga livejournal Reach DERScSi"
 	# "reach ga orkut Reach DERScSi"
 
-	"andersen andersen 500000 PointsTo DERScSi"
+	# "andersen andersen 500000 PointsTo DERScSi"
 
-	# "csda csda httpd Null DERScSi"
+	# "csda csda httpd NullNode DERScSi"
 	# "csda csda linux Null DERScSi"
 	# "csda csda postgresql Null DERScSi"
 	# "cspa cspa httpd ValueFlow DERScSi"
@@ -25,7 +25,7 @@ targets=(
 	# "cspa cspa postgresql ValueFlow DERScSi"
 
 	# "galen misc galen OutP DERScSi"
-	# "borrow pl borrow origin_live_on_entry DERScSi"
+	"borrow pl borrow origin_live_on_entry DERScSi"
 
 	# # # Slow
 	# "sg gt G10K-0.01 Sg DERScSi"
