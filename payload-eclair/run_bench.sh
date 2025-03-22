@@ -34,7 +34,7 @@ for target in "${targets[@]}"; do
 				echo "Status: DNF" >>$tag.info
 			fi
 
-			sed -n "s/Delta of.*\[$key\]: ((), (), \([0-9]*\))/DLOut: \1/p" $tag*.out >>$tag.info
+			sed -n "s/Delta of.*\[$key\]: ((), (), \([0-9]*\))/DLOut: \1/Ip" $tag*.out >>$tag.info
 			echo "DLBenchRT:" $(tail -n 1 $tag*.log | cut -d ',' -f 1) >>$tag.info
 		done
 	fi

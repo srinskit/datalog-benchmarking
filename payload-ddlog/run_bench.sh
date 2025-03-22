@@ -18,10 +18,10 @@ ddlog_prog_build() {
 	local dl_prog="$1"
 	ddlog -i "$dl".dl
 	pushd "$dl"_ddlog > /dev/null
-	killall cargo || true
-	RUSTFLAGS=-Awarnings cargo +$rust_v build --release --quiet -j $build_workers
+	killall cargo || true > /dev/null
+	RUSTFLAGS=-Awarnings cargo +$rust_v build --release --quiet -j $build_workers > /dev/null
 	popd > /dev/null
-	echo "$dl"_ddlog/target/release/"$dl"_cli
+	exe="$dl"_ddlog/target/release/"$dl"_cli
 }
 
 for target in "${targets[@]}"; do
@@ -34,11 +34,11 @@ for target in "${targets[@]}"; do
 			# Build program
 			if [ "$prev_dl" != "$dl" ]; then
 				rm -rf *_ddlog || true
-				exe=$(ddlog_prog_build $dl)
+				ddlog_prog_build $dl
 				prev_dl="$dl"
 			fi
 
-			killall $exe || true
+			killall $exe || true > /dev/null
 			cmd="./$exe -w $w < $DATA/$dd/$ds/data.ddin"
 			tag="$dl"_"$ds"_"$w"_ddlog
 
@@ -57,7 +57,7 @@ for target in "${targets[@]}"; do
 				echo "Status: DNF" >>$tag.info
 			fi
 
-			sed -n "s/.*$key\", .size = \(.*\)}/DLOut: \1/p" $tag*.out >>$tag.info
+			sed -n "s/.*$key\", .size = \(.*\)}/DLOut: \1/Ip" $tag*.out >>$tag.info
 			echo "DLBenchRT:" $(tail -n 1 $tag*.log | cut -d ',' -f 1) >>$tag.info
 		done
 	fi
