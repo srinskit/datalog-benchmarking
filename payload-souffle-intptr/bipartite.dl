@@ -1,0 +1,22 @@
+.decl Arc(y:number, x:number)
+.input Arc(IO="file", filename="Arc.csv", delimiter=",")
+
+.decl Source(x:number)
+.input Source(IO="file", filename="Source.csv", delimiter=",")
+
+.decl BipartiteViolation(x:number)
+.decl Zero(x:number)
+.decl One(x:number)
+.decl BiArc(x: number, y: number)
+
+BiArc(x, y) :- Arc(x, y).
+BiArc(x, y) :- Arc(y, x).
+
+Zero(x) :- Source(x).
+One(y) :- BiArc(x, y), Zero(x).
+Zero(y) :- BiArc(x, y), One(x).
+BipartiteViolation(x) :- One(x), Zero(x).
+
+.printsize BipartiteViolation
+.printsize Zero
+.printsize One
