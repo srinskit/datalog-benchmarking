@@ -9,8 +9,6 @@ DATA=/data/input/souffle
 source $SRC/recstep_env
 source targets.sh
 
-swapon -a
-
 for target in "${targets[@]}"; do
 	read -r dl dd ds key charmap <<<"$target"
 
@@ -28,7 +26,8 @@ for target in "${targets[@]}"; do
 
 			# Prime the benchmark
 			timeout 5s $cmd >/dev/null 2>&1
-			/usr/bin/time -f "LinuxRT: %e" timeout 600s dlbench run "$cmd" "$tag" -m quickstep_cli_shell 2>$tag.info
+
+			/usr/bin/time -f "LinuxRT: %e" timeout 600s dlbench run "$cmd" "$tag" --monitor quickstep_cli_shell 2>$tag.info
 			ret=$?
 			echo $ret
 			set -e
@@ -56,7 +55,7 @@ for target in "${targets[@]}"; do
 				rm Config.json
 				set -e
 
-			elif [[ $ret == 127 || $ret == 137 ]]; then
+			elif [[ $ret == 124 || $ret == 137 ]]; then
 				echo "Status: TOUT" >>$tag.info
 			else
 				echo "Status: DNF" >>$tag.info

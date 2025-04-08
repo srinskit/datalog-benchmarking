@@ -36,7 +36,7 @@ for target in "${targets[@]}"; do
 			# Evaluate result
 			if [[ $ret == 0 ]]; then
 				echo "Status: CMP" >>$tag.info
-			elif [[ $ret == 127 || $ret == 137 ]]; then
+			elif [[ $ret == 124 || $ret == 137 ]]; then
 				echo "Status: TOUT" >>$tag.info
 			else
 				echo "Status: DNF" >>$tag.info
