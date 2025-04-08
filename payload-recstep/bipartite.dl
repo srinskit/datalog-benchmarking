@@ -6,13 +6,14 @@ IDB_DECL:
 BipartiteViolation(x int)
 Zero(x int)
 One(x int)
-BiArc(x int, y int)
 
 RULE_DECL:
-BiArc(x, y) :- Arc(x, y).
-BiArc(x, y) :- Arc(y, x).
-
 Zero(x) :- Source(x).
-One(y) :- BiArc(x, y), Zero(x).
-Zero(y) :- BiArc(x, y), One(x).
+
+One(y) :- Arc(x, y), Zero(x).
+One(x) :- Arc(x, y), Zero(y).
+
+Zero(y) :- Arc(x, y), One(x).
+Zero(x) :- Arc(x, y), One(y).
+
 BipartiteViolation(x) :- One(x), Zero(x).

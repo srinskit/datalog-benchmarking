@@ -7,14 +7,15 @@
 .decl BipartiteViolation(x:number)
 .decl Zero(x:number)
 .decl One(x:number)
-.decl BiArc(x: number, y: number)
-
-BiArc(x, y) :- Arc(x, y).
-BiArc(x, y) :- Arc(y, x).
 
 Zero(x) :- Source(x).
-One(y) :- BiArc(x, y), Zero(x).
-Zero(y) :- BiArc(x, y), One(x).
+
+One(y) :- Arc(x, y), Zero(x).
+One(x) :- Arc(x, y), Zero(y).
+
+Zero(y) :- Arc(x, y), One(x).
+Zero(x) :- Arc(x, y), One(y).
+
 BipartiteViolation(x) :- One(x), Zero(x).
 
 .printsize BipartiteViolation
