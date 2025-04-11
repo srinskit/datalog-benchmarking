@@ -17,6 +17,7 @@ for target in "${targets[@]}"; do
 			echo "[run_bench] program: $dl, dataset: $dd/$ds, workers: $w"
 			cmd="recstep --program $dl.dl --input $DATA/$dd/$ds --jobs $w"
 			tag="$dl"_"$ds"_"$w"_recstep
+			tag="${tag//\//-}"
 
 			set +e
 
@@ -55,8 +56,10 @@ for target in "${targets[@]}"; do
 				rm Config.json
 				set -e
 
-			elif [[ $ret == 124 || $ret == 137 ]]; then
+			elif [[ $ret == 124 ]]; then
 				echo "Status: TOUT" >>$tag.info
+			elif [[ $ret == 137 ]]; then
+				echo "Status: OOM" >>$tag.info
 			else
 				echo "Status: DNF" >>$tag.info
 			fi

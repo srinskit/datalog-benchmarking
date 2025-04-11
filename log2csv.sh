@@ -38,7 +38,7 @@ print_runtimes() {
 
 			# Check the number of matching files
 			if [[ $nfiles == 1 ]]; then
-				echo "$dl_program,$dataset,$e,$n,$(parse_info "${rfiles[0]}" "Status"),$(parse_info "${rfiles[0]}" "LinuxRT"),$(parse_info "${rfiles[0]}" "DLOut"),$(parse_info "${rfiles[0]}" "DLBenchRT"),$base_rdir"
+				echo "$dl_program,$dataset,$e,$n,$(parse_info "${rfiles[0]}" "Status"),$(parse_info "${rfiles[0]}" "LinuxRT"),$(parse_info "${rfiles[0]}" "DLOut"),$(parse_info "${rfiles[0]}" "DLBenchRT"),$(parse_info "${rfiles[0]}" "CompileTime"),$base_rdir"
 			elif [[ $nfiles > 0 ]]; then
 				echo "Error: Found ${#rfiles[@]} file matching the pattern $rfile_pattern. Expected exactly one."
 				exit 1

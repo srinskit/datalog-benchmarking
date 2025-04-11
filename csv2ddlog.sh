@@ -64,8 +64,8 @@ else
 	done
 fi
 
-# Write "start" into the output file
-echo "start;" >$op_file
+# Write "Source" into the output file
+echo "Source;" >$op_file
 
 # Shuffle output if requested
 if [[ "$shuf_mode" == "shuf" ]]; then
@@ -88,7 +88,7 @@ echo "[csv2ddlog] Number of lines in inputs:"
 wc -l $list_of_csv
 
 echo
-echo "[csv2ddlog] Number of lines in output (incl start and commit):"
+echo "[csv2ddlog] Number of lines in output (incl Source and commit):"
 wc -l $op_file
 
 echo

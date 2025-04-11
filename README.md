@@ -1,80 +1,34 @@
-# CloudLab & DLBench Automations
+# DLBench Automations for CloudLab
 
-## Setup
+## Organization
+### cloudlab-auto
+This project folder contains the Datalog programs scripts that drive the benchmarking.
 
-### Option 1: Use Disk Image
+For every Datalog engine, there is a folder labelled `payload-<engine>` that contains Datalog programs in that engine's syntax.
 
-* Create a VM from the CloudLab disk image `dlbench-ubu20-v0.1` or CloudLab profile `dlbench-small-lan` for the benchmark.
-* The disk image was prepared by running executing `sudo ./setup.sh` on a `small-lan` VM (Ubuntu 20.04).
-* It has the following tools installed:
-  * Rust (TODO: which version?)
-  * DLBench
-  * Souffle (TODO)
-  * DDLog (TODO)
-  * RecStep (TODO)
+### Benchmark Node
+The benchmarks are executed on a CloudLab node with two AMD EPYC 7543 32-core processors (64 cores / 128 threads) and 256 GB of RAM. 
 
-URN for the disk image: `urn:publicid:IDN+wisc.cloudlab.us+image+lpad-PG0:dlbench-ubu20-v0.1`
+The node is instantiated with the CloudLab profile `dlbench-small-lan`, which configures the node with the `Ubuntu 20.04.6 LTS` OS and installs the following Datalog engines:
+1. FlowLog
+1. Souffle
+1. DDLog
+1. RecStep
 
-### Option 2: BYOE
+The profile also mounts the remote dataset storage to the benchmark node at `/remote/input`.
 
-Bring your own environment by executing `setup.sh` or equivalent manually on the VM to install DLBench and the target project's dependencies.
+### Dataset Storage
+The dataset for the benchmarks are stored remotely. The dataset cannot be packaged along with the base OS because of the size constraints in an image-backed dataset. 
 
-## Benchmark
+The CloudLab profile `dlbench-small-lan` mounts the remote dataset storage to the benchmark node at `/remote/input`.
 
-## deploy.sh
+Prior to starting the benchmark, the automation scripts create a node-local copy of the dataset to avoid slow IO during benchmarking.
 
-### Usage
+### Driver Node
+A driver node launches the benchmark in the `Benchmark Node`, and collects the results. This could be your personal device for short benchmarks, or another CloudLab node for long runs. 
 
-```sh
-./deploy.sh <project-path> <bench.sh> <username@vm.cloudlab.us> <ssh-key>
-```
-
-* `project-path`: Path to the project / program to be benchmarked. This directory / file will be copied to the working directory of the VM. This could be your Rust project, a binary, etc.
-* `bench.sh`: Script that is executed in the VM's working directory to start the benchmarking. This could also contain some setup jobs like build. See below for a sample script.
-* `username@vm.cloudlab.us`: The VM host address to SSH into.
-* `ssh-key`: The SSH key to login to the host with.
-
-### Example
-
-```
-./deploy.sh ../hw_timely bench.sh srinskit@xyz.wisc.cloudlab.us ~/wisc-key
-```
-
-#### Sample bench.sh
-
-```sh
-#!/bin/bash
-
-# Builds and benchmarks a Rust project "hw_timely"
-
-cd hw_timely
-
-# load rust env vars and build
-source rust_env 
-cargo build --release
-
-dlbench run 'target/release/hw_timely 10000000 -w3'
-```
-
-```sh
-$ ./deploy.sh ../hw_timely bench.sh srinskit@xyz.wisc.cloudlab.us ~/wisc-key
-
-    Finished `release` profile [optimized] target(s) in 0.14s
-System CPU count: 40
-System MEM total: 187
-System MEM avail: 185
-System MEM usage: 1.0
-Started process: hw_timely
-Run name: dlbench-hw_timely-2024-12-10T20:10:21
-Logging stats to: dlbench-hw_timely-2024-12-10T20:10:21.log
-STATS: (8500, 259.3, 2163429376, 10963)
-CPU Time: pcputimes(user=21.85, system=3.32, children_user=0.0, children_system=0.0, iowait=0.0)
-CPU Time: 25.17
-```
-
-## deploy-dist.sh
-
-TODO: `deploy.sh` but for a cluster of VMs.
-
-
-ssh-add $SSH_KEY
+## Benchmarking
+### Setup CloudLab Infra
+1. Login to [CloudLab](https://www.cloudlab.us)
+1. Navigate to the profile [dlbench-small-lan](https://www.cloudlab.us/show-profile.php?uuid=96137190-0ff5-11f0-828b-e4434b2381fc), click on `Instantiate`
+1. Select the `physical node type` as `r6525` from the `CloudLab Clemson` cluster.

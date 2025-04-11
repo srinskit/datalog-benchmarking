@@ -1,0 +1,21 @@
+EDB_DECL:
+P(X int, Z int)
+Q(X int, Y int, Z int)
+R(R int, P int, E int)
+C(Y int, Z int, W int)
+U(R int, Z int, W int)
+S(R int, P int)
+
+IDB_DECL:
+OutP(X int, Z int)
+OutQ(X int, Y int, Z int)
+
+RULE_DECL:
+OutP(x, y) :- P(x, y).
+OutQ(x, y, z) :- Q(x, y, z).
+OutP(x,z) :- OutP(x,y), OutP(y,z).
+OutQ(x,r,z) :- OutP(x,y), OutQ(y,r,z).
+OutP(x,z) :- OutP(y,w), U(w,r,z), OutQ(x,r,y).
+OutP(x,z) :- C(y,w,z),OutP(x,w), OutP(x,y).
+OutQ(x,q,z) :- OutQ(x,r,z),S(r,q).
+OutQ(x,e,o) :- OutQ(x,y,z),R(y,u,e),OutQ(z,u,o).

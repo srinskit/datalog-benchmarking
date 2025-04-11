@@ -4,9 +4,9 @@ SELECT
 	workers,
 	MAX(
 		CASE
-			WHEN engine = 'eclair' THEN display
+			WHEN engine = 'flowlog' THEN display
 		END
-	) AS eclair,
+	) AS flowlog,
 	MAX(
 		CASE
 			WHEN engine = 'souffle-cmpl' THEN display
@@ -26,7 +26,17 @@ SELECT
 		CASE
 			WHEN engine = 'ddlog' THEN display
 		END
-	) AS ddlog
+	) AS ddlog,
+	MAX(
+		CASE
+			WHEN engine = 'souffle-cmpl' THEN cmpl_time
+		END
+	) AS souffle_cmpl_time,
+	MAX(
+		CASE
+			WHEN engine = 'ddlog' THEN cmpl_time
+		END
+	) AS ddlog_cmpl_time
 FROM
 	(
 		SELECT
@@ -37,20 +47,12 @@ FROM
 			(
 				CASE
 					WHEN cmp > 0 THEN runtime
-					ELSE (
-						CASE
-							WHEN tout > 0 THEN 'TOUT'
-							ELSE (
-								CASE
-									WHEN dnf > 0
-									THEN 'DNF'
-									ELSE 'N/A'
-								END
-							)
-						END
-					)
+					WHEN oom > 0 THEN 'OOM'
+					WHEN tout > 0 THEN 'TOUT'
+					ELSE 'DNF'
 				END
-			) AS display
+			) AS display,
+			cmpl_time
 		FROM
 			(
 				SELECT
@@ -58,42 +60,32 @@ FROM
 					dataset,
 					workers,
 					engine,
-					COUNT() AS total_runs,
 					COUNT(
 						CASE
 							WHEN status = 'CMP'
-							AND output <> ''
-							AND output <> '0' THEN 1
+							AND output <> '' THEN 1
 						END
 					) AS cmp,
+					COUNT(
+						CASE
+							WHEN status = 'OOM' THEN 1
+						END
+					) AS oom,
 					COUNT(
 						CASE
 							WHEN status = 'TOUT' THEN 1
 						END
 					) AS tout,
-					COUNT(
-						CASE
-							WHEN status = 'DNF'
-							OR (
-								status = 'CMP'
-								AND (
-									output = ''
-									OR output = '0'
-								)
-							) THEN 1
-						END
-					) AS dnf,
 					ROUND(
-						AVG(
+						MIN(
 							CASE
 								WHEN status = 'CMP'
-								AND output <> ''
-								AND output <> '0' THEN runtime
+								AND output <> '' THEN runtime
 							END
 						),
 						2
 					) AS runtime,
-					ROUND(AVG(runtime), 2) AS dirty_runtime
+					ROUND(MIN(cmpl_time), 2) AS cmpl_time
 				FROM
 					runs
 				GROUP BY
@@ -107,6 +99,7 @@ GROUP BY
 	program,
 	dataset,
 	workers
+HAVING NOT (program LIKE '%diamond%')
 ORDER BY
 	program,
 	dataset,

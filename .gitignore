@@ -3,12 +3,11 @@
 **/*.info
 **/*.zip
 **/*.txt
-payload-*/*
-!payload-*/*.sh
-!payload-*/*.dl
 *.png
 
 .vscode
 .notes
 .commands
 .env
+
+*.db

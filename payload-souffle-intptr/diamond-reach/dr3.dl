@@ -1,0 +1,11 @@
+.decl Arc(u:number, v:number)
+.input Arc(IO="file", filename="Arc.csv", delimiter=",")
+
+.decl Source(u: number)
+.input Source(IO="file", filename="Source.csv", delimiter=",")
+
+.decl DiamondReach(a:number)
+.printsize DiamondReach
+
+DiamondReach(u) :- Source(u).
+DiamondReach(u) :- Arc(x1, u), Arc(v, x1), Arc(v, x2), Arc(x2, u), DiamondReach(v).

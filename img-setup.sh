@@ -134,7 +134,7 @@ if [[ ! -d $WORK_DIR/RecStep ]]; then
 	pushd $WORK_DIR/RecStep
 
 	# Point config to quickstep
-	sed -i "s|/fastdisk/quickstep-datalog/build|$WORK_DIR/quickstep|" $WORK_DIR/RecStep/Config.json
+	sed -i "s|/fastdisk/quickstep-datalog/build|/data/quickstep|" $WORK_DIR/RecStep/Config.json
 
 	# Install CLI and env
 	echo "#! $(which python3)" > recstep
@@ -200,5 +200,9 @@ if [[ 1 ]]; then
 	cargo build --release -j $build_workers
 	popd
 fi
+
+pushd /usr/local/bin
+wget -O csv2ddlog https://raw.githubusercontent.com/srinskit/cloudlab-auto/refs/heads/main/csv2ddlog.sh
+popd
 
 echo "SUCCESS"

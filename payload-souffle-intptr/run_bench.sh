@@ -17,6 +17,7 @@ for target in "${targets[@]}"; do
 			echo "[run_bench] program: $dl, dataset: $dd/$ds, workers: $w"
 			cmd="souffle "$dl.dl" -F $DATA/$dd/$ds -D . -j $w"
 			tag="$dl"_"$ds"_"$w"_souffle-intptr
+			tag="${tag//\//-}"
 
 			sync && sysctl vm.drop_caches=3
 			set +e
@@ -27,8 +28,10 @@ for target in "${targets[@]}"; do
 			# Evaluate result
 			if [[ $ret == 0 ]]; then
 				echo "Status: CMP" >>$tag.info
-			elif [[ $ret == 124 || $ret == 137 ]]; then
+			elif [[ $ret == 124 ]]; then
 				echo "Status: TOUT" >>$tag.info
+			elif [[ $ret == 137 ]]; then
+				echo "Status: OOM" >>$tag.info
 			else
 				echo "Status: DNF" >>$tag.info
 			fi

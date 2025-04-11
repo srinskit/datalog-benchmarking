@@ -1,0 +1,15 @@
+.in
+.decl Arc(u: number, v: number)
+.input Arc.csv
+
+.decl Source(u: number)
+.input Source.csv
+
+
+.printsize
+.decl DiamondReach(a: number)
+
+.rule
+DiamondReach(u) :- Source(u).
+DiamondReach(u) :- Arc(x1, u), Arc(v, x1), Arc(v, x2), Arc(x2, u), DiamondReach(v).
+.plan
