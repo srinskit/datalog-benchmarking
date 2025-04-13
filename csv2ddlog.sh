@@ -64,8 +64,8 @@ else
 	done
 fi
 
-# Write "Source" into the output file
-echo "Source;" >$op_file
+# Write "start" into the output file
+echo "start;" >$op_file
 
 # Shuffle output if requested
 if [[ "$shuf_mode" == "shuf" ]]; then
