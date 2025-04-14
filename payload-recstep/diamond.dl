@@ -1,0 +1,10 @@
+EDB_DECL:
+Source(id int)
+Arc(x int, y int)
+
+IDB_DECL:
+Reach(x int)
+
+RULE_DECL:
+Reach(x) :- Source(x).
+Reach(z) :- Reach(x), Arc(x, y), Arc(y, z), Arc(z, w), Arc(w, x).

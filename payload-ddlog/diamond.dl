@@ -1,0 +1,12 @@
+typedef number = signed<32> 
+
+input relation Source(id: number)
+input relation Arc(x: number, y: number)
+
+output relation Reach(x: number)
+
+Reach(x) :- Source(x).
+Reach(z) :- Reach(x), Arc(x, y), Arc(y, z), Arc(z, w), Arc(w, x).
+
+output relation RelationSizes(rel: string, size:bit<64>)
+RelationSizes("Reach", size) :- Reach(x),  var size = (x).group_by(()).count_distinct().
