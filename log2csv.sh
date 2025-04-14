@@ -1,6 +1,6 @@
 #!/bin/bash
 
-workers=(4 64)
+workers=(1 4 64)
 engines=("eclair" "souffle-cmpl" "souffle-intptr" "recstep" "ddlog")
 delim="_"
 

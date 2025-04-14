@@ -1,31 +1,33 @@
 targets=(
-	# Fast
-	"xalan		doop 	xalan		SubtypeOf DERScSi"
-	"batik		doop 	batik		SubtypeOf DERScSi"
-	"zxing		doop 	zxing		SubtypeOf DERScSi"
-	"biojava	doop	biojava		SubtypeOf DERScSi"
-	"eclipse	doop	eclipse		SubtypeOf DERScSi"
+	# # Fast
+	"doop/xalan		doop 	xalan		SubtypeOf DERScSi"
+	"doop/batik		doop 	batik		SubtypeOf DERScSi"
+	"doop/zxing		doop 	zxing		SubtypeOf DERScSi"
+	"doop/biojava	doop	biojava		SubtypeOf DERScSi"
+	"doop/eclipse	doop	eclipse		SubtypeOf DERScSi"
 
-	"sg gt G10K-0.001		Sg DERScSi"
-	"sg gt G5K-0.001		Sg DERScSi"
-	"sg gt web-stanford		Sg DERScSi"
-	"sg gt web-google		Sg DERScSi"
-	"sg gt wiki-vote		Sg DERScSi"
-	"sg gt web-notredame	Sg DERScSi"
-	"sg gt soc-epinions		Sg DERScSi"
+	"sg graph-traverse G10K-0.001		Sg DERScSi"
+	"sg graph-traverse G5K-0.001		Sg DERScSi"
+	"sg graph-traverse wiki-vote		Sg DERScSi"
 
-	"tc gt G10K-0.001		Tc DERScSi"
-	"tc gt G5K-0.001		Tc DERScSi"
-	"tc gt web-stanford		Tc DERScSi"
-	"tc gt web-google		Tc DERScSi"
-	"tc gt wiki-vote		Tc DERScSi"
-	"tc gt web-notredame	Tc DERScSi"
-	"tc gt soc-epinions		Tc DERScSi"
+	"tc graph-traverse G10K-0.001		Tc DERScSi"
+	"tc graph-traverse G5K-0.001		Tc DERScSi"
+	"tc graph-traverse wiki-vote		Tc DERScSi"
 
-	"reach ga livejournal	Reach DERScSi"
-	"reach ga orkut			Reach DERScSi"
-	"reach gt wiki-vote		Reach DERScSi"
-	"reach gt simon			Reach DERScSi"
+	"dyck graph-traverse kernel		Dyck DERScSi"
+	"dyck graph-traverse postgre	Dyck DERScSi"
+
+	"reach graph-reach livejournal	Reach DERScSi"
+	"reach graph-reach orkut			Reach DERScSi"
+	"reach graph-reach wiki-vote		Reach DERScSi"
+
+	"bipartite graph-reach yelp		Zero DERScSi"
+	"bipartite graph-reach netflix	Zero DERScSi"
+	"bipartite graph-reach mind		Zero DERScSi"
+
+	"diamond graph-reach livejournal	Reach DERScSi"
+	"diamond graph-reach orkut		Reach DERScSi"
+	"diamond graph-reach wiki-vote	Reach DERScSi"
 
 	"andersen andersen 500000 PointsTo DERScSi"
 
@@ -37,30 +39,56 @@ targets=(
 	"cspa cspa linux		ValueFlow DERScSi"
 	"cspa cspa postgresql	ValueFlow DERScSi"
 
-	"galen misc galen OutP DERScSi"
+	"galen misc galen OutP DEScSi"
 
 	"borrow pl borrow path_maybe_initialized_on_exit DERScSi"
 
-	"crdt		ga crdt nextSiblingAnc DERScSi"
-	"crdtslow	ga crdt nextSiblingAnc DERScSi"
-
-	"bipartite ga yelp		Zero DERScSi"
-	"bipartite ga netflix	Zero DERScSi"
-	"bipartite ga mind		Zero DERScSi"
+	"crdt		pl crdt nextSiblingAnc DERScSi"
+	"crdtslow	pl crdt nextSiblingAnc DERScSi"
 
 	# Slow
-	"sg gt G10K-0.01	Sg DERScSi"
-	"sg gt G10K-0.1		Sg DERScSi"
-	"sg gt G20K-0.001	Sg DERScSi"
-	"sg gt G40K-0.001	Sg DERScSi"
-	"sg gt G80K-0.001	Sg DERScSi"
-	"tc gt G10K-0.01	Tc DERScSi"
-	"tc gt G10K-0.1		Tc DERScSi"
-	"tc gt G20K-0.001	Tc DERScSi"
-	"tc gt G40K-0.001	Tc DERScSi"
-	"tc gt G80K-0.001	Tc DERScSi"
+	"sg graph-traverse G10K-0.01	Sg DERScSi"
+	"sg graph-traverse G10K-0.1	Sg DERScSi"
+	"sg graph-traverse G20K-0.001	Sg DERScSi"
+	"sg graph-traverse G40K-0.001	Sg DERScSi"
+	"sg graph-traverse G80K-0.001	Sg DERScSi"
+
+	"tc graph-traverse G10K-0.01	Tc DERScSi"
+	"tc graph-traverse G10K-0.1	Tc DERScSi"
+	"tc graph-traverse G20K-0.001	Tc DERScSi"
+	"tc graph-traverse G40K-0.001	Tc DERScSi"
+	"tc graph-traverse G80K-0.001	Tc DERScSi"
+
+	"sg graph-traverse web-stanford	Sg DERScSi"
+	"sg graph-traverse web-google		Sg DERScSi"
+	"sg graph-traverse web-notredame	Sg DERScSi"
+	"sg graph-traverse soc-epinions	Sg DERScSi"
+
+	"tc graph-traverse web-stanford	Tc DERScSi"
+	"tc graph-traverse web-google		Tc DERScSi"
+	"tc graph-traverse web-notredame	Tc DERScSi"
+	"tc graph-traverse soc-epinions	Tc DERScSi"
 
 	# Plans
+	"galen/g1 misc pl OutP EScSi"
+	"galen/g2 misc pl OutP EScSi"
+	"galen/g3 misc pl OutP EScSi"
+	"galen/g4 misc pl OutP EScSi"
+	"galen/g5 misc pl OutP EScSi"
+	"galen/g6 misc pl OutP EScSi"
+	"galen/g7 misc pl OutP EScSi"
+	"galen/g8 misc pl OutP EScSi"
+	"galen/g9 misc pl OutP EScSi"
+	"galen/g10 misc pl OutP EScSi"
+	"galen/g11 misc pl OutP EScSi"
+	"galen/g12 misc pl OutP EScSi"
+	"galen/g13 misc pl OutP EScSi"
+	"galen/g14 misc pl OutP EScSi"
+	"galen/g15 misc pl OutP EScSi"
+	"galen/g16 misc pl OutP EScSi"
+	"galen/g17 misc pl OutP EScSi"
+	"galen/g18 misc pl OutP EScSi"
+
 	"diamond-reach/dr1-opt		gt web-stanford DiamondReach E"
 	"diamond-reach/dr1-plan		gt web-stanford DiamondReach E"
 	"diamond-reach/dr1-sip		gt web-stanford DiamondReach E"
@@ -92,4 +120,4 @@ targets=(
 	"diamond-reach/dr6			gt web-google DiamondReach EScSi"
 )
 
-workers=(64 4)
+workers=(64 4 1)
