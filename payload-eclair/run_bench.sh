@@ -7,12 +7,15 @@ SRC=/opt
 DATA=/data/input/souffle
 exe=$SRC/FlowLogTest/target/release/executing
 
+swapoff -a
+
 source targets.sh
 
 for target in "${targets[@]}"; do
-	read -r dl dd ds key charmap <<<"$target"
+	read -r dl dd ds key charmap threads <<<"$target"
 
 	if [[ "$charmap" == *"E"* ]]; then
+		IFS=',' read -ra workers <<<"$threads"
 		for w in "${workers[@]}"; do
 			echo "[run_bench] program: $dl, dataset: $dd/$ds, workers: $w"
 			cmd="$exe --program $dl.dl --facts $DATA/$dd/$ds --csvs . --workers $w"

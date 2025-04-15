@@ -9,3 +9,9 @@ SET
 	engine = 'flowlog'
 WHERE
 	engine = 'eclair';
+
+UPDATE runs
+SET
+	program = 'doop'
+WHERE
+	program LIKE '%doop_';

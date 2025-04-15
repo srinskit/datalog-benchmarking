@@ -12,9 +12,10 @@ prev_dl=""
 source targets.sh
 
 for target in "${targets[@]}"; do
-	read -r dl dd ds key charmap <<<"$target"
+	read -r dl dd ds key charmap threads <<<"$target"
 
 	if [[ "$charmap" == *"Sc"* ]]; then
+		IFS=',' read -ra workers <<<"$threads"
 		for w in "${workers[@]}"; do
 			echo "[run_bench] program: $dl, dataset: $dd/$ds, workers: $w"
 			tag="$dl"_"$ds"_"$w"_souffle-cmpl

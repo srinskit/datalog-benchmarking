@@ -5,6 +5,9 @@
 **/*.txt
 *.png
 
+payload-*/*.sh
+!payload-*/run_bench.sh
+
 .vscode
 .notes
 .commands

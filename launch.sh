@@ -22,7 +22,9 @@ ssh -A $HOST "sudo swapoff -a"
 
 echo
 echo "[launch] moving payload: local ---> host"
+cp targets.sh $PAYLOAD/
 $RSYNC --rsync-path="sudo rsync" $PAYLOAD $HOST:$WORK_DIR
+rm $PAYLOAD/targets.sh
 
 # Execute benchmark script in host
 ssh -A $HOST "cd $WORK_DIR/$PAYLOAD_DIR; sudo ./run_bench.sh"
