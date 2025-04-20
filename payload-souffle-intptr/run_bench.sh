@@ -3,14 +3,20 @@
 # Exit script on error
 set -e
 
-DATA=/data/input/souffle
+DATA=/data/input
 workers_low=4
 workers_high=64
 
 source targets.sh
 
 for target in "${targets[@]}"; do
-	read -r dl dd ds key charmap threads <<<"$target"
+	read -r dl dd ds key charmap threads tout <<<"$target"
+
+	if [ -z "$tout" ]; then
+		tout=600s
+	fi
+
+	echo "timout:" $tout
 
 	if [[ "$charmap" == *"Si"* ]]; then
 		IFS=',' read -ra workers <<<"$threads"
@@ -22,7 +28,7 @@ for target in "${targets[@]}"; do
 
 			sync && sysctl vm.drop_caches=3
 			set +e
-			/usr/bin/time -f "LinuxRT: %e" timeout 600s dlbench run "$cmd" "$tag" 2>$tag.info
+			/usr/bin/time -f "LinuxRT: %e" timeout $tout dlbench run "$cmd" "$tag" 2>$tag.info
 			ret=$?
 			set -e
 

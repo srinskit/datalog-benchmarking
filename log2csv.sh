@@ -1,7 +1,7 @@
 #!/bin/bash
 
-workers=(1 4 64)
-engines=("eclair" "souffle-cmpl" "souffle-intptr" "recstep" "ddlog")
+workers=(1 2 4 8 16 32 64)
+engines=("flowlog" "souffle-cmpl" "souffle-intptr" "recstep" "ddlog" "flowlog1")
 delim="_"
 
 parse_info() {

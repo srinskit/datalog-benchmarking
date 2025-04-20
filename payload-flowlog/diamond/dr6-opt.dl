@@ -1,0 +1,14 @@
+.in
+.decl Source(id: number)
+.input Source.csv
+
+.decl Arc(x: number, y: number)
+.input Arc.csv
+
+.printsize
+.decl Reach(a: number)
+
+.rule
+Reach(u) :- Source(u).
+Reach(u) :- Reach(v), Arc(x2,v), Arc(u,x2), Arc(v,x1), Arc(x1,u).
+.optimize

@@ -1,0 +1,9 @@
+typedef int = bit<32>
+
+input relation Arc(x: int, y: int)
+output relation Sg(x: int)
+
+Sg(x) :- Arc(0, x).
+
+output relation RelationSizes(rel: string, size:bit<64>)
+RelationSizes("Sg", size) :- Sg(x),  var size = (x).group_by(()).count_distinct().

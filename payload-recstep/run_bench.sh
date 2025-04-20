@@ -4,13 +4,19 @@
 set -e
 
 SRC=/opt
-DATA=/data/input/souffle
+DATA=/data/input
 
 source $SRC/recstep_env
 source targets.sh
 
 for target in "${targets[@]}"; do
-	read -r dl dd ds key charmap threads <<<"$target"
+	read -r dl dd ds key charmap threads tout <<<"$target"
+
+	if [ -z "$tout" ]; then
+		tout=600s
+	fi
+
+	echo "timout:" $tout
 
 	if [[ "$charmap" == *"R"* ]]; then
 		IFS=',' read -ra workers <<<"$threads"
@@ -29,7 +35,7 @@ for target in "${targets[@]}"; do
 			# Prime the benchmark
 			timeout 5s $cmd >/dev/null 2>&1
 
-			/usr/bin/time -f "LinuxRT: %e" timeout 600s dlbench run "$cmd" "$tag" --monitor quickstep_cli_shell 2>$tag.info
+			/usr/bin/time -f "LinuxRT: %e" timeout $tout dlbench run "$cmd" "$tag" --monitor quickstep_cli_shell 2>$tag.info
 			ret=$?
 			echo $ret
 			set -e

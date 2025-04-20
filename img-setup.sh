@@ -21,13 +21,12 @@ fi
 # Install DL Bench
 
 if command -v dlbench >/dev/null 2>&1; then
-	echo "[img-setup] dlbench exists, re-installing latest."
-	pip uninstall -y dlbench
+	echo "[img-setup] dlbench exists, skipping install."
+else
 	rm -rf $WORK_DIR/dlbench
+	git clone --depth=1 https://github.com/srinskit/dlbench $WORK_DIR/dlbench
+	pip install $WORK_DIR/dlbench/
 fi
-
-git clone --depth=1 https://github.com/srinskit/dlbench $WORK_DIR/dlbench
-pip install $WORK_DIR/dlbench/
 
 dlbench --help
 
@@ -151,9 +150,11 @@ source $WORK_DIR/recstep_env
 recstep --help
 
 project=FlowLogTest
-eclair_exe=$WORK_DIR/$project/target/release/executing
+target=FlowLogTest
+branch=benchmark
+flowlog_exe=$WORK_DIR/$target/target/release/executing
 
-if [[ 1 ]]; then
+if [[ 0 ]]; then
 	build_workers=$(nproc)
 	source $WORK_DIR/rust_env
 	killall cargo || true
@@ -162,9 +163,9 @@ if [[ 1 ]]; then
 
 	export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no"
 
-	rm -rf $project
-	git clone --branch benchmark --single-branch --depth 1 git@github.com:hdz284/$project.git
-	pushd $project
+	rm -rf $target
+	git clone --branch $branch --single-branch --depth 1 git@github.com:hdz284/$project.git $target
+	pushd $target
 
 	echo "Build workers: " $build_workers
 	cargo fetch
@@ -174,8 +175,7 @@ if [[ 1 ]]; then
 
 	wget https://raw.githubusercontent.com/srinskit/cloudlab-auto/refs/heads/main/collection.rs
 	wget https://raw.githubusercontent.com/srinskit/cloudlab-auto/refs/heads/main/iterate.rs
-	patch_dst=$(find $CARGO_HOME -path "*/differential-dataflow-0.13.7/src")
-	patch_src=collection.rs
+	patch_dst=$(find $CARGO_HOME -path "*/differential-dataflow-0.14.2/src")
 
 	# Test DD crate exists
 	[ -d $patch_dst ]
@@ -199,6 +199,34 @@ if [[ 1 ]]; then
 	# Build the project
 	cargo build --release -j $build_workers
 	popd
+
+	$flowlog_exe --help
+fi
+
+target=FlowLogTest1
+branch=benchmark1
+flowlog_exe=$WORK_DIR/$target/target/release/executing
+
+if [[ 1 ]]; then
+	build_workers=$(nproc)
+	source $WORK_DIR/rust_env
+	killall cargo || true
+
+	# Update or clone the project
+
+	export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no"
+
+	rm -rf $target
+	git clone --branch $branch --single-branch --depth 1 git@github.com:hdz284/$project.git $target
+	pushd $target
+
+	echo "Build workers: " $build_workers
+
+	# Build the project
+	cargo build --release -j $build_workers
+	popd
+
+	$flowlog_exe --help
 fi
 
 pushd /usr/local/bin

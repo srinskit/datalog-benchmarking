@@ -4,7 +4,7 @@
 set -e
 PS4=':$LINENO+'
 SRC=/opt
-DATA=/data/input/ddlog
+DATA=/data/input
 build_workers=$(nproc)
 prev_dl=""
 cmpl_time=0
@@ -19,15 +19,21 @@ ddlog_prog_build() {
 	local dl_prog="$1"
 	rm -rf *_ddlog || true
 	ddlog -i "$dl".dl
-	pushd "$dl"_ddlog > /dev/null
-	killall cargo || true > /dev/null
-	RUSTFLAGS=-Awarnings cargo +$rust_v build --release --quiet -j $build_workers > /dev/null
-	popd > /dev/null
-	exe="$dl"_ddlog/target/release/"$dl"_cli
+	pushd "$dl"_ddlog >/dev/null
+	killall cargo || true >/dev/null
+	RUSTFLAGS=-Awarnings cargo +$rust_v build --release --quiet -j $build_workers >/dev/null
+	popd >/dev/null
+	exe="$dl"_ddlog/target/release/"$(basename $dl)"_cli
 }
 
 for target in "${targets[@]}"; do
-	read -r dl dd ds key charmap threads <<<"$target"
+	read -r dl dd ds key charmap threads tout <<<"$target"
+
+	if [ -z "$tout" ]; then
+		tout=600s
+	fi
+
+	echo "timout:" $tout
 
 	if [[ "$charmap" == *"D"* ]]; then
 		IFS=',' read -ra workers <<<"$threads"
@@ -48,12 +54,12 @@ for target in "${targets[@]}"; do
 
 			printf "CompileTime: %.2f\n" "$cmpl_time" >$tag.info
 
-			killall $exe || true > /dev/null
+			killall $exe || true >/dev/null
 			cmd="./$exe -w $w < $DATA/$dd/$ds/data.ddin"
 
 			sync && sysctl vm.drop_caches=3
 			set +e
-			/usr/bin/time -f "LinuxRT: %e" timeout 600s dlbench run "$cmd" "$tag" 2>>$tag.info
+			/usr/bin/time -f "LinuxRT: %e" timeout $tout dlbench run "$cmd" "$tag" 2>>$tag.info
 			ret=$?
 			set -e
 

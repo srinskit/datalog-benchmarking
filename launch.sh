@@ -18,11 +18,11 @@ RSYNC="rsync -ah --info=progress2 --info=name0 --delete"
 echo "[launch] Setting up local dataset"
 /usr/bin/time -f "Local dataset setup took: %E" ssh -A $HOST "sudo cp -an /remote/. /data/"
 
-ssh -A $HOST "sudo swapoff -a"
+ssh -A $HOST "sudo swapoff -a; sudo rm -rf /opt/grpc"
 
 echo
 echo "[launch] moving payload: local ---> host"
-cp targets.sh $PAYLOAD/
+cp $PROJECT_ROOT/targets.sh $PAYLOAD/
 $RSYNC --rsync-path="sudo rsync" $PAYLOAD $HOST:$WORK_DIR
 rm $PAYLOAD/targets.sh
 
@@ -32,6 +32,8 @@ ssh -A $HOST "cd $WORK_DIR/$PAYLOAD_DIR; sudo ./run_bench.sh"
 # Sync local payload from host payload, except the run_bench.sh file
 echo "[launch] moving payload: local <--- host"
 $RSYNC --rsync-path="sudo rsync" --include="*.log" --include="*.info" --include="*.out" --exclude="*" $HOST:$WORK_DIR/$PAYLOAD_DIR/ $PAYLOAD 
+
+ssh -A $HOST "sudo rm -rf $WORK_DIR/$PAYLOAD_DIR"
 
 mv $PAYLOAD/*.log . || true
 mv $PAYLOAD/*.info . || true

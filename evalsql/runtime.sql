@@ -88,7 +88,6 @@ FROM
 					ROUND(MIN(cmpl_time), 2) AS cmpl_time
 				FROM
 					runs
-				-- WHERE folder = 'result04-12-00-43-58'
 				GROUP BY
 					program,
 					dataset,
@@ -100,10 +99,8 @@ GROUP BY
 	program,
 	dataset,
 	workers
--- HAVING NOT (program LIKE '%diamond%')
-HAVING program like '%galen%' and workers = 64
+HAVING INSTR(program, '-') = 0
 ORDER BY
-	length(program) ASC,
 	program,
 	dataset,
 	workers
