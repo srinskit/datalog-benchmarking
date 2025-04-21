@@ -515,7 +515,7 @@ VarPointsTo(heap, to) :- Reachable(inmethod), LoadArrayIndex(base, to, inmethod)
 
 # Expensive 1
 VarPointsTo(heap, to) :- Reachable(inmethod), LoadInstanceField(base, signature, to, inmethod), VarPointsTo(baseheap, base), InstanceFieldPointsTo(heap, signature, baseheap).
-.optimize
+.optimize#mod
 
 VarPointsTo(heap, to) :-
   Reachable(inmethod),

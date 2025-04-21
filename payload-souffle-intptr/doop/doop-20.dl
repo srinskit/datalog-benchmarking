@@ -522,7 +522,7 @@ VarPointsTo(heap, to) :-
   StaticFieldPointsTo(heap, fld).
 
 // Expensive 4
-VarPointsTo(heap, this) :- MethodLookup(simplename, descriptor, heaptype, toMethod), HeapAllocation_Type(heap, heaptype), VarPointsTo(heap, base), VirtualMethodInvocation_Base(invocation, base), VirtualMethodInvocation_SimpleName(invocation, simplename), VirtualMethodInvocation_Descriptor(invocation, descriptor), Instruction_Method(invocation, inMethod), ThisVar(toMethod, this), Reachable(inMethod).
+VarPointsTo(heap, this) :- ThisVar(toMethod, this), MethodLookup(simplename, descriptor, heaptype, toMethod), VirtualMethodInvocation_SimpleName(invocation, simplename), Instruction_Method(invocation, inMethod), Reachable(inMethod), VirtualMethodInvocation_Base(invocation, base), HeapAllocation_Type(heap, heaptype), VarPointsTo(heap, base), VirtualMethodInvocation_Descriptor(invocation, descriptor).//mod
 
 InstanceFieldPointsTo(heap, fld, baseheap) :-
   Reachable(inmethod),

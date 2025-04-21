@@ -511,7 +511,7 @@ VarPointsTo(heap, to) :- Reachable(inmethod), AssignCast(type, from, to, inmetho
 ArrayIndexPointsTo(baseheap, heap) :- Reachable(inmethod), StoreArrayIndex(from, base, inmethod), VarPointsTo(baseheap, base), VarPointsTo(heap, from), HeapAllocation_Type(heap, heaptype), HeapAllocation_Type(baseheap, baseheaptype), ComponentType(baseheaptype, componenttype), SupertypeOf(componenttype, heaptype).
 
 // Expensive 3
-VarPointsTo(heap, to) :- Var_Type(to, type), SupertypeOf(type, basecomponenttype), ComponentType(baseheaptype, basecomponenttype), HeapAllocation_Type(baseheap, baseheaptype), ArrayIndexPointsTo(baseheap, heap), VarPointsTo(baseheap, base), LoadArrayIndex(base, to, inmethod), Reachable(inmethod).
+VarPointsTo(heap, to) :- ArrayIndexPointsTo(baseheap, heap), HeapAllocation_Type(baseheap, baseheaptype), VarPointsTo(baseheap, base), ComponentType(baseheaptype, basecomponenttype), SupertypeOf(type, basecomponenttype), Var_Type(to, type), LoadArrayIndex(base, to, inmethod), Reachable(inmethod).//mod
 
 // Expensive 1
 VarPointsTo(heap, to) :- Reachable(inmethod), LoadInstanceField(base, signature, to, inmethod), VarPointsTo(baseheap, base), InstanceFieldPointsTo(heap, signature, baseheap).

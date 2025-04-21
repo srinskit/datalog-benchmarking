@@ -505,7 +505,7 @@ VarPointsTo(heap, to) :-
   VarPointsTo(heap, from).
 
 # Expensive 2
-VarPointsTo(heap, to) :- VarPointsTo(heap, from), HeapAllocation_Type(heap, heaptype), SupertypeOf(type, heaptype), AssignCast(type, from, to, inmethod), Reachable(inmethod).
+VarPointsTo(heap, to) :- Reachable(inmethod), AssignCast(type, from, to, inmethod), VarPointsTo(heap, from), SupertypeOf(type, heaptype), HeapAllocation_Type(heap, heaptype).#mod
 
 # Expensive 5
 ArrayIndexPointsTo(baseheap, heap) :- Reachable(inmethod), StoreArrayIndex(from, base, inmethod), VarPointsTo(baseheap, base), VarPointsTo(heap, from), HeapAllocation_Type(heap, heaptype), HeapAllocation_Type(baseheap, baseheaptype), ComponentType(baseheaptype, componenttype), SupertypeOf(componenttype, heaptype).

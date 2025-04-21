@@ -508,7 +508,7 @@ VarPointsTo(heap, to) :-
 VarPointsTo(heap, to) :- Reachable(inmethod), AssignCast(type, from, to, inmethod), SupertypeOf(type, heaptype), HeapAllocation_Type(heap, heaptype), VarPointsTo(heap, from).
 
 // Expensive 5
-ArrayIndexPointsTo(baseheap, heap) :- Reachable(inmethod), StoreArrayIndex(from, base, inmethod), VarPointsTo(baseheap, base), HeapAllocation_Type(baseheap, baseheaptype), ComponentType(baseheaptype, componenttype), SupertypeOf(componenttype, heaptype), HeapAllocation_Type(heap, heaptype), VarPointsTo(heap, from).
+ArrayIndexPointsTo(baseheap, heap) :- Reachable(inmethod), StoreArrayIndex(from, base, inmethod), VarPointsTo(baseheap, base), VarPointsTo(heap, from), HeapAllocation_Type(heap, heaptype), HeapAllocation_Type(baseheap, baseheaptype), ComponentType(baseheaptype, componenttype), SupertypeOf(componenttype, heaptype).
 
 // Expensive 3
 VarPointsTo(heap, to) :- Reachable(inmethod), LoadArrayIndex(base, to, inmethod), VarPointsTo(baseheap, base), ArrayIndexPointsTo(baseheap, heap), Var_Type(to, type), HeapAllocation_Type(baseheap, baseheaptype), ComponentType(baseheaptype, basecomponenttype), SupertypeOf(type, basecomponenttype).
@@ -522,7 +522,7 @@ VarPointsTo(heap, to) :-
   StaticFieldPointsTo(heap, fld).
 
 // Expensive 4
-VarPointsTo(heap, this) :- Reachable(inMethod), Instruction_Method(invocation, inMethod), VirtualMethodInvocation_Base(invocation, base), VarPointsTo(heap, base), HeapAllocation_Type(heap, heaptype), VirtualMethodInvocation_SimpleName(invocation, simplename), VirtualMethodInvocation_Descriptor(invocation, descriptor), MethodLookup(simplename, descriptor, heaptype, toMethod), ThisVar(toMethod, this).
+VarPointsTo(heap, this) :- VirtualMethodInvocation_Base(invocation, base), Instruction_Method(invocation, inMethod), Reachable(inMethod), VarPointsTo(heap, base), VirtualMethodInvocation_SimpleName(invocation, simplename), VirtualMethodInvocation_Descriptor(invocation, descriptor), MethodLookup(simplename, descriptor, heaptype, toMethod), ThisVar(toMethod, this), HeapAllocation_Type(heap, heaptype).//mod
 
 InstanceFieldPointsTo(heap, fld, baseheap) :-
   Reachable(inmethod),

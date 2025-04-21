@@ -505,13 +505,13 @@ VarPointsTo(heap, to) :-
   VarPointsTo(heap, from).
 
 // Expensive 2
-VarPointsTo(heap, to) :- Reachable(inmethod), AssignCast(type, from, to, inmethod), SupertypeOf(type, heaptype), HeapAllocation_Type(heap, heaptype), VarPointsTo(heap, from).
+VarPointsTo(heap, to) :- SupertypeOf(type, heaptype), HeapAllocation_Type(heap, heaptype), AssignCast(type, from, to, inmethod), Reachable(inmethod), VarPointsTo(heap, from).//mod
 
 // Expensive 5
 ArrayIndexPointsTo(baseheap, heap) :- Reachable(inmethod), StoreArrayIndex(from, base, inmethod), VarPointsTo(baseheap, base), VarPointsTo(heap, from), HeapAllocation_Type(heap, heaptype), HeapAllocation_Type(baseheap, baseheaptype), ComponentType(baseheaptype, componenttype), SupertypeOf(componenttype, heaptype).
 
 // Expensive 3
-VarPointsTo(heap, to) :- SupertypeOf(type, basecomponenttype), ComponentType(baseheaptype, basecomponenttype), HeapAllocation_Type(baseheap, baseheaptype), Var_Type(to, type), ArrayIndexPointsTo(baseheap, heap), VarPointsTo(baseheap, base), LoadArrayIndex(base, to, inmethod), Reachable(inmethod).
+VarPointsTo(heap, to) :- Reachable(inmethod), LoadArrayIndex(base, to, inmethod), VarPointsTo(baseheap, base), ArrayIndexPointsTo(baseheap, heap), Var_Type(to, type), HeapAllocation_Type(baseheap, baseheaptype), ComponentType(baseheaptype, basecomponenttype), SupertypeOf(type, basecomponenttype).
 
 // Expensive 1
 VarPointsTo(heap, to) :- Reachable(inmethod), LoadInstanceField(base, signature, to, inmethod), VarPointsTo(baseheap, base), InstanceFieldPointsTo(heap, signature, baseheap).

@@ -511,7 +511,7 @@ VarPointsTo(heap, to) :- Reachable(inmethod), AssignCast(type, from, to, inmetho
 ArrayIndexPointsTo(baseheap, heap) :- Reachable(inmethod), StoreArrayIndex(from, base, inmethod), VarPointsTo(baseheap, base), VarPointsTo(heap, from), HeapAllocation_Type(heap, heaptype), HeapAllocation_Type(baseheap, baseheaptype), ComponentType(baseheaptype, componenttype), SupertypeOf(componenttype, heaptype).
 
 // Expensive 3
-VarPointsTo(heap, to) :- Reachable(inmethod), LoadArrayIndex(base, to, inmethod), VarPointsTo(baseheap, base), ArrayIndexPointsTo(baseheap, heap), Var_Type(to, type), HeapAllocation_Type(baseheap, baseheaptype), ComponentType(baseheaptype, basecomponenttype), SupertypeOf(type, basecomponenttype).
+VarPointsTo(heap, to) :- Reachable(inmethod), LoadArrayIndex(base, to, inmethod), Var_Type(to, type), SupertypeOf(type, basecomponenttype), ComponentType(baseheaptype, basecomponenttype), HeapAllocation_Type(baseheap, baseheaptype), VarPointsTo(baseheap, base), ArrayIndexPointsTo(baseheap, heap).//mod
 
 // Expensive 1
 VarPointsTo(heap, to) :- Reachable(inmethod), LoadInstanceField(base, signature, to, inmethod), VarPointsTo(baseheap, base), InstanceFieldPointsTo(heap, signature, baseheap).
@@ -522,7 +522,7 @@ VarPointsTo(heap, to) :-
   StaticFieldPointsTo(heap, fld).
 
 // Expensive 4
-VarPointsTo(heap, this) :- VirtualMethodInvocation_SimpleName(invocation, simplename), Instruction_Method(invocation, inMethod), VirtualMethodInvocation_Base(invocation, base), VarPointsTo(heap, base), HeapAllocation_Type(heap, heaptype), MethodLookup(simplename, descriptor, heaptype, toMethod), VirtualMethodInvocation_Descriptor(invocation, descriptor), ThisVar(toMethod, this), Reachable(inMethod).
+VarPointsTo(heap, this) :- Reachable(inMethod), Instruction_Method(invocation, inMethod), VirtualMethodInvocation_Base(invocation, base), VarPointsTo(heap, base), HeapAllocation_Type(heap, heaptype), VirtualMethodInvocation_SimpleName(invocation, simplename), VirtualMethodInvocation_Descriptor(invocation, descriptor), MethodLookup(simplename, descriptor, heaptype, toMethod), ThisVar(toMethod, this).
 
 InstanceFieldPointsTo(heap, fld, baseheap) :-
   Reachable(inmethod),
