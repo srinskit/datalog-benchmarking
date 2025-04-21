@@ -512,6 +512,7 @@ ArrayIndexPointsTo(baseheap, heap) :- Reachable(inmethod), StoreArrayIndex(from,
 
 # Expensive 3 (in paper)
 VarPointsTo(heap, to) :- VarPointsTo(baseheap, base), ArrayIndexPointsTo(baseheap, heap), HeapAllocation_Type(baseheap, baseheaptype), LoadArrayIndex(base, to, inmethod), Reachable(inmethod), Var_Type(to, type), SupertypeOf(type, basecomponenttype), ComponentType(baseheaptype, basecomponenttype).
+.optimize
 
 # Expensive 1
 VarPointsTo(heap, to) :- Reachable(inmethod), LoadInstanceField(base, signature, to, inmethod), VarPointsTo(baseheap, base), InstanceFieldPointsTo(heap, signature, baseheap).

@@ -1,33 +1,24 @@
-.in
 .decl DirectSuperclass(class:number, superclass:number)
-.input DirectSuperclass.csv
-
+.input DirectSuperclass(IO="file", filename="DirectSuperclass.csv", delimiter=",")
 .decl DirectSuperinterface(ref:number, interface:number)
-.input DirectSuperinterface.csv
-
+.input DirectSuperinterface(IO="file", filename="DirectSuperinterface.csv", delimiter=",")
 .decl MainClass(class:number)
-.input MainClass.csv
-
+.input MainClass(IO="file", filename="MainClass.csv", delimiter=",")
 .decl FormalParam(index:number, method:number, var:number)
-.input FormalParam.csv
-
+.input FormalParam(IO="file", filename="FormalParam.csv", delimiter=",")
 .decl ComponentType(arrayType:number, componentType:number)
-.input ComponentType.csv
-
+.input ComponentType(IO="file", filename="ComponentType.csv", delimiter=",")
 .decl AssignReturnValue(invocation:number, to:number)
-.input AssignReturnValue.csv
-
+.input AssignReturnValue(IO="file", filename="AssignReturnValue.csv", delimiter=",")
 .decl ActualParam(index:number, invocation:number, var:number)
-.input ActualParam.csv
-
+.input ActualParam(IO="file", filename="ActualParam.csv", delimiter=",")
 .decl Method_Modifier(mod:number, method:number)
-.input Method_Modifier.csv
+.input Method_Modifier(IO="file", filename="Method_Modifier.csv", delimiter=",")
 .decl Var_Type(var:number, type:number)
-.input Var_Type.csv
+.input Var_Type(IO="file", filename="Var_Type.csv", delimiter=",")
 .decl HeapAllocation_Type(heap:number, type:number)
-.input HeapAllocation_Type.csv
+.input HeapAllocation_Type(IO="file", filename="HeapAllocation_Type.csv", delimiter=",") // modified to be an EDB now
 
-.printsize
 .decl isType(t:number)
 .decl isReferenceType(t:number)
 .decl isArrayType(t:number)
@@ -80,33 +71,31 @@
 .decl ReturnVar(var:number, method:number)
 .decl StaticMethodInvocation(invocation:number, signature:number, inmethod:number)
 
-.in
 .decl _ClassType(class:number)
-.input ClassType.csv
+.input _ClassType(IO="file", filename="ClassType.csv", delimiter=",")
 .decl _ArrayType(arrayType:number)
-.input ArrayType.csv
+.input _ArrayType(IO="file", filename="ArrayType.csv", delimiter=",")
 .decl _InterfaceType(interface:number)
-.input InterfaceType.csv
+.input _InterfaceType(IO="file", filename="InterfaceType.csv", delimiter=",")
 .decl _Var_DeclaringMethod(var:number, method:number)
-.input Var_DeclaringMethod.csv
+.input _Var_DeclaringMethod(IO="file", filename="Var_DeclaringMethod.csv", delimiter=",")
 .decl _ApplicationClass(type:number)
-.input ApplicationClass.csv
+.input _ApplicationClass(IO="file", filename="ApplicationClass.csv", delimiter=",")
 .decl _ThisVar(method:number, var:number)
-.input ThisVar.csv
+.input _ThisVar(IO="file", filename="ThisVar.csv", delimiter=",")
 .decl _NormalHeap(id:number, type:number)
-.input NormalHeap.csv
+.input _NormalHeap(IO="file", filename="NormalHeap.csv", delimiter=",")
 .decl _StringConstant(id:number)
-.input StringConstant.csv
+.input _StringConstant(IO="file", filename="StringConstant.csv", delimiter=",")
 .decl _AssignHeapAllocation(instruction:number, index:number, heap:number, to:number, inmethod:number, linenumber:number)
-.input AssignHeapAllocation.csv
+.input _AssignHeapAllocation(IO="file", filename="AssignHeapAllocation.csv", delimiter=",")
 .decl _AssignLocal(instruction:number, index:number, from:number, to:number, inmethod:number)
-.input AssignLocal.csv
+.input _AssignLocal(IO="file", filename="AssignLocal.csv", delimiter=",")
 .decl _AssignCast(instruction:number, index:number, from:number, to:number, type:number, inmethod:number)
-.input AssignCast.csv
+.input _AssignCast(IO="file", filename="AssignCast.csv", delimiter=",")
 .decl _Field(signature:number, declaringClass:number, simplename:number, type:number)
-.input Field.csv
+.input _Field(IO="file", filename="Field.csv", delimiter=",")
 
-.rule
 isType(class) :- _ClassType(class).
 isReferenceType(class) :- _ClassType(class).
 isClassType(class) :- _ClassType(class).
@@ -157,36 +146,31 @@ Field_DeclaringType(signature, declaringType) :- _Field(signature, declaringType
 MethodInvocation_Base(invocation, base) :- VirtualMethodInvocation_Base(invocation, base).
 MethodInvocation_Base(invocation, base) :- SpecialMethodInvocation_Base(invocation, base).
 
-
-
-
-.in
 .decl _StaticMethodInvocation(instruction:number, index:number, signature:number, method:number)
-.input StaticMethodInvocation.csv
+.input _StaticMethodInvocation(IO="file", filename="StaticMethodInvocation.csv", delimiter=",")
 .decl _SpecialMethodInvocation(instruction:number, index:number, signature:number, base:number, method:number)
-.input SpecialMethodInvocation.csv
+.input _SpecialMethodInvocation(IO="file", filename="SpecialMethodInvocation.csv", delimiter=",")
 .decl _VirtualMethodInvocation(instruction:number, index:number, signature:number, base:number, method:number)
-.input VirtualMethodInvocation.csv
+.input _VirtualMethodInvocation(IO="file", filename="VirtualMethodInvocation.csv", delimiter=",")
 .decl _Method(method:number, simplename:number, params:number, declaringType:number, returnType:number, jvmDescriptor:number, arity:number)
-.input Method.csv
+.input _Method(IO="file", filename="Method.csv", delimiter=",")
 .decl Method_Descriptor(method:number, descriptor:number)
-.input Method_Descriptor.csv
+.input Method_Descriptor(IO="file", filename="Method_Descriptor.csv", delimiter=",")
 .decl _StoreInstanceField(instruction:number, index:number, from:number, base:number, signature:number, method:number)
-.input StoreInstanceField.csv
+.input _StoreInstanceField(IO="file", filename="StoreInstanceField.csv", delimiter=",")
 .decl _LoadInstanceField(instruction:number, index:number, to:number, base:number, signature:number, method:number)
-.input LoadInstanceField.csv
+.input _LoadInstanceField(IO="file", filename="LoadInstanceField.csv", delimiter=",")
 .decl _StoreStaticField(instruction:number, index:number, from:number, signature:number, method:number)
-.input StoreStaticField.csv
+.input _StoreStaticField(IO="file", filename="StoreStaticField.csv", delimiter=",")
 .decl _LoadStaticField(instruction:number, index:number, to:number, signature:number, method:number)
-.input LoadStaticField.csv
+.input _LoadStaticField(IO="file", filename="LoadStaticField.csv", delimiter=",")
 .decl _StoreArrayIndex(instruction:number, index:number, from:number, base:number, method:number)
-.input StoreArrayIndex.csv
+.input _StoreArrayIndex(IO="file", filename="StoreArrayIndex.csv", delimiter=",")
 .decl _LoadArrayIndex(instruction:number, index:number, to:number, base:number, method:number)
-.input LoadArrayIndex.csv
+.input _LoadArrayIndex(IO="file", filename="LoadArrayIndex.csv", delimiter=",")
 .decl _Return(instruction:number, index:number, var:number, method:number)
-.input Return.csv
+.input _Return(IO="file", filename="Return.csv", delimiter=",")
 
-.rule
 Instruction_Method(instruction, method) :-
   _StaticMethodInvocation(instruction, index, signature, method).
 isStaticMethodInvocation_Insn(instruction) :-
@@ -323,7 +307,6 @@ VirtualMethodInvocation_Descriptor(invocation, descriptor) :-
   Method_SimpleName(signature, simplename),
   Method_Descriptor(signature, descriptor).
 
-.printsize
 .decl MethodLookup(simplename:number, descriptor:number, type:number, method:number)
 .decl MethodImplemented(simplename:number, descriptor:number, type:number, method:number)
 .decl DirectSubclass(a:number, c:number)
@@ -335,18 +318,17 @@ VirtualMethodInvocation_Descriptor(invocation, descriptor) :-
 .decl SubtypeOfDifferent(subtype:number, type:number)
 .decl MainMethodDeclaration(method:number)
 
+.printsize MethodLookup
+.printsize MethodImplemented
+.printsize DirectSubclass
+.printsize Subclass
+.printsize Superclass
+.printsize Superinterface
+.printsize SubtypeOf
+.printsize SupertypeOf
+.printsize SubtypeOfDifferent
+.printsize MainMethodDeclaration
 
-
-
-
-
-
-
-
-
-
-
-.rule
 MethodLookup(simplename, descriptor, type, method) :-
   MethodImplemented(simplename, descriptor, type, method).
 MethodLookup(simplename, descriptor, type, method) :-
@@ -436,11 +418,12 @@ SubtypeOfDifferent(s, t) :-
   SubtypeOf(s, t),
   s != t.
 
-.printsize
 .decl ClassInitializer(type:number, method:number)
 .decl InitializedClass(classOrInterface:number)
 
-.rule
+.printsize ClassInitializer
+.printsize InitializedClass
+
 ClassInitializer(type, method) :-
    MethodImplemented(894110, 3016219, type, method).
 InitializedClass(superclass) :-
@@ -474,7 +457,6 @@ Reachable(clinit) :-
    InitializedClass(class),
    ClassInitializer(class, clinit).
 
-.printsize
 .decl Assign(to:number, from:number)
 .decl VarPointsTo(heap:number, var:number)
 .decl InstanceFieldPointsTo(heap:number , fld:number, baseheap:number)
@@ -483,8 +465,26 @@ Reachable(clinit) :-
 .decl ArrayIndexPointsTo(baseheap:number, heap:number)
 .decl Reachable(method:number)
 
-# Line 486
-.rule
+.printsize Assign
+.printsize VarPointsTo
+.printsize InstanceFieldPointsTo
+.printsize StaticFieldPointsTo
+.printsize CallGraphEdge
+.printsize ArrayIndexPointsTo
+.printsize Reachable
+
+
+
+
+
+
+
+
+
+
+
+// Line 486
+
 Assign(actual, formal) :-
   CallGraphEdge(invocation, method),
   FormalParam(index, method, formal),
@@ -504,16 +504,16 @@ VarPointsTo(heap, to) :-
   AssignLocal(from, to, inmethod),
   VarPointsTo(heap, from).
 
-# Expensive 2
+// Expensive 2
 VarPointsTo(heap, to) :- Reachable(inmethod), AssignCast(type, from, to, inmethod), SupertypeOf(type, heaptype), HeapAllocation_Type(heap, heaptype), VarPointsTo(heap, from).
 
-# Expensive 5
+// Expensive 5
 ArrayIndexPointsTo(baseheap, heap) :- Reachable(inmethod), StoreArrayIndex(from, base, inmethod), VarPointsTo(baseheap, base), VarPointsTo(heap, from), HeapAllocation_Type(heap, heaptype), HeapAllocation_Type(baseheap, baseheaptype), ComponentType(baseheaptype, componenttype), SupertypeOf(componenttype, heaptype).
 
-# Expensive 3 (in paper)
-VarPointsTo(heap, to) :- VarPointsTo(baseheap, base), ArrayIndexPointsTo(baseheap, heap), HeapAllocation_Type(baseheap, baseheaptype), LoadArrayIndex(base, to, inmethod), Reachable(inmethod), Var_Type(to, type), SupertypeOf(type, basecomponenttype), ComponentType(baseheaptype, basecomponenttype).
+// Expensive 3
+VarPointsTo(heap, to) :- Reachable(inmethod), LoadArrayIndex(base, to, inmethod), VarPointsTo(baseheap, base), ArrayIndexPointsTo(baseheap, heap), Var_Type(to, type), HeapAllocation_Type(baseheap, baseheaptype), ComponentType(baseheaptype, basecomponenttype), SupertypeOf(type, basecomponenttype).
 
-# Expensive 1
+// Expensive 1
 VarPointsTo(heap, to) :- Reachable(inmethod), LoadInstanceField(base, signature, to, inmethod), VarPointsTo(baseheap, base), InstanceFieldPointsTo(heap, signature, baseheap).
 
 VarPointsTo(heap, to) :-
@@ -521,8 +521,9 @@ VarPointsTo(heap, to) :-
   LoadStaticField(fld, to, inmethod),
   StaticFieldPointsTo(heap, fld).
 
-# Expensive 4
-VarPointsTo(heap, this) :- Reachable(inMethod), Instruction_Method(invocation, inMethod), VirtualMethodInvocation_Base(invocation, base), VarPointsTo(heap, base), HeapAllocation_Type(heap, heaptype), VirtualMethodInvocation_SimpleName(invocation, simplename), VirtualMethodInvocation_Descriptor(invocation, descriptor), MethodLookup(simplename, descriptor, heaptype, toMethod), ThisVar(toMethod, this).
+// Expensive 4
+VarPointsTo(heap, this) :- VirtualMethodInvocation_Descriptor(invocation, descriptor), VirtualMethodInvocation_SimpleName(invocation, simplename), MethodLookup(simplename, descriptor, heaptype, toMethod), Instruction_Method(invocation, inMethod), VirtualMethodInvocation_Base(invocation, base), HeapAllocation_Type(heap, heaptype), VarPointsTo(heap, base), ThisVar(toMethod, this), Reachable(inMethod).
+.optimize
 
 InstanceFieldPointsTo(heap, fld, baseheap) :-
   Reachable(inmethod),
