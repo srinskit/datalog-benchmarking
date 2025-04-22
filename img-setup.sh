@@ -50,7 +50,14 @@ else
 
 	# For DDLog
 	rustup toolchain install 1.76
+
+	cargo install cargo-cache
 fi
+
+rustc --version
+cargo --version
+
+rustup update
 
 rustc --version
 cargo --version
@@ -91,34 +98,35 @@ ddlog --version
 
 # Install RecStep
 
-## Install GRPC
-
-if [[ ! -d $WORK_DIR/grpc ]]; then
-	apt -qq update -y
-	apt -qq install -y clang
-	apt -qq install -y clang++ || true
-	apt -qq install -y cmake
-
-	export CC=/usr/bin/clang
-	export CXX=/usr/bin/clang++
-
-	git clone --depth=1 -b v1.28.1 https://github.com/grpc/grpc $WORK_DIR/grpc
-
-	cd $WORK_DIR/grpc
-	git submodule update --init
-
-	make --silent -j $build_workers
-	make --silent install
-
-	cd third_party/protobuf
-	make --silent install
-fi
-
 ## Install QuickStep by copying build from Ubuntu 18 LTS manually as a folder $WORK_DIR/quickstep
 
 ## Install RecStep
 
 if [[ ! -d $WORK_DIR/RecStep ]]; then
+
+	## Install GRPC
+
+	if [[ ! -d $WORK_DIR/grpc ]]; then
+		apt -qq update -y
+		apt -qq install -y clang
+		apt -qq install -y clang++ || true
+		apt -qq install -y cmake
+
+		export CC=/usr/bin/clang
+		export CXX=/usr/bin/clang++
+
+		git clone --depth=1 -b v1.28.1 https://github.com/grpc/grpc $WORK_DIR/grpc
+
+		cd $WORK_DIR/grpc
+		git submodule update --init
+
+		make --silent -j $build_workers
+		make --silent install
+
+		cd third_party/protobuf
+		make --silent install
+	fi
+
 	apt -qq update -y
 	apt -qq install -y python3-pip python-dev build-essential libjpeg-dev zlib1g-dev
 	pip3 install --upgrade pip
@@ -153,45 +161,37 @@ project=FlowLogTest
 target=FlowLogTest
 branch=benchmark
 flowlog_exe=$WORK_DIR/$target/target/release/executing
+export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no"
+build_workers=$(nproc)
+source $WORK_DIR/rust_env
 
-if [[ 0 ]]; then
-	build_workers=$(nproc)
-	source $WORK_DIR/rust_env
+if [[ 1 == 0 ]]; then
 	killall cargo || true
 
 	# Update or clone the project
-
-	export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no"
-
 	rm -rf $target
 	git clone --branch $branch --single-branch --depth 1 git@github.com:hdz284/$project.git $target
 	pushd $target
 
-	echo "Build workers: " $build_workers
-	cargo fetch
-	# cargo update differential-dataflow
-
 	# Patch DD
+	cargo cache -a
+	cargo fetch
+	cargo update differential-dataflow
 
 	wget https://raw.githubusercontent.com/srinskit/cloudlab-auto/refs/heads/main/collection.rs
 	wget https://raw.githubusercontent.com/srinskit/cloudlab-auto/refs/heads/main/iterate.rs
-	patch_dst=$(find $CARGO_HOME -path "*/differential-dataflow-0.14.2/src")
+	patch_dst=$(find $CARGO_HOME -regex ".*/differential-dataflow-[.0-9]*/src")
 
 	# Test DD crate exists
 	[ -d $patch_dst ]
 
-	# if cmp -s $patch_src $patch_dst; then
-	# 	echo "[run_bench] DD already patched"
-	# else
-		echo "[run_bench] Patching DD"
-
-		chmod a+w $patch_dst/collection.rs
-		chmod a+w $patch_dst/operators/iterate.rs
-		cp collection.rs $patch_dst/collection.rs
-		cp iterate.rs $patch_dst/operators/iterate.rs
-		cargo clean -p differential-dataflow --release
-		cargo build -p differential-dataflow --release
-	# fi
+	echo "[run_bench] Patching DD"
+	chmod a+w $patch_dst/collection.rs
+	chmod a+w $patch_dst/operators/iterate.rs
+	cp collection.rs $patch_dst/collection.rs
+	cp iterate.rs $patch_dst/operators/iterate.rs
+	cargo clean -p differential-dataflow --release
+	cargo build -p differential-dataflow --release
 
 	rm collection.rs*
 	rm iterate.rs*
@@ -203,24 +203,84 @@ if [[ 0 ]]; then
 	$flowlog_exe --help
 fi
 
-target=FlowLogTest1
+target=/remote/FlowLogTest1
 branch=benchmark1
-flowlog_exe=$WORK_DIR/$target/target/release/executing
+flowlog_exe=$target/target/release/executing
 
-if [[ 1 ]]; then
-	build_workers=$(nproc)
+if [[ 1 == 0 ]]; then
 	source $WORK_DIR/rust_env
 	killall cargo || true
 
 	# Update or clone the project
-
-	export GIT_SSH_COMMAND="ssh -o StrictHostKeyChecking=no"
-
 	rm -rf $target
 	git clone --branch $branch --single-branch --depth 1 git@github.com:hdz284/$project.git $target
 	pushd $target
 
-	echo "Build workers: " $build_workers
+	# Patch DD
+	cargo cache -a
+	cargo fetch
+	cargo update differential-dataflow
+
+	wget https://raw.githubusercontent.com/srinskit/cloudlab-auto/refs/heads/main/collection.rs
+	wget https://raw.githubusercontent.com/srinskit/cloudlab-auto/refs/heads/main/iterate.rs
+	patch_dst=$(find $CARGO_HOME -regex ".*/differential-dataflow-[.0-9]*/src")
+
+	# Test DD crate exists
+	[ -d $patch_dst ]
+
+	echo "[run_bench] Patching DD"
+	chmod a+w $patch_dst/collection.rs
+	chmod a+w $patch_dst/operators/iterate.rs
+	cp collection.rs $patch_dst/collection.rs
+	cp iterate.rs $patch_dst/operators/iterate.rs
+	cargo clean -p differential-dataflow --release
+	cargo build -p differential-dataflow --release
+
+	rm collection.rs*
+	rm iterate.rs*
+
+	# Build the project
+	cargo build --release -j $build_workers
+	popd
+
+	$flowlog_exe --help
+fi
+
+target=/remote/FlowLogTest2
+branch=aggregation-benchmark
+flowlog_exe=$target/target/release/executing
+
+if [[ 1 ]]; then
+	killall cargo || true
+
+	# Update or clone the project
+	rm -rf $target
+	git clone --branch $branch --single-branch --depth 1 git@github.com:hdz284/$project.git $target
+	pushd $target
+	rm Cargo.lock
+
+	# Patch DD
+	cargo cache -a
+	cargo fetch
+	cargo update differential-dataflow
+
+	wget https://raw.githubusercontent.com/srinskit/cloudlab-auto/refs/heads/main/collection.rs
+	wget https://raw.githubusercontent.com/srinskit/cloudlab-auto/refs/heads/main/iterate.rs
+	patch_dst=$(find $CARGO_HOME -regex ".*/differential-dataflow-[.0-9]*/src")
+
+	# Test DD crate exists
+	[ -d $patch_dst ]
+
+	echo "[run_bench] Patching DD"
+	chmod a+w $patch_dst/collection.rs
+	chmod a+w $patch_dst/operators/iterate.rs
+	cp collection.rs $patch_dst/collection.rs
+	cp iterate.rs $patch_dst/operators/iterate.rs
+	cargo clean -p differential-dataflow --release
+	cargo build -p differential-dataflow --release
+
+	rm collection.rs*
+	rm iterate.rs*
 
 	# Build the project
 	cargo build --release -j $build_workers

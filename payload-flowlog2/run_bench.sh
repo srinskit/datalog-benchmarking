@@ -5,7 +5,7 @@ set -e
 
 SRC=/data
 DATA=/data/input
-exe=$SRC/FlowLogTest1/target/release/executing
+exe=$SRC/FlowLogTest2/target/release/executing
 
 swapoff -a
 
@@ -18,7 +18,7 @@ for target in "${targets[@]}"; do
 		tout=600s
 	fi
 
-	if [[ "$charmap" == *"F1"* ]]; then
+	if [[ "$charmap" == *"F2"* ]]; then
 		IFS=',' read -ra workers <<<"$threads"
 		for w in "${workers[@]}"; do
 			echo "[run_bench] program: $dl, dataset: $dd/$ds, workers: $w"
