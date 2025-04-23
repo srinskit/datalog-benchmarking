@@ -483,12 +483,10 @@ Reachable(clinit) :-
 .decl ArrayIndexPointsTo(baseheap:number, heap:number)
 .decl Reachable(method:number)
 
-# Line 486
+# Expensive 6 (Line 486)
 .rule
-Assign(actual, formal) :-
-  CallGraphEdge(invocation, method),
-  FormalParam(index, method, formal),
-  ActualParam(index, invocation, actual).
+Assign(actual, formal) :- CallGraphEdge(invocation, method), FormalParam(index, method, formal), ActualParam(index, invocation, actual).
+
 Assign(return, local) :-
   CallGraphEdge(invocation, method),
   ReturnVar(return, method),
@@ -504,11 +502,13 @@ VarPointsTo(heap, to) :-
   AssignLocal(from, to, inmethod),
   VarPointsTo(heap, from).
 
-# Expensive 2
+
+
+# Expensive 2 (Line 507)
 VarPointsTo(heap, to) :- Reachable(inmethod), AssignCast(type, from, to, inmethod), SupertypeOf(type, heaptype), HeapAllocation_Type(heap, heaptype), VarPointsTo(heap, from).
 
 # Expensive 5
-ArrayIndexPointsTo(baseheap, heap) :- HeapAllocation_Type(baseheap, baseheaptype), VarPointsTo(baseheap, base), StoreArrayIndex(from, base, inmethod), SupertypeOf(componenttype, heaptype), ComponentType(baseheaptype, componenttype), VarPointsTo(heap, from), Reachable(inmethod), HeapAllocation_Type(heap, heaptype).
+ArrayIndexPointsTo(baseheap, heap) :- HeapAllocation_Type(baseheap, baseheaptype), VarPointsTo(baseheap, base), StoreArrayIndex(from, base, inmethod), ComponentType(baseheaptype, componenttype), SupertypeOf(componenttype, heaptype), VarPointsTo(heap, from), Reachable(inmethod), HeapAllocation_Type(heap, heaptype).
 .optimize#mod
 
 # Expensive 3 (in paper)
@@ -544,15 +544,11 @@ Reachable(toMethod) :-
   VirtualMethodInvocation_SimpleName(invocation, simplename),
   VirtualMethodInvocation_Descriptor(invocation, descriptor),
   MethodLookup(simplename, descriptor, heaptype, toMethod).
-CallGraphEdge(invocation, toMethod) :-
-  Reachable(inMethod),
-  Instruction_Method(invocation, inMethod),
-  VirtualMethodInvocation_Base(invocation, base),
-  VarPointsTo(heap, base),
-  HeapAllocation_Type(heap, heaptype),
-  VirtualMethodInvocation_SimpleName(invocation, simplename),
-  VirtualMethodInvocation_Descriptor(invocation, descriptor),
-  MethodLookup(simplename, descriptor, heaptype, toMethod).
+
+# Expensive 7 (Line 547)
+CallGraphEdge(invocation, toMethod) :- Reachable(inMethod), Instruction_Method(invocation, inMethod), VirtualMethodInvocation_Base(invocation, base), VarPointsTo(heap, base), HeapAllocation_Type(heap, heaptype), VirtualMethodInvocation_SimpleName(invocation, simplename), VirtualMethodInvocation_Descriptor(invocation, descriptor), MethodLookup(simplename, descriptor, heaptype, toMethod).
+
+
 Reachable(tomethod) :-
   Reachable(inmethod),
   StaticMethodInvocation(invocation, tomethod, inmethod).

@@ -18,9 +18,7 @@ for target in "${targets[@]}"; do
 		tout=600s
 	fi
 
-	echo "timout:" $tout
-
-	if [[ "$charmap" == *"F"* ]]; then
+	if [[ "$charmap" == *"F0"* ]]; then
 		IFS=',' read -ra workers <<<"$threads"
 		for w in "${workers[@]}"; do
 			echo "[run_bench] program: $dl, dataset: $dd/$ds, workers: $w"

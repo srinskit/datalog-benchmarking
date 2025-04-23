@@ -16,8 +16,6 @@ for target in "${targets[@]}"; do
 		tout=600s
 	fi
 
-	echo "timout:" $tout
-
 	if [[ "$charmap" == *"R"* ]]; then
 		IFS=',' read -ra workers <<<"$threads"
 		for w in "${workers[@]}"; do

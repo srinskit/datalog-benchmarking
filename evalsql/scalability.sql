@@ -108,6 +108,7 @@ HAVING (
 	program = "csda" and dataset = "linux" or
 	program = "andersen" and dataset = "500000 " or
 	program = "bipartite" and dataset = "mind" or
+	program = "bipartite" and dataset = "netflix" or
 	program = "reach" and dataset = "livejournal" or
 	program = "dyck" and dataset = "postgre" or
 	program = "tc" and dataset = "G10K-0.001" or
