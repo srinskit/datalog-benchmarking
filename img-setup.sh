@@ -250,7 +250,7 @@ target=/remote/FlowLogTest2
 branch=aggregation-benchmark
 flowlog_exe=$target/target/release/executing
 
-if [[ 1 ]]; then
+if [[ 1 == 0 ]]; then
 	killall cargo || true
 
 	# Update or clone the project
@@ -258,6 +258,48 @@ if [[ 1 ]]; then
 	git clone --branch $branch --single-branch --depth 1 git@github.com:hdz284/$project.git $target
 	pushd $target
 	rm Cargo.lock
+
+	# Patch DD
+	cargo cache -a
+	cargo fetch
+	cargo update differential-dataflow
+
+	wget https://raw.githubusercontent.com/srinskit/cloudlab-auto/refs/heads/main/collection.rs
+	wget https://raw.githubusercontent.com/srinskit/cloudlab-auto/refs/heads/main/iterate.rs
+	patch_dst=$(find $CARGO_HOME -regex ".*/differential-dataflow-[.0-9]*/src")
+
+	# Test DD crate exists
+	[ -d $patch_dst ]
+
+	echo "[run_bench] Patching DD"
+	chmod a+w $patch_dst/collection.rs
+	chmod a+w $patch_dst/operators/iterate.rs
+	cp collection.rs $patch_dst/collection.rs
+	cp iterate.rs $patch_dst/operators/iterate.rs
+	cargo clean -p differential-dataflow --release
+	cargo build -p differential-dataflow --release
+
+	rm collection.rs*
+	rm iterate.rs*
+
+	# Build the project
+	cargo build --release -j $build_workers
+	popd
+
+	$flowlog_exe --help
+fi
+
+target=/remote/FlowLogTest3
+branch=sip-tests
+flowlog_exe=$target/target/release/executing
+
+if [[ 1 ]]; then
+	killall cargo || true
+
+	# Update or clone the project
+	rm -rf $target
+	git clone --branch $branch --single-branch --depth 1 git@github.com:hdz284/$project.git $target
+	pushd $target
 
 	# Patch DD
 	cargo cache -a

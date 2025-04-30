@@ -1,0 +1,3 @@
+[submodule "dlbench"]
+	path = dlbench
+	url = git@github.com:srinskit/dlbench.git

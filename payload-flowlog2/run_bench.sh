@@ -44,7 +44,13 @@ for target in "${targets[@]}"; do
 				echo "Status: DNF" >>$tag.info
 			fi
 
-			sed -n "s/Delta of.*\[$key\]: ((), (), \([0-9]*\))/DLOut: \1/Ip" $tag*.out >>$tag.info
+			if [[ "$program" == "cc" ]]; then
+			echo hi
+				# cnt=$(cat CC1.csv | cut -d "," -f 2 | sort | uniq | wc -l)
+				# echo "DLOut: $cnt" >>$tag.info
+			else
+				sed -n "s/Delta of.*\[$key\]: ((), (), \([0-9]*\))/DLOut: \1/Ip" $tag*.out >>$tag.info
+			fi
 			echo "DLBenchRT:" $(tail -n 1 $tag*.log | cut -d ',' -f 1) >>$tag.info
 		done
 	fi

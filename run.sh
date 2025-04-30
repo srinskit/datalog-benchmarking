@@ -18,8 +18,8 @@ $launcher $host $basedir/payload-flowlog1/
 $launcher $host $basedir/payload-flowlog2/
 $launcher $host $basedir/payload-souffle-cmpl/
 $launcher $host $basedir/payload-souffle-intptr/
-$launcher $host $basedir/payload-ddlog/
 $launcher $host $basedir/payload-recstep/
+$launcher $host $basedir/payload-ddlog/
 popd
 
 echo $folder

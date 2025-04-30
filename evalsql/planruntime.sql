@@ -105,19 +105,18 @@ GROUP BY
 	runtimes.workers
 HAVING
 	(
-		runtimes.program LIKE 'galen%'
+		(runtimes.program LIKE 'galen%')
 		OR (
 			runtimes.program LIKE 'ddisasm%'
 			AND runtimes.dataset = 'z3'
 		)
-		OR runtimes.program LIKE 'diamond%'
 		OR (
 			runtimes.program LIKE 'doop%'
 			AND runtimes.dataset = 'batik'
 		)
 	)
 	AND runtimes.workers = '64'
-	AND runtimes.dataset != 'wiki-vote'
+	and  (runtimes.program like '%-%-%')
 ORDER BY
 	(
 		CASE

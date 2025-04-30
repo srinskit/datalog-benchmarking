@@ -2,7 +2,7 @@ UPDATE runs
 SET
 	program = 'doop'
 WHERE
-	program IN ('batik', 'biojava', 'eclipse', 'xalan', 'zxing');
+	program IN ('doop-batik', 'doop-biojava', 'doop-eclipse', 'doop-xalan', 'doop-zxing');
 
 UPDATE runs
 SET

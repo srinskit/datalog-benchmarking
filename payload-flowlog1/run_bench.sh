@@ -5,7 +5,8 @@ set -e
 
 SRC=/data
 DATA=/data/input
-exe=$SRC/FlowLogTest1/target/release/executing
+# exe=$SRC/FlowLogTest1/target/release/executing
+exe=$SRC/FlowLogTest3/target/release/executing
 
 swapoff -a
 
