@@ -27,7 +27,8 @@ ddlog_prog_build() {
 }
 
 for target in "${targets[@]}"; do
-	read -r dl dd ds key charmap threads tout <<<"$target"
+	read -r dl dp key charmap threads tout <<<"$target"
+	ds=`basename $dp`
 
 	if [ -z "$tout" ]; then
 		tout=600s
@@ -36,7 +37,7 @@ for target in "${targets[@]}"; do
 	if [[ "$charmap" == *"D"* ]]; then
 		IFS=',' read -ra workers <<<"$threads"
 		for w in "${workers[@]}"; do
-			echo "[run_bench] program: $dl, dataset: $dd/$ds, workers: $w"
+			echo "[run_bench] program: $dl, dataset: $ds, workers: $w"
 			tag="$dl"_"$ds"_"$w"_ddlog
 			tag="${tag//\//-}"
 
@@ -53,7 +54,7 @@ for target in "${targets[@]}"; do
 			printf "CompileTime: %.2f\n" "$cmpl_time" >$tag.info
 
 			killall $exe || true >/dev/null
-			cmd="./$exe -w $w < $DATA/$dd/$ds/data.ddin"
+			cmd="./$exe -w $w < $DATA/$dp/data.ddin"
 
 			sync && sysctl vm.drop_caches=3
 			set +e

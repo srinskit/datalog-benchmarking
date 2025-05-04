@@ -10,7 +10,8 @@ source $SRC/recstep_env
 source targets.sh
 
 for target in "${targets[@]}"; do
-	read -r dl dd ds key charmap threads tout <<<"$target"
+	read -r dl dp key charmap threads tout <<<"$target"
+	ds=`basename $dp`
 
 	if [ -z "$tout" ]; then
 		tout=600s
@@ -19,8 +20,8 @@ for target in "${targets[@]}"; do
 	if [[ "$charmap" == *"R"* ]]; then
 		IFS=',' read -ra workers <<<"$threads"
 		for w in "${workers[@]}"; do
-			echo "[run_bench] program: $dl, dataset: $dd/$ds, workers: $w"
-			cmd="recstep --program $dl.dl --input $DATA/$dd/$ds --jobs $w"
+			echo "[run_bench] program: $dl, dataset: $ds, workers: $w"
+			cmd="recstep --program $dl.dl --input $DATA/$dp --jobs $w"
 			tag="$dl"_"$ds"_"$w"_recstep
 			tag="${tag//\//-}"
 

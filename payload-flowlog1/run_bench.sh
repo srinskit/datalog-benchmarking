@@ -13,7 +13,8 @@ swapoff -a
 source targets.sh
 
 for target in "${targets[@]}"; do
-	read -r dl dd ds key charmap threads tout <<<"$target"
+	read -r dl dp key charmap threads tout <<<"$target"
+	ds=`basename $dp`
 
 	if [ -z "$tout" ]; then
 		tout=600s
@@ -22,8 +23,8 @@ for target in "${targets[@]}"; do
 	if [[ "$charmap" == *"F1"* ]]; then
 		IFS=',' read -ra workers <<<"$threads"
 		for w in "${workers[@]}"; do
-			echo "[run_bench] program: $dl, dataset: $dd/$ds, workers: $w"
-			cmd="$exe --program $dl.dl --facts $DATA/$dd/$ds --csvs . --workers $w"
+			echo "[run_bench] program: $dl, dataset: $ds, workers: $w"
+			cmd="$exe --program $dl.dl --facts $DATA/$dp --csvs . --workers $w"
 			tag="$dl"_"$ds"_"$w"_flowlog
 			tag="${tag//\//-}"
 

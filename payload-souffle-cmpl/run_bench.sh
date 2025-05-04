@@ -12,7 +12,8 @@ prev_dl=""
 source targets.sh
 
 for target in "${targets[@]}"; do
-	read -r dl dd ds key charmap threads tout <<<"$target"
+	read -r dl dp key charmap threads tout <<<"$target"
+	ds=`basename $dp`
 
 	if [ -z "$tout" ]; then
 		tout=600s
@@ -21,7 +22,7 @@ for target in "${targets[@]}"; do
 	if [[ "$charmap" == *"Sc"* ]]; then
 		IFS=',' read -ra workers <<<"$threads"
 		for w in "${workers[@]}"; do
-			echo "[run_bench] program: $dl, dataset: $dd/$ds, workers: $w"
+			echo "[run_bench] program: $dl, dataset: $ds, workers: $w"
 			tag="$dl"_"$ds"_"$w"_souffle-cmpl
 			tag="${tag//\//-}"
 
@@ -37,7 +38,7 @@ for target in "${targets[@]}"; do
 			printf "CompileTime: %.2f\n" "$cmpl_time" >$tag.info
 
 			killall $exe || true
-			cmd="./$exe -F $DATA/$dd/$ds -D . -j $w"
+			cmd="./$exe -F $DATA/$dp -D . -j $w"
 
 			sync && sysctl vm.drop_caches=3
 			set +e

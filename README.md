@@ -1,6 +1,9 @@
 # DLBench Automations for CloudLab
 
 ## Organization
+
+We have compiled the datasets used here: https://pages.cs.wisc.edu/~srinskit/datalog
+
 ### cloudlab-auto
 This project folder contains the Datalog programs scripts that drive the benchmarking.
 
