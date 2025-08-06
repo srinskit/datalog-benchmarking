@@ -2,6 +2,9 @@
 -- Based on bipartite.dl Datalog program
 -- Compatible with both DuckDB and Umbra
 
+CREATE TEMPORARY TABLE timing_log (start_time TIMESTAMP);
+INSERT INTO timing_log VALUES (CURRENT_TIMESTAMP);
+
 -- Create arc table (edges in the graph)
 CREATE TABLE arc (
     y INTEGER,
@@ -17,6 +20,9 @@ CREATE TABLE source (
 -- Note: Both DuckDB and Umbra support this COPY syntax
 COPY arc FROM '/data/Arc.csv' (FORMAT CSV, HEADER false);
 COPY source FROM '/data/Source.csv' (FORMAT CSV, HEADER false);
+
+SELECT EXTRACT(EPOCH FROM (CURRENT_TIMESTAMP - start_time)) AS load_time
+FROM timing_log;
 
 WITH RECURSIVE
     coloring(x, color) AS (
@@ -39,3 +45,5 @@ SELECT
     -- -- Count the intersection of the two sets
     -- COUNT(DISTINCT x) FILTER (WHERE color = 0 AND x IN (SELECT x FROM coloring WHERE color = 1)) AS intersection_count
 FROM coloring;
+
+DROP TABLE timing_log;

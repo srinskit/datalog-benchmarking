@@ -26,15 +26,13 @@ cp $PROJECT_ROOT/targets.sh $PAYLOAD/
 $RSYNC --rsync-path="sudo rsync" $PAYLOAD $HOST:$WORK_DIR
 rm $PAYLOAD/targets.sh
 
-# Execute benchmark script in host
-ssh -A $HOST "cd $WORK_DIR/$PAYLOAD_DIR; sudo ./run_bench.sh"
+# Execute benchmark script in host (prefer Python version if available)
+ssh -A $HOST "cd $WORK_DIR/$PAYLOAD_DIR; if [ -f run_bench.py ]; then sudo python3 ./run_bench.py; else sudo ./run_bench.sh; fi"
 
-# Sync local payload from host payload, except the run_bench.sh file
+# Sync local payload from host payload, except the run_bench scripts
 echo "[launch] moving payload: local <--- host"
-$RSYNC --rsync-path="sudo rsync" --include="*.log" --include="*.info" --include="*.out" --exclude="*" $HOST:$WORK_DIR/$PAYLOAD_DIR/ $PAYLOAD 
+$RSYNC --rsync-path="sudo rsync" --include="*.log" --include="*.profile" --include="*.info" --include="*.out" --include="*.json" --exclude="*" $HOST:$WORK_DIR/$PAYLOAD_DIR/ $PAYLOAD 
 
 ssh -A $HOST "sudo rm -rf $WORK_DIR/$PAYLOAD_DIR"
 
-mv $PAYLOAD/*.log . || true
-mv $PAYLOAD/*.info . || true
-mv $PAYLOAD/*.out . || true
+mv $PAYLOAD/*.{log,profile,info,out,json} . 2>/dev/null || true

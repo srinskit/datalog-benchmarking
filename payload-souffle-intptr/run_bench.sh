@@ -21,9 +21,9 @@ for target in "${targets[@]}"; do
 		IFS=',' read -ra workers <<<"$threads"
 		for w in "${workers[@]}"; do
 			echo "[run_bench] program: $dl, dataset: $ds, workers: $w"
-			cmd="souffle "$dl.dl" -F $DATA/$dp -D . -j $w"
 			tag="$dl"_"$ds"_"$w"_souffle-intptr
 			tag="${tag//\//-}"
+			cmd="souffle "$dl.dl" -F $DATA/$dp -D . -j $w -p $tag.profile"
 
 			sync && sysctl vm.drop_caches=3
 			set +e
