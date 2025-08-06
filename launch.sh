@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Example: ./launch.sh user@mach.cloudlab.us sshkey payload
+# Example: ./launch.sh user@mach.cloudlab.us "DF0RScSi"
 
 # Exit script on error
 set -e
@@ -9,9 +9,9 @@ WORK_DIR=~
 SRC=/opt
 
 HOST=$1
-PAYLOAD=${2%/} # Strip trailing slash to create new dest dir with rsync
+ENGINES=$2
 
-PAYLOAD_DIR=$(basename $PAYLOAD)
+PAYLOAD_DIR="cloudlab-auto"
 RSYNC="rsync -ah --info=progress2 --info=name0 --delete"
 
 # Copy dataset from remote to local
@@ -22,17 +22,13 @@ ssh -A $HOST "sudo swapoff -a; sudo rm -rf /opt/grpc"
 
 echo
 echo "[launch] moving payload: local ---> host"
-cp $PROJECT_ROOT/targets.sh $PAYLOAD/
-$RSYNC --rsync-path="sudo rsync" $PAYLOAD $HOST:$WORK_DIR
-rm $PAYLOAD/targets.sh
+$RSYNC --rsync-path="sudo rsync" --include="targets.*" --include="run_bench.*" --include="payload-*/" --include="payload-*/**" --exclude="*" . $HOST:$WORK_DIR/$PAYLOAD_DIR
 
-# Execute benchmark script in host (prefer Python version if available)
-ssh -A $HOST "cd $WORK_DIR/$PAYLOAD_DIR; if [ -f run_bench.py ]; then sudo python3 ./run_bench.py; else sudo ./run_bench.sh; fi"
+# Execute unified benchmark script with engine parameter
+ssh -A $HOST "cd $WORK_DIR/$PAYLOAD_DIR; sudo python3 ./run_bench.py '$ENGINES'"
 
-# Sync local payload from host payload, except the run_bench scripts
-echo "[launch] moving payload: local <--- host"
-$RSYNC --rsync-path="sudo rsync" --include="*.log" --include="*.profile" --include="*.info" --include="*.out" --include="*.json" --exclude="*" $HOST:$WORK_DIR/$PAYLOAD_DIR/ $PAYLOAD 
+# Sync results back from host
+echo "[launch] moving results: local <--- host"
+$RSYNC --rsync-path="sudo rsync" --include="*.log" --include="*.profile" --include="*.err" --include="*.out" --include="*.json" --exclude="*" $HOST:$WORK_DIR/$PAYLOAD_DIR/ .
 
-ssh -A $HOST "sudo rm -rf $WORK_DIR/$PAYLOAD_DIR"
-
-mv $PAYLOAD/*.{log,profile,info,out,json} . 2>/dev/null || true
+# ssh -A $HOST "sudo rm -rf $WORK_DIR/$PAYLOAD_DIR"

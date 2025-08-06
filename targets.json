@@ -4,7 +4,7 @@
 		"dataset": "pl/doop/xalan",
 		"output_relation": "SubtypeOf",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -12,7 +12,7 @@
 		"dataset": "pl/doop/batik",
 		"output_relation": "SubtypeOf",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -20,7 +20,7 @@
 		"dataset": "pl/doop/zxing",
 		"output_relation": "SubtypeOf",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -28,7 +28,7 @@
 		"dataset": "pl/doop/biojava",
 		"output_relation": "SubtypeOf",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -36,7 +36,7 @@
 		"dataset": "pl/doop/eclipse",
 		"output_relation": "SubtypeOf",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -44,7 +44,7 @@
 		"dataset": "graph-traverse/G10K-0.001",
 		"output_relation": "Sg",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": false
 	},
 	{
@@ -52,7 +52,7 @@
 		"dataset": "graph-traverse/G5K-0.001",
 		"output_relation": "Sg",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -60,7 +60,7 @@
 		"dataset": "graph-traverse/wiki-vote",
 		"output_relation": "Sg",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -68,7 +68,7 @@
 		"dataset": "graph-traverse/G10K-0.001",
 		"output_relation": "Tc",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -76,7 +76,7 @@
 		"dataset": "graph-traverse/G5K-0.001",
 		"output_relation": "Tc",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -84,7 +84,7 @@
 		"dataset": "graph-traverse/wiki-vote",
 		"output_relation": "Tc",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": false
 	},
 	{
@@ -92,7 +92,7 @@
 		"dataset": "graph-traverse/kernel",
 		"output_relation": "Dyck",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -100,7 +100,7 @@
 		"dataset": "graph-traverse/postgre",
 		"output_relation": "Dyck",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -108,7 +108,7 @@
 		"dataset": "graph-reach/arabic",
 		"output_relation": "Reach",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -116,7 +116,7 @@
 		"dataset": "graph-reach/twitter",
 		"output_relation": "Reach",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -124,7 +124,7 @@
 		"dataset": "graph-reach/livejournal",
 		"output_relation": "Reach",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -132,7 +132,7 @@
 		"dataset": "graph-reach/orkut",
 		"output_relation": "Reach",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -140,7 +140,7 @@
 		"dataset": "graph-reach/wiki-vote",
 		"output_relation": "Reach",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -148,7 +148,7 @@
 		"dataset": "graph-reach/yelp",
 		"output_relation": "Zero",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -156,7 +156,7 @@
 		"dataset": "graph-reach/netflix",
 		"output_relation": "Zero",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -164,7 +164,7 @@
 		"dataset": "graph-reach/mind",
 		"output_relation": "Zero",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -172,7 +172,7 @@
 		"dataset": "graph-reach/yelp",
 		"output_relation": "Zero",
 		"engines": "U",
-		"threads": "4",
+		"threads": [4],
 		"disabled": false
 	},
 	{
@@ -180,7 +180,7 @@
 		"dataset": "graph-reach/livejournal",
 		"output_relation": "Reach",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -188,7 +188,7 @@
 		"dataset": "graph-reach/orkut",
 		"output_relation": "Reach",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -196,7 +196,7 @@
 		"dataset": "graph-reach/wiki-vote",
 		"output_relation": "Reach",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -204,7 +204,7 @@
 		"dataset": "graph-reach/web-google",
 		"output_relation": "Reach",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -212,7 +212,7 @@
 		"dataset": "graph-traverse/livejournal",
 		"output_relation": "CC",
 		"engines": "DF2R",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -220,7 +220,7 @@
 		"dataset": "graph-traverse/orkut",
 		"output_relation": "CC",
 		"engines": "DF2R",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -228,7 +228,7 @@
 		"dataset": "graph-traverse/twitter",
 		"output_relation": "CC",
 		"engines": "DF2R",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -236,7 +236,7 @@
 		"dataset": "pl/andersen/500000",
 		"output_relation": "PointsTo",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": false
 	},
 	{
@@ -244,7 +244,7 @@
 		"dataset": "pl/andersen/1000000",
 		"output_relation": "PointsTo",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -252,7 +252,7 @@
 		"dataset": "pl/csda/httpd",
 		"output_relation": "NullNode",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -260,7 +260,7 @@
 		"dataset": "pl/csda/linux",
 		"output_relation": "NullNode",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -268,7 +268,7 @@
 		"dataset": "pl/csda/postgresql",
 		"output_relation": "NullNode",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -276,7 +276,7 @@
 		"dataset": "pl/cspa/httpd",
 		"output_relation": "ValueFlow",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -284,7 +284,7 @@
 		"dataset": "pl/cspa/linux",
 		"output_relation": "ValueFlow",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -292,7 +292,7 @@
 		"dataset": "pl/cspa/postgresql",
 		"output_relation": "ValueFlow",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": false
 	},
 	{
@@ -300,7 +300,7 @@
 		"dataset": "misc/galen",
 		"output_relation": "OutP",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -308,7 +308,7 @@
 		"dataset": "pl/borrow",
 		"output_relation": "path_maybe_initialized_on_exit",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -316,7 +316,7 @@
 		"dataset": "pl/crdt",
 		"output_relation": "nextSiblingAnc",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -324,7 +324,7 @@
 		"dataset": "pl/crdt",
 		"output_relation": "nextSiblingAnc",
 		"engines": "DF0RScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -332,7 +332,7 @@
 		"dataset": "pl/cvc5",
 		"output_relation": "Stack_def_use_live_var_at_block_end",
 		"engines": "DRF1ScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	},
 	{
@@ -340,7 +340,7 @@
 		"dataset": "pl/z3",
 		"output_relation": "Stack_def_use_live_var_at_block_end",
 		"engines": "DRF1ScSi",
-		"threads": "64,4",
+		"threads": [64, 4],
 		"disabled": true
 	}
 ]
