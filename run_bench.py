@@ -8,60 +8,77 @@ import re
 import json
 import time
 import argparse
+import logging
 from pathlib import Path
+
+# Setup logging
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
+
+# Global constants
+DATA = "/data/input"
+
 
 def get_payload_dir(engine_variant):
     """Get the correct payload directory for the engine"""
     engine_to_payload = {
-        'D': 'payload-ddlog',
-        'F0': 'payload-flowlog',
-        'F1': 'payload-flowlog1',
-        'F2': 'payload-flowlog2',
-        'Si': 'payload-souffle-intptr',
-        'Sc': 'payload-souffle-cmpl',
-        'R': 'payload-recstep',
-        'Q': 'payload-duckdb',
-        'U': 'payload-umbra'
+        "D": "payload-ddlog",
+        "F0": "payload-flowlog",
+        "F1": "payload-flowlog1",
+        "F2": "payload-flowlog2",
+        "Si": "payload-souffle",
+        "Sc": "payload-souffle",
+        "R": "payload-recstep",
+        "Q": "payload-duckdb",
+        "U": "payload-umbra",
     }
-    return engine_to_payload.get(engine_variant, '.')
+    return engine_to_payload.get(engine_variant, ".")
+
 
 def load_targets():
     """Load benchmark targets from targets.json"""
-    required_fields = ['program', 'dataset', 'output_relation', 'engines', 'threads']
-    
+    required_fields = ["program", "dataset", "output_relation", "engines", "threads"]
+
     try:
-        with open('targets.json', 'r') as f:
+        with open("targets.json", "r") as f:
             targets = json.load(f)
-        
+
         valid_targets = []
         for i, target in enumerate(targets):
             missing_fields = [field for field in required_fields if field not in target]
             if missing_fields:
-                print(f"Error: Target {i} missing fields: {missing_fields}")
+                logger.error(f"Target {i} missing fields: {missing_fields}")
                 sys.exit(1)
-            
-            if target.get('disabled', False):
+
+            if target.get("disabled", False):
                 continue
-                
+
             valid_targets.append(target)
-        
+
         return valid_targets
     except FileNotFoundError:
-        print("Error: targets.json not found")
+        logger.error("targets.json not found")
         sys.exit(1)
+
 
 def run_command(cmd, timeout_sec=None):
     """Run command and return (exit_code, stdout, stderr)"""
     try:
-        result = subprocess.run(cmd, shell=True, capture_output=True, text=True, timeout=timeout_sec)
+        result = subprocess.run(
+            cmd, shell=True, capture_output=True, text=True, timeout=timeout_sec
+        )
         return result.returncode, result.stdout, result.stderr
     except subprocess.TimeoutExpired:
         return 124, "", ""
+
 
 def clear_caches():
     """Clear system caches for consistent benchmarking"""
     subprocess.run("sync", shell=True)
     subprocess.run("sysctl vm.drop_caches=3", shell=True)
+
 
 def get_status_from_exit_code(exit_code):
     """Map exit codes to status strings"""
@@ -74,12 +91,13 @@ def get_status_from_exit_code(exit_code):
     else:
         return "DNF"
 
+
 def extract_metric_regex(pattern, files, case_insensitive=True):
     """Extract metric from files using regex pattern"""
     flags = re.IGNORECASE if case_insensitive else 0
     for file_path in glob.glob(files):
         try:
-            with open(file_path, 'r') as f:
+            with open(file_path, "r") as f:
                 content = f.read()
             match = re.search(pattern, content, flags)
             if match:
@@ -88,371 +106,376 @@ def extract_metric_regex(pattern, files, case_insensitive=True):
             continue
     return ""
 
-def get_last_field(files, delimiter=',', field=0):
-    """Get specific field from last line of files"""
-    for file_path in glob.glob(files):
-        try:
-            with open(file_path, 'r') as f:
-                lines = f.readlines()
-            if lines:
-                last_line = lines[-1].strip()
-                fields = last_line.split(delimiter)
-                if len(fields) > field:
-                    return fields[field]
-        except FileNotFoundError:
-            continue
+
+def extract_dl_out(engine_variant, key, tag, exit_code):
+    """Extract dl_out metric for all engines"""
+    if engine_variant == "D":
+        return extract_metric_regex(rf"{key}\", .size = (\d+)", f"{tag}*.out")
+    elif engine_variant in ["F0", "F1", "F2"]:
+        return extract_metric_regex(
+            rf"Delta of.*\[{key}\]: \(\(\), \(\), (\d+)\)", f"{tag}*.out"
+        )
+    elif engine_variant in ["Si", "Sc"]:
+        return extract_metric_regex(rf"{key}\s+(\d+)", f"{tag}*.out")
+    elif engine_variant == "R":
+        if exit_code != 0:
+            return ""
+        # Wait for quickstep to exit
+        while (
+            subprocess.run(
+                "pgrep quickstep", shell=True, capture_output=True
+            ).returncode
+            == 0
+        ):
+            time.sleep(1)
+        # Query quickstep for results
+        SRC = "/opt"
+        for k in key.split(","):
+            query_cmd = f"python3 {SRC}/RecStep/quickstep_shell.py --mode interactive"
+            query_input = f"select '{k}' as Rel, count(*) from {k};"
+            result = subprocess.run(
+                query_cmd, input=query_input, shell=True, capture_output=True, text=True
+            )
+            match = re.search(rf"\|\s*{k}\s*\|\s*(\d+)\s*\|", result.stdout)
+            if match:
+                return match.group(1)
+        return ""
+    elif engine_variant == "Q":
+        for file_path in glob.glob(f"{tag}*.out"):
+            try:
+                with open(file_path, "r") as f:
+                    content = f.read()
+                lines = content.split("\n")
+                for i, line in enumerate(lines):
+                    if key in line and i + 3 < len(lines):
+                        match = re.search(r"\d+", lines[i + 3])
+                        if match:
+                            return match.group(0)
+            except FileNotFoundError:
+                continue
+        return ""
+    elif engine_variant == "U":
+        for file_path in glob.glob(f"{tag}*.out"):
+            try:
+                with open(file_path, "r") as f:
+                    lines = f.readlines()
+                for i, line in enumerate(lines):
+                    if key.lower() in line.lower() and i + 1 < len(lines):
+                        return lines[i + 1].strip()
+            except FileNotFoundError:
+                continue
+        return ""
     return ""
 
-def run_ddlog_benchmark(dl, dp, key, w, tag, timeout_sec):
-    """Run DDLog benchmark"""
-    DATA = "/data/input"
-    SRC = "/opt"
-    payload_dir = get_payload_dir('D')
-    
-    # Change to payload directory
-    os.chdir(payload_dir)
-    
-    # Source environment
-    subprocess.run(f"source {SRC}/rust_env && source {SRC}/ddlog_env", shell=True)
-    
-    # Build program if needed
-    exe = f"{dl}_ddlog/target/release/{Path(dl).name}_cli"
-    if not os.path.exists(exe):
-        print(f"Building DDLog program: {dl}")
-        subprocess.run(f"rm -rf *_ddlog", shell=True)
-        subprocess.run(f"ddlog -i {dl}.dl", shell=True)
-        subprocess.run(f"cd {dl}_ddlog && RUSTFLAGS=-Awarnings cargo build --release --quiet", shell=True)
-    
-    cmd = f"./{exe} -w {w} < {DATA}/{dp}/data.ddin"
-    
-    clear_caches()
-    time_cmd = f"/usr/bin/time -f 'LinuxRT: %e' timeout {timeout_sec}s dlbench run \"{cmd}\" \"{tag}\""
-    exit_code, stdout, stderr = run_command(time_cmd, timeout_sec + 10)
-    
-    # Extract metrics
-    dl_out = extract_metric_regex(rf"{key}\", .size = (\d+)", f"{tag}*.out")
-    dlbench_rt = get_last_field(f"{tag}*.log")
-    
-    return exit_code, stderr, dl_out, dlbench_rt
 
-def run_flowlog_benchmark(dl, dp, key, w, tag, timeout_sec, variant="F0"):
-    """Run FlowLog benchmark"""
-    DATA = "/data/input"
-    payload_dir = get_payload_dir(variant)
-    
-    # Change to payload directory
-    os.chdir(payload_dir)
-    
+def extract_load_time(engine_variant, tag):
+    """Extract load_time metric for all engines"""
+    if engine_variant == "U":
+        for file_path in glob.glob(f"{tag}*.out"):
+            try:
+                with open(file_path, "r") as f:
+                    lines = f.readlines()
+                for i, line in enumerate(lines):
+                    if "load_time" in line.lower() and i + 1 < len(lines):
+                        return lines[i + 1].strip()
+            except FileNotFoundError:
+                continue
+        return ""
+    return None
+
+
+def benchmark_ddlog(program_path, dataset_path, workers, tag, timeout_sec, payload_dir):
+    """Benchmark DDLog engine"""
+    base_program = Path(program_path).name
+    compile_time = 0
+
+    # Build program if needed
+    exe = f"{payload_dir}/{base_program}_ddlog/target/release/{base_program}_cli"
+    if not os.path.exists(exe):
+        start_time = time.time()
+        subprocess.run(f"ddlog -i {payload_dir}/{program_path}.dl", shell=True)
+        subprocess.run(
+            f"RUSTFLAGS=-Awarnings cargo build --release --quiet",
+            shell=True,
+            cwd=f"{payload_dir}/{base_program}_ddlog",
+        )
+        compile_time = time.time() - start_time
+
+    cmd = f"{exe} -w {workers} < {DATA}/{dataset_path}/data.ddin"
+
+    clear_caches()
+    start_time = time.time()
+    dlbench_cmd = f'dlbench run "{cmd}" "{tag}"'
+    exit_code, stdout, stderr = run_command(dlbench_cmd, timeout_sec)
+    runtime = time.time() - start_time
+
+    return exit_code, stderr, compile_time, runtime
+
+
+def benchmark_flowlog(
+    program_path, dataset_path, workers, tag, timeout_sec, payload_dir, variant="F0"
+):
+    """Benchmark FlowLog engine"""
+
     if variant == "F0":
         exe = "/opt/FlowLogTest/target/release/executing"
     elif variant == "F1":
         exe = "/data/FlowLogTest3/target/release/executing"
     elif variant == "F2":
         exe = "/data/FlowLogTest2/target/release/executing"
-    
-    cmd = f"{exe} --program {dl}.dl --facts {DATA}/{dp} --csvs . --workers {w}"
-    
-    clear_caches()
-    time_cmd = f"/usr/bin/time -f 'LinuxRT: %e' timeout {timeout_sec}s dlbench run \"{cmd}\" \"{tag}\""
-    exit_code, stdout, stderr = run_command(time_cmd, timeout_sec + 10)
-    
-    # Extract metrics
-    dl_out = extract_metric_regex(rf"Delta of.*\[{key}\]: \(\(\), \(\), (\d+)\)", f"{tag}*.out")
-    dlbench_rt = get_last_field(f"{tag}*.log")
-    
-    return exit_code, stderr, dl_out, dlbench_rt
 
-def run_souffle_benchmark(dl, dp, key, w, tag, timeout_sec, variant="Si"):
-    """Run Souffle benchmark"""
-    DATA = "/data/input"
-    payload_dir = get_payload_dir(variant)
-    
-    # Change to payload directory
-    os.chdir(payload_dir)
-    
+    cmd = f"{exe} --program {payload_dir}/{program_path}.dl --facts {DATA}/{dataset_path} --csvs . --workers {workers}"
+
+    clear_caches()
+    start_time = time.time()
+    dlbench_cmd = f'dlbench run "{cmd}" "{tag}"'
+    exit_code, stdout, stderr = run_command(dlbench_cmd, timeout_sec)
+    runtime = time.time() - start_time
+
+    return exit_code, stderr, None, runtime
+
+
+def benchmark_souffle(
+    program_path, dataset_path, workers, tag, timeout_sec, payload_dir, variant
+):
+    """Benchmark Souffle engine"""
+    assert variant in ["Si", "Sc"], f"Invalid variant: {variant}"
+    compile_time = None
+    runtime = None
+
     if variant == "Si":
-        cmd = f"souffle {dl}.dl -F {DATA}/{dp} -D . -j {w} -p {tag}.profile"
-        engine_name = "souffle-intptr"
+        cmd = f"souffle {payload_dir}/{program_path}.dl -F {DATA}/{dataset_path} -D . -j {workers} -p {tag}.profile"
     elif variant == "Sc":
         exe = "souffle_cmpl"
-        subprocess.run(f"souffle -o {exe} {dl}.dl", shell=True)
-        cmd = f"./{exe} -F {DATA}/{dp} -D . -j {w}"
-        engine_name = "souffle-cmpl"
-    
-    clear_caches()
-    time_cmd = f"/usr/bin/time -f 'LinuxRT: %e' timeout {timeout_sec}s dlbench run \"{cmd}\" \"{tag}\""
-    exit_code, stdout, stderr = run_command(time_cmd, timeout_sec + 10)
-    
-    # Extract metrics
-    dl_out = extract_metric_regex(rf"{key}\s+(\d+)", f"{tag}*.out")
-    dlbench_rt = get_last_field(f"{tag}*.log")
-    
-    return exit_code, stderr, dl_out, dlbench_rt
 
-def run_recstep_benchmark(dl, dp, key, w, tag, timeout_sec):
-    """Run RecStep benchmark"""
-    DATA = "/data/input"
-    SRC = "/opt"
-    payload_dir = get_payload_dir('R')
-    
-    # Change to payload directory
-    os.chdir(payload_dir)
-    
-    subprocess.run(f"source {SRC}/recstep_env", shell=True)
-    
-    cmd = f"recstep --program {dl}.dl --input {DATA}/{dp} --jobs {w}"
-    
+        if os.path.exists(exe):
+            os.remove(exe)
+
+        start_time = time.time()
+        result = subprocess.run(
+            f"souffle -o {exe} {payload_dir}/{program_path}.dl",
+            shell=True,
+            capture_output=True,
+            text=True,
+        )
+
+        compile_time = time.time() - start_time
+
+        if result.returncode != 0:
+            logger.error(
+                f"Souffle compilation failed with return code {result.returncode}: {result.stderr}"
+            )
+            return result.returncode, result.stderr, compile_time, runtime
+
+        assert os.path.exists(
+            exe
+        ), f"Executable {exe} not found after successful compilation"
+
+        cmd = f"./{exe} -F {DATA}/{dataset_path} -D . -j {workers}"
+
+    clear_caches()
+    start_time = time.time()
+    dlbench_cmd = f'dlbench run "{cmd}" "{tag}"'
+    exit_code, stdout, stderr = run_command(dlbench_cmd, timeout_sec)
+    runtime = time.time() - start_time
+
+    return exit_code, stderr, compile_time, runtime
+
+
+def benchmark_recstep(program_path, dataset_path, workers, tag, timeout_sec, payload_dir):
+    """Benchmark RecStep engine"""
+
+    cmd = f"recstep --program {payload_dir}/{program_path}.dl --input {DATA}/{dataset_path} --jobs {workers}"
+
     # Prime the benchmark
-    subprocess.run(f"timeout 5s {cmd}", shell=True)
-    
-    clear_caches()
-    time_cmd = f"/usr/bin/time -f 'LinuxRT: %e' timeout {timeout_sec}s dlbench run \"{cmd}\" \"{tag}\" --monitor quickstep_cli_shell"
-    exit_code, stdout, stderr = run_command(time_cmd, timeout_sec + 10)
-    
-    # Extract metrics for RecStep (special handling)
-    dl_out = ""
-    if exit_code == 0:
-        # Wait for quickstep to exit
-        while subprocess.run("pgrep quickstep", shell=True, capture_output=True).returncode == 0:
-            time.sleep(1)
-        
-        # Query quickstep for results
-        for k in key.split(','):
-            query_cmd = f"python3 {SRC}/RecStep/quickstep_shell.py --mode interactive"
-            query_input = f"select '{k}' as Rel, count(*) from {k};"
-            result = subprocess.run(query_cmd, input=query_input, shell=True, capture_output=True, text=True)
-            
-            match = re.search(rf"\|\s*{k}\s*\|\s*(\d+)\s*\|", result.stdout)
-            if match:
-                dl_out = match.group(1)
-                break
-    
-    dlbench_rt = get_last_field(f"{tag}*.log")
-    
-    return exit_code, stderr, dl_out, dlbench_rt
+    run_command(cmd, 5)
 
-def run_duckdb_benchmark(dl, dp, key, w, tag, timeout_sec):
-    """Run DuckDB benchmark"""
-    DATA = "/data/input"
+    clear_caches()
+    start_time = time.time()
+    dlbench_cmd = f'dlbench run "{cmd}" "{tag}" --monitor quickstep_cli_shell'
+    exit_code, stdout, stderr = run_command(dlbench_cmd, timeout_sec)
+    runtime = time.time() - start_time
+
+    return exit_code, stderr, None, runtime
+
+
+def benchmark_duckdb(program_path, dataset_path, workers, tag, timeout_sec, payload_dir):
+    """Benchmark DuckDB engine"""
     DB = "test.db"
-    payload_dir = get_payload_dir('Q')
-    
-    # Change to payload directory
-    os.chdir(payload_dir)
-    
-    # Setup
-    subprocess.run(f"ln -sf {DATA}/{dp} /dataset", shell=True)
-    subprocess.run(f"rm -f {DB}", shell=True)
-    subprocess.run(f"duckdb {DB} < duckdb_config.sql", shell=True)
-    
-    cmd = f"duckdb {DB} < {dl}.sql"
-    
-    clear_caches()
-    time_cmd = f"/usr/bin/time -f 'LinuxRT: %e' timeout {timeout_sec}s dlbench run \"{cmd}\" \"{tag}\""
-    exit_code, stdout, stderr = run_command(time_cmd, timeout_sec + 10)
-    
-    # Extract metrics
-    dl_out = ""
-    for file_path in glob.glob(f"{tag}*.out"):
-        try:
-            with open(file_path, 'r') as f:
-                content = f.read()
-            # Find key and get number from 3 lines after
-            lines = content.split('\n')
-            for i, line in enumerate(lines):
-                if key in line and i + 3 < len(lines):
-                    match = re.search(r'\d+', lines[i + 3])
-                    if match:
-                        dl_out = match.group(0)
-                        break
-        except FileNotFoundError:
-            continue
-    
-    dlbench_rt = get_last_field(f"{tag}*.log")
-    
-    return exit_code, stderr, dl_out, dlbench_rt
 
-def run_umbra_benchmark(dl, dp, key, w, tag, timeout_sec):
-    """Run Umbra benchmark"""
-    DATA = "/data/input"
-    payload_dir = get_payload_dir('U')
-    
-    # Change to payload directory
-    os.chdir(payload_dir)
-    
-    subprocess.run("docker pull umbradb/umbra:25.07.1", shell=True)
-    
+    # Setup
+    subprocess.run(f"ln -sf {DATA}/{dataset_path} /dataset", shell=True)
+    subprocess.run(f"rm -f {DB}", shell=True)
+    subprocess.run(f"duckdb {DB} < {payload_dir}/duckdb_config.sql", shell=True)
+
+    cmd = f"duckdb {DB} < {payload_dir}/{program_path}.sql"
+
+    clear_caches()
+    start_time = time.time()
+    dlbench_cmd = f'dlbench run "{cmd}" "{tag}"'
+    exit_code, stdout, stderr = run_command(dlbench_cmd, timeout_sec)
+    runtime = time.time() - start_time
+
+    return exit_code, stderr, None, runtime
+
+
+def benchmark_umbra(program_path, dataset_path, workers, tag, timeout_sec, payload_dir):
+    """Benchmark Umbra engine"""
+
     cmd = f"""docker run \\
         --rm \\
-        --cpuset-cpus='0-{w}' \\
-        -v '{DATA}/{dp}:/data' \\
-        -v '{os.getcwd()}:/payload' \\
-        -w /payload \\
+        --cpuset-cpus='0-{workers}' \\
+        -v '{DATA}/{dataset_path}:/data' \\
+        -v '{os.getcwd()}/{payload_dir}:/payload' \\
         --user root \\
         umbradb/umbra:25.07.1 \\
-        /usr/local/bin/umbra-sql -createdb '/payload/test.db' '/payload/{dl}.sql'"""
-    
+        /usr/local/bin/umbra-sql -createdb 'test.db' '/payload/{program_path}.sql'"""
+
     clear_caches()
-    time_cmd = f"/usr/bin/time -f 'LinuxRT: %e' timeout {timeout_sec}s dlbench run \"{cmd}\" \"{tag}\""
-    exit_code, stdout, stderr = run_command(time_cmd, timeout_sec + 10)
-    
-    # Extract metrics
-    dl_out = ""
-    load_time = ""
-    for file_path in glob.glob(f"{tag}*.out"):
-        try:
-            with open(file_path, 'r') as f:
-                lines = f.readlines()
-            
-            for i, line in enumerate(lines):
-                if key.lower() in line.lower() and i + 1 < len(lines):
-                    dl_out = lines[i + 1].strip()
-                if "load_time" in line.lower() and i + 1 < len(lines):
-                    load_time = lines[i + 1].strip()
-        except FileNotFoundError:
-            continue
-    
-    dlbench_rt = get_last_field(f"{tag}*.log")
-    
-    return exit_code, stderr, dl_out, dlbench_rt, load_time
+    start_time = time.time()
+    dlbench_cmd = f'dlbench run "{cmd}" "{tag}"'
+    exit_code, stdout, stderr = run_command(dlbench_cmd, timeout_sec)
+    runtime = time.time() - start_time
+
+    return exit_code, stderr, None, runtime
+
 
 def main():
-    parser = argparse.ArgumentParser(description='Run Datalog benchmarks')
-    parser.add_argument('engines', help='Engine character map (e.g., DF0RScSi, U, etc.)')
+    parser = argparse.ArgumentParser(description="Run Datalog benchmarks")
+    parser.add_argument(
+        "engines", help="Comma-separated engine list (e.g., D,F0,Si,Sc,U)"
+    )
     args = parser.parse_args()
-    
-    engine_filter = args.engines
-    original_dir = os.getcwd()
-    
+
+    # Parse CLI engines from comma-separated string
+    cli_engines = {
+        engine.strip() for engine in args.engines.split(",") if engine.strip()
+    }
+
     # Disable swap
     subprocess.run("swapoff -a", shell=True)
-    
+    subprocess.run("docker pull umbradb/umbra:25.07.1", shell=True)
+
     # Load targets
     targets = load_targets()
-    
+
     for target in targets:
-        dl = target['program']
-        dp = target['dataset']
-        key = target['output_relation']
-        charmap = target['engines']
-        threads = target['threads']
-        timeout = target.get('timeout', '600s')
-        
-        ds = Path(dp).name
-        timeout_sec = int(timeout.rstrip('s')) if timeout.endswith('s') else 600
-        
-        # Run for each engine in charmap that matches the filter
-        for engine_char in charmap:
-            if engine_char not in ['D', 'F', 'S', 'R', 'Q', 'U']:
-                continue
-                
-            # Handle FlowLog variants
-            if engine_char == 'F':
-                if 'F0' in charmap:
-                    engine_variant = 'F0'
-                elif 'F1' in charmap:
-                    engine_variant = 'F1'
-                elif 'F2' in charmap:
-                    engine_variant = 'F2'
-                else:
-                    engine_variant = 'F0'
-            elif engine_char == 'S':
-                if 'Si' in charmap:
-                    engine_variant = 'Si'
-                elif 'Sc' in charmap:
-                    engine_variant = 'Sc'
-                else:
-                    engine_variant = 'Si'
-            else:
-                engine_variant = engine_char
-            
-            # Skip if this engine is not in charmap or engine filter
-            if engine_variant not in charmap or engine_variant not in engine_filter:
-                continue
-            
-            for w in threads:
-                print(f"[run_bench] program: {dl}, dataset: {ds}, workers: {w}, engine: {engine_variant}")
-                
+        program_path = target["program_path"]
+        dataset_path = target["dataset_path"]
+        key = target["output_relation"]
+        target_engines = set(target["engines"])
+        threads = target["threads"]
+        timeout = target.get("timeout", 600)
+
+        ds = Path(dataset_path).name
+        timeout_sec = int(timeout)
+
+        # Find engines to test: intersection of CLI engines and target engines
+        engines_to_test = cli_engines & target_engines
+
+        # Run for each engine that should be tested
+        for engine_variant in engines_to_test:
+
+            for workers in threads:
+                logger.info(
+                    f"program: {target['program']}, dataset: {target['dataset']}, workers: {workers}, engine: {engine_variant}"
+                )
+
                 # Create tag
                 engine_names = {
-                    'D': 'ddlog',
-                    'F0': 'flowlog',
-                    'F1': 'flowlog',
-                    'F2': 'flowlog',
-                    'Si': 'souffle-intptr',
-                    'Sc': 'souffle-cmpl',
-                    'R': 'recstep',
-                    'Q': 'duckdb',
-                    'U': 'umbra'
+                    "D": "ddlog",
+                    "F0": "flowlog",
+                    "F1": "flowlog",
+                    "F2": "flowlog",
+                    "Si": "souffle-intptr",
+                    "Sc": "souffle-cmpl",
+                    "R": "recstep",
+                    "Q": "duckdb",
+                    "U": "umbra",
                 }
-                
+
                 engine_name = engine_names.get(engine_variant, engine_variant)
-                tag = f"{dl}_{ds}_{w}_{engine_name}".replace('/', '-')
-                
+                program_name = target["program"]
+                dataset_name = target["dataset"]
+                plan_set = target["plan_set"]
+                tag = f"{program_name}_{plan_set}_{dataset_name}_{workers}_{engine_name}"
+
+                # Get payload directory
+                payload_dir = get_payload_dir(engine_variant)
+
                 # Run appropriate benchmark
+                compile_time = None
                 try:
-                    if engine_variant == 'D':
-                        exit_code, stderr, dl_out, dlbench_rt = run_ddlog_benchmark(dl, dp, key, w, tag, timeout_sec)
-                        extra_metrics = {}
-                    elif engine_variant in ['F0', 'F1', 'F2']:
-                        exit_code, stderr, dl_out, dlbench_rt = run_flowlog_benchmark(dl, dp, key, w, tag, timeout_sec, engine_variant)
-                        extra_metrics = {}
-                    elif engine_variant in ['Si', 'Sc']:
-                        exit_code, stderr, dl_out, dlbench_rt = run_souffle_benchmark(dl, dp, key, w, tag, timeout_sec, engine_variant)
-                        extra_metrics = {}
-                    elif engine_variant == 'R':
-                        exit_code, stderr, dl_out, dlbench_rt = run_recstep_benchmark(dl, dp, key, w, tag, timeout_sec)
-                        extra_metrics = {}
-                    elif engine_variant == 'Q':
-                        exit_code, stderr, dl_out, dlbench_rt = run_duckdb_benchmark(dl, dp, key, w, tag, timeout_sec)
-                        extra_metrics = {}
-                    elif engine_variant == 'U':
-                        exit_code, stderr, dl_out, dlbench_rt, load_time = run_umbra_benchmark(dl, dp, key, w, tag, timeout_sec)
-                        extra_metrics = {'load_time': load_time}
+                    if engine_variant == "D":
+                        exit_code, stderr, compile_time, runtime = benchmark_ddlog(
+                            program_path, dataset_path, workers, tag, timeout_sec, payload_dir
+                        )
+                    elif engine_variant in ["F0", "F1", "F2"]:
+                        exit_code, stderr, compile_time, runtime = benchmark_flowlog(
+                            program_path,
+                            dataset_path,
+                            workers,
+                            tag,
+                            timeout_sec,
+                            payload_dir,
+                            engine_variant,
+                        )
+                    elif engine_variant in ["Si", "Sc"]:
+                        exit_code, stderr, compile_time, runtime = benchmark_souffle(
+                            program_path,
+                            dataset_path,
+                            workers,
+                            tag,
+                            timeout_sec,
+                            payload_dir,
+                            engine_variant,
+                        )
+                    elif engine_variant == "R":
+                        exit_code, stderr, compile_time, runtime = benchmark_recstep(
+                            program_path, dataset_path, workers, tag, timeout_sec, payload_dir
+                        )
+                    elif engine_variant == "Q":
+                        exit_code, stderr, compile_time, runtime = benchmark_duckdb(
+                            program_path, dataset_path, workers, tag, timeout_sec, payload_dir
+                        )
+                    elif engine_variant == "U":
+                        exit_code, stderr, compile_time, runtime = benchmark_umbra(
+                            program_path, dataset_path, workers, tag, timeout_sec, payload_dir
+                        )
                     else:
                         continue
-                        
+
                 except Exception as e:
-                    print(f"Error running {engine_variant} benchmark: {e}")
+                    logger.error(f"Error running {engine_variant} benchmark: {e}")
                     continue
-                finally:
-                    # Return to original directory
-                    os.chdir(original_dir)
-                
+
                 # Write stderr to tag.err file
-                with open(f"{tag}.err", 'w') as f:
+                with open(f"{tag}.err", "w") as f:
                     f.write(stderr)
-                
-                # Extract LinuxRT from stderr
-                linux_rt = 0.0
-                if stderr:
-                    rt_match = re.search(r'LinuxRT: ([0-9.]+)', stderr)
-                    if rt_match:
-                        linux_rt = float(rt_match.group(1))
-                
+
+                # Extract dl_out and load_time
+                dl_out = extract_dl_out(engine_variant, key, tag, exit_code)
+                load_time = extract_load_time(engine_variant, tag)
+
                 # Convert metrics to appropriate types
-                correctness_output = int(dl_out) if dl_out.isdigit() else 0
-                dlbench_runtime = float(dlbench_rt) if dlbench_rt else 0.0
-                
-                # Convert extra metrics
-                converted_extra = {}
-                for k, v in extra_metrics.items():
-                    if k == 'load_time':
-                        converted_extra[k] = float(v) if v and v.replace('.', '').isdigit() else 0.0
-                    else:
-                        converted_extra[k] = v
-                
+                correctness_output = int(dl_out) if dl_out.isdigit() else None
+
                 # Write JSON file
                 result_data = {
                     "status": get_status_from_exit_code(exit_code),
-                    "runtime": linux_rt,
+                    "runtime": runtime,
                     "correctness_output": correctness_output,
-                    "dlbench_runtime": dlbench_runtime,
-                    **converted_extra
+                    "load_time": (
+                        float(load_time)
+                        if load_time and load_time.replace(".", "").isdigit()
+                        else load_time
+                    ),
+                    "compile_time": compile_time,
                 }
-                
-                with open(f"{tag}.json", 'w') as f:
+
+                with open(f"{tag}.json", "w") as f:
                     json.dump(result_data, f, indent=2)
+
 
 if __name__ == "__main__":
     main()
