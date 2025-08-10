@@ -15,6 +15,6 @@
 PointsTo(y, x) :- AddressOf(y, x).
 PointsTo(y, x) :- Assign(y, z), PointsTo(z, x).
 PointsTo(y, w) :- Load(y, x), PointsTo(x, z), PointsTo(z, w).
-PointsTo(z, w) :- Store(y, x), PointsTo(x, w), PointsTo(y, z).          # Reordered: moved PointsTo(x, w) to second position
+PointsTo(z, w) :- Store(y, x), PointsTo(x, w), PointsTo(y, z).          // Reordered: moved PointsTo(x, w) to second position
 
 .printsize PointsTo

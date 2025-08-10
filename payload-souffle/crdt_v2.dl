@@ -7,7 +7,7 @@
 
 
 
-# definition of insertion into an ordered list (defines nextElem):
+// definition of insertion into an ordered list (defines nextElem):
 .decl insert(a: number, b: number, c: number, d: number)
 .decl remove(IDCtr: number, IDN: number)
 .decl hasChild(ParentCtr: number, ParentN: number)
@@ -37,7 +37,7 @@
 
 
 
-.rule
+
 insert(a, b, c, d) :- Insert_input(a, b, c, d).
 remove(a, b) :- Remove_input(a, b).
 assign(ctr, n, ctr, n, n) :- insert(ctr, n, _, _).
@@ -47,7 +47,7 @@ laterChild(ParentCtr, ParentN, Ctr2, N2) :-
   insert(Ctr1, N1, ParentCtr, ParentN),
   insert(Ctr2, N2, ParentCtr, ParentN),
   Ctr1 * 10 + N1 > Ctr2 * 10 + N2.
-#  (Ctr1 > Ctr2; (Ctr1 = Ctr2, N1 > N2)). 
+//  (Ctr1 > Ctr2; (Ctr1 = Ctr2, N1 > N2)). 
 
 
 firstChild(ParentCtr, ParentN, ChildCtr, ChildN) :-
@@ -63,7 +63,7 @@ sibling(ChildCtr1, ChildN1, ChildCtr2, ChildN2) :-
 laterSibling(Ctr1, N1, Ctr2, N2) :-
   sibling(Ctr1, N1, Ctr2, N2),
   Ctr1 * 10 + N1 > Ctr2 * 10 + N2.
-#  (Ctr1 > Ctr2; (Ctr1 = Ctr2, N1 > N2)).
+//  (Ctr1 > Ctr2; (Ctr1 = Ctr2, N1 > N2)).
 
 
 laterSibling2(Ctr1, N1, Ctr3, N3) :-
@@ -71,8 +71,8 @@ laterSibling2(Ctr1, N1, Ctr3, N3) :-
   sibling(Ctr1, N1, Ctr3, N3),
   Ctr1 * 10 + N1 > Ctr2 * 10 + N2, 
   Ctr2 * 10 + N2 > Ctr3 * 10 + N3.
-#  (Ctr1 > Ctr2; (Ctr1 = Ctr2, N1 > N2)),
-#  (Ctr2 > Ctr3; (Ctr2 = Ctr3, N2 > N3)).
+//  (Ctr1 > Ctr2; (Ctr1 = Ctr2, N1 > N2)),
+//  (Ctr2 > Ctr3; (Ctr2 = Ctr3, N2 > N3)).
 
 
 nextSibling(Ctr1, N1, Ctr2, N2) :-
@@ -95,17 +95,17 @@ nextElem(PrevCtr, PrevN, NextCtr, NextN) :- !hasChild(PrevCtr, PrevN), nextSibli
 
 
 
-# Assigning values to list elements.
+// Assigning values to list elements.
 currentValue(ElemCtr, ElemN, Value) :- assign(IDCtr, IDN, ElemCtr, ElemN, Value), !remove(IDCtr, IDN).
 
 hasValue(ElemCtr, ElemN) :- currentValue(ElemCtr, ElemN, _).
-valueStep(FromCtr, FromN, ToCtr, ToN) :- nextElem(FromCtr, FromN, ToCtr, ToN), hasValue(FromCtr, FromN).            # Reordered: switch join order 
+valueStep(FromCtr, FromN, ToCtr, ToN) :- nextElem(FromCtr, FromN, ToCtr, ToN), hasValue(FromCtr, FromN).            // Reordered: switch join order 
 blankStep(FromCtr, FromN, ToCtr, ToN) :- 
   !valueStep(FromCtr, FromN, ToCtr, ToN), 
   nextElem(FromCtr, FromN, ToCtr, ToN).
 
 value_blank_star(FromCtr, FromN, ToCtr, ToN) :- valueStep(FromCtr, FromN, ToCtr, ToN).
-value_blank_star(FromCtr, FromN, ToCtr, ToN) :- blankStep(ViaCtr, ViaN, ToCtr, ToN), value_blank_star(FromCtr, FromN, ViaCtr, ViaN).            # Reordered: switch join order
+value_blank_star(FromCtr, FromN, ToCtr, ToN) :- blankStep(ViaCtr, ViaN, ToCtr, ToN), value_blank_star(FromCtr, FromN, ViaCtr, ViaN).            // Reordered: switch join order
 
 nextVisible(PrevCtr, PrevN, NextCtr, NextN) :- 
   value_blank_star(PrevCtr, PrevN, NextCtr, NextN), 

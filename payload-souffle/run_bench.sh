@@ -1,6 +1,6 @@
-#!/bin/bash
+//!/bin/bash
 
-# Exit script on error
+// Exit script on error
 set -e
 
 DATA=/data/input
@@ -31,7 +31,7 @@ for target in "${targets[@]}"; do
 			ret=$?
 			set -e
 
-			# Evaluate result
+			// Evaluate result
 			if [[ $ret == 0 ]]; then
 				echo "Status: CMP" >>$tag.info
 			elif [[ $ret == 124 ]]; then

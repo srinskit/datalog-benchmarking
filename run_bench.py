@@ -9,6 +9,7 @@ import json
 import time
 import argparse
 import logging
+import csv
 from pathlib import Path
 
 # Setup logging
@@ -168,19 +169,66 @@ def extract_dl_out(engine_variant, key, tag, exit_code):
     return ""
 
 
+def find_rate_drop_time(rows, threshold):
+    """Find the earliest time when IO rate drops below the threshold, starting from the latest time."""
+    if not rows:
+        return None
+    
+    rates = []
+    prev_time = 0.0
+    prev_io = 0
+
+    for row in rows:
+        time_val = float(row["Time"])
+        io_reads = int(row["IO Reads"])
+
+        time_diff_s = (time_val - prev_time)
+        io_rate_s = (io_reads - prev_io) / time_diff_s if time_diff_s > 0 else 0
+        rates.append((time_val, io_rate_s))
+
+        prev_time = time_val
+        prev_io = io_reads
+
+    # Start from the end and go backwards
+    for i in range(len(rates) - 1, -1, -1):
+        time_val, rate = rates[i]
+        if rate > threshold:
+            return time_val
+
+    return None
+
+
 def extract_load_time(engine_variant, tag):
     """Extract load_time metric for all engines"""
-    if engine_variant == "U":
+    if engine_variant in ["Si", "Sc", "F0", "F1", "F2"]:
+        # For both Souffle and FlowLog, use IO rate drop technique from .log file
+        log_file = f"{tag}.log"
+        threshold = 1000  # bytes/s threshold
+        
+        try:
+            with open(log_file, "r") as f:
+                csv_reader = csv.DictReader(f)
+                rows = list(csv_reader)
+            
+            return find_rate_drop_time(rows, threshold)
+        except (FileNotFoundError, KeyError, ValueError):
+            return None
+    
+    elif engine_variant == "U":
         for file_path in glob.glob(f"{tag}*.out"):
             try:
                 with open(file_path, "r") as f:
                     lines = f.readlines()
                 for i, line in enumerate(lines):
                     if "load_time" in line.lower() and i + 1 < len(lines):
-                        return lines[i + 1].strip()
+                        try:
+                            return float(lines[i + 1].strip())
+                        except ValueError:
+                            return None
             except FileNotFoundError:
                 continue
-        return ""
+        return None
+    
     return None
 
 
@@ -466,11 +514,7 @@ def main():
                     "status": get_status_from_exit_code(exit_code),
                     "runtime": round(runtime, 2) if runtime is not None else None,
                     "correctness_output": correctness_output,
-                    "load_time": (
-                        float(load_time)
-                        if load_time and load_time.replace(".", "").isdigit()
-                        else load_time
-                    ),
+                    "load_time": round(load_time, 2) if load_time is not None else None,
                     "compile_time": round(compile_time, 2) if compile_time is not None else None,
                 }
 

@@ -14,7 +14,7 @@
 
 PointsTo(y, x) :- AddressOf(y, x).
 PointsTo(y, x) :- Assign(y, z), PointsTo(z, x).
-PointsTo(y, w) :- PointsTo(x, z), PointsTo(z, w), Load(y, x).           # Reordered: moved Load(y, x) to last position after both PointsTo atoms
+PointsTo(y, w) :- PointsTo(x, z), PointsTo(z, w), Load(y, x).           // Reordered: moved Load(y, x) to last position after both PointsTo atoms
 PointsTo(z, w) :- Store(y, x), PointsTo(y, z), PointsTo(x, w).
 
 .printsize PointsTo

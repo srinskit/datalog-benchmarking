@@ -14,9 +14,9 @@
  
 .decl ValueAlias(x: number, y: number)
 
-.rule
+
 ValueFlow(y, x) :- Assign(y, x).
-ValueFlow(x, y) :- MemoryAlias(z, y), Assign(x, z).             # Reordered: switch join order
+ValueFlow(x, y) :- MemoryAlias(z, y), Assign(x, z).             // Reordered: switch join order
 ValueFlow(x, y) :- ValueFlow(x, z), ValueFlow(z, y).
 MemoryAlias(x, w) :- Dereference(y, x), ValueAlias(y, z), Dereference(z, w).
 ValueAlias(x, y) :- ValueFlow(z, x), ValueFlow(z, y).

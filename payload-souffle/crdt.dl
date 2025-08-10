@@ -48,7 +48,7 @@
 
 
 
-// .rule
+// 
 insert(a, b, c, d) :- Insert_input(a, b, c, d).
 remove(a, b) :- Remove_input(a, b).
 assign(ctr, n, ctr, n, n) :- insert(ctr, n, _, _).

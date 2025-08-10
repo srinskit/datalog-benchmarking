@@ -8,9 +8,9 @@
  
 .decl Reach(id: number)
 
-.rule
+
 Reach(y) :- Source(y).
-# Reordered: moved Arc(x,y) before Reach(x) to change join order
+// Reordered: moved Arc(x,y) before Reach(x) to change join order
 Reach(y) :- Arc(x,y), Reach(x).
 
 .printsize Reach

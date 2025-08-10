@@ -10,10 +10,10 @@
 .decl Zero(x:number)
 .decl One(x:number)
 
-.rule
+
 Zero(x) :- Source(x).
 
-# Reordered: moved Zero(x) before Arc(x, y) in One rules
+// Reordered: moved Zero(x) before Arc(x, y) in One rules
 One(y) :- Zero(x), Arc(x, y).
 One(x) :- Zero(y), Arc(x, y).
 

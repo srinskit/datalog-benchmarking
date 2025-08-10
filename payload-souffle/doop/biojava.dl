@@ -108,7 +108,7 @@
 .decl _Field(signature:number, declaringClass:number, simplename:number, type:number)
 .input _Field(IO="file", filename="Field.csv", delimiter=",")
 
-// .rule
+// 
 isType(class) :- _ClassType(class).
 isReferenceType(class) :- _ClassType(class).
 isClassType(class) :- _ClassType(class).
@@ -190,7 +190,7 @@ MethodInvocation_Base(invocation, base) :- SpecialMethodInvocation_Base(invocati
 .decl _Return(instruction:number, index:number, var:number, method:number)
 .input _Return(IO="file", filename="Return.csv", delimiter=",")
 
-// .rule
+// 
 Instruction_Method(instruction, method) :-
   _StaticMethodInvocation(instruction, index, signature, method).
 isStaticMethodInvocation_Insn(instruction) :-
@@ -369,7 +369,7 @@ VirtualMethodInvocation_Descriptor(invocation, descriptor) :-
 .printsize SubtypeOfDifferent
 .printsize MainMethodDeclaration
 
-// .rule
+// 
 MethodLookup(simplename, descriptor, type, method) :-
   MethodImplemented(simplename, descriptor, type, method).
 MethodLookup(simplename, descriptor, type, method) :-
@@ -480,7 +480,7 @@ SubtypeOfDifferent(s, t) :-
 .printsize ClassInitializer
 .printsize InitializedClass
 
-// .rule
+// 
 ClassInitializer(type, method) :-
    MethodImplemented(1386348, 5096596, type, method).
 InitializedClass(superclass) :-
@@ -534,7 +534,7 @@ Reachable(clinit) :-
 .printsize ArrayIndexPointsTo
 .printsize Reachable
 
-// .rule
+// 
 Assign(actual, formal) :-
   CallGraphEdge(invocation, method),
   FormalParam(index, method, formal),

@@ -86,7 +86,7 @@
 .printsize var_drop_live_on_entry
 
 
-// .rule
+// 
 // basic
 subset(origin1, origin2, point) :-
     subset_base(origin1, origin2, point).

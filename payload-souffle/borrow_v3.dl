@@ -1,25 +1,25 @@
-# cfg_edge.facts                   known_placeholder_subset.facts  loan_killed_at.facts         path_is_var.facts         subset_base.facts               var_defined_at.facts
-# child_path.facts                 loan_invalidated_at.facts       path_accessed_at_base.facts  path_moved_at_base.facts  universal_region.facts          var_dropped_at.facts
-# drop_of_var_derefs_origin.facts  loan_issued_at.facts            path_assigned_at_base.facts  placeholder.facts         use_of_var_derefs_origin.facts  var_used_at.facts
+// cfg_edge.facts                   known_placeholder_subset.facts  loan_killed_at.facts         path_is_var.facts         subset_base.facts               var_defined_at.facts
+// child_path.facts                 loan_invalidated_at.facts       path_accessed_at_base.facts  path_moved_at_base.facts  universal_region.facts          var_dropped_at.facts
+// drop_of_var_derefs_origin.facts  loan_issued_at.facts            path_assigned_at_base.facts  placeholder.facts         use_of_var_derefs_origin.facts  var_used_at.facts
 
-# .input subset_base
-# .input cfg_edge
-# .input loan_issued_at
-# .input universal_region
-# .input var_used_at
-# .input loan_killed_at
-# .input known_placeholder_subset
-# .input var_dropped_at
-# .input drop_of_var_derefs_origin
-# .input var_defined_at
-# .input child_path
-# .input path_moved_at_base
-# .input path_assigned_at_base
-# .input path_accessed_at_base
-# .input path_is_var
-# .input loan_invalidated_at
-# .input use_of_var_derefs_origin
-# // .input placeholder
+// .input subset_base
+// .input cfg_edge
+// .input loan_issued_at
+// .input universal_region
+// .input var_used_at
+// .input loan_killed_at
+// .input known_placeholder_subset
+// .input var_dropped_at
+// .input drop_of_var_derefs_origin
+// .input var_defined_at
+// .input child_path
+// .input path_moved_at_base
+// .input path_assigned_at_base
+// .input path_accessed_at_base
+// .input path_is_var
+// .input loan_invalidated_at
+// .input use_of_var_derefs_origin
+// // .input placeholder
 
 
 .decl subset_base(x:number, y:number, z:number)
@@ -64,30 +64,30 @@
 .decl var_drop_live_on_entry(x:number, y:number)
 
 
-# .printsize subset
-# .printsize origin_live_on_entry
-# .printsize origin_contains_loan_on_entry
-# .printsize loan_live_at
-# .printsize errors
-# .printsize placeholder_origin
-# .printsize subset_error
-# .printsize var_maybe_partly_initialized_on_exit
-# .printsize var_maybe_partly_initialized_on_entry
-# .printsize var_live_on_entry
-# .printsize ancestor_path
-# .printsize path_moved_at
-# .printsize path_assigned_at
-# .printsize path_accessed_at
-# .printsize path_begins_with_var
-# .printsize path_maybe_initialized_on_exit
-# .printsize path_maybe_uninitialized_on_exit
-# .printsize move_error
-# .printsize cfg_node
-# .printsize var_drop_live_on_entry
+// .printsize subset
+// .printsize origin_live_on_entry
+// .printsize origin_contains_loan_on_entry
+// .printsize loan_live_at
+// .printsize errors
+// .printsize placeholder_origin
+// .printsize subset_error
+// .printsize var_maybe_partly_initialized_on_exit
+// .printsize var_maybe_partly_initialized_on_entry
+// .printsize var_live_on_entry
+// .printsize ancestor_path
+// .printsize path_moved_at
+// .printsize path_assigned_at
+// .printsize path_accessed_at
+// .printsize path_begins_with_var
+// .printsize path_maybe_initialized_on_exit
+// .printsize path_maybe_uninitialized_on_exit
+// .printsize move_error
+// .printsize cfg_node
+// .printsize var_drop_live_on_entry
 
 
-.rule
-# basic
+
+// basic
 subset(origin1, origin2, point) :-
     subset_base(origin1, origin2, point).
 origin_contains_loan_on_entry(origin, loan, point) :-
@@ -126,19 +126,19 @@ subset_error(origin1, origin2, point) :-
     placeholder_origin(origin2),
     !known_placeholder_subset(origin1, origin2),
     origin1 != origin2.
-# ========================================================
-# make_universal_regions_live (liveness.rs)
+// ========================================================
+// make_universal_regions_live (liveness.rs)
 origin_live_on_entry(origin, point) :-
     cfg_node(point),
     universal_region(origin).
-# ========================================================
-# populating cfg_node (output/mod.rs)
+// ========================================================
+// populating cfg_node (output/mod.rs)
 cfg_node(point1) :-
     cfg_edge(point1, _).
 cfg_node(point2) :-
     cfg_edge(_, point2).
-# ========================================================
-# liveness logic (liveness.rs)
+// ========================================================
+// liveness logic (liveness.rs)
 var_live_on_entry(var, point) :- var_used_at(var, point).
 var_maybe_partly_initialized_on_entry(var, point2) :-
     var_maybe_partly_initialized_on_exit(var, point1),
@@ -161,9 +161,9 @@ var_drop_live_on_entry(Var, SourceNode) :-
     cfg_edge(SourceNode, TargetNode),
     !var_defined_at(Var, SourceNode),
     var_maybe_partly_initialized_on_exit(Var, SourceNode).
-# ========================================================
-# initialization logic (initialization.rs)
-# Step 1: compute transitive closures of path operations
+// ========================================================
+// initialization logic (initialization.rs)
+// Step 1: compute transitive closures of path operations
 ancestor_path(x, y) :- child_path(x, y).
 path_moved_at(x, y) :- path_moved_at_base(x, y).
 path_assigned_at(x, y) :- path_assigned_at_base(x, y).
@@ -184,7 +184,7 @@ path_accessed_at(Child, point) :-
 path_begins_with_var(Child, Var) :-
     path_begins_with_var(Parent, Var),
     ancestor_path(Parent, Child).
-# Step 2: Compute path initialization and deinitialization across the CFG.
+// Step 2: Compute path initialization and deinitialization across the CFG.
 path_maybe_initialized_on_exit(path, point) :-
     path_assigned_at(path, point).
 path_maybe_uninitialized_on_exit(path, point) :-
@@ -196,7 +196,7 @@ path_maybe_initialized_on_exit(path, point2) :-
 path_maybe_uninitialized_on_exit(path, point2) :-
     cfg_edge(point1, point2),
     !path_assigned_at(path, point2),
-    path_maybe_uninitialized_on_exit(path, point1).         # Reordered: move path_maybe_uninitialized_on_exit(path, point1) to last position
+    path_maybe_uninitialized_on_exit(path, point1).         // Reordered: move path_maybe_uninitialized_on_exit(path, point1) to last position
 var_maybe_partly_initialized_on_exit(var, point) :-
     path_maybe_initialized_on_exit(path, point),
     path_begins_with_var(path, var).
