@@ -232,6 +232,65 @@ def extract_load_time(engine_variant, tag):
     return None
 
 
+def extract_profiler_load_time(engine_variant, tag):
+    """Extract profiler load time for flowlog and souffle engines"""
+    if engine_variant in ["F0", "F1", "F2"]:
+        return _get_flowlog_loadtime(f"{tag}.out")
+    elif engine_variant in ["Si", "Sc"]:
+        return _get_souffle_loadtime(f"{tag}.profile")
+    return None
+
+
+def _get_flowlog_loadtime(out_file_path):
+    """Extract load time from FlowLog .out file"""
+    if not os.path.exists(out_file_path):
+        return None
+        
+    last_timestamp = None
+    pattern = re.compile(r"(\d+\.\d+)(ms|s):\s*Data loaded for")
+    
+    try:
+        with open(out_file_path, "r") as f:
+            for line in f:
+                match = pattern.search(line)
+                if match:
+                    value = float(match.group(1))
+                    unit = match.group(2)
+                    if unit == "ms":
+                        value = value / 1000.0
+                    last_timestamp = value
+    except (FileNotFoundError, ValueError):
+        return None
+        
+    return last_timestamp
+
+
+def _get_souffle_loadtime(profile_file_path):
+    """Extract load time from Souffle .profile file"""
+    if not os.path.exists(profile_file_path):
+        return None
+        
+    try:
+        with open(profile_file_path, 'r') as f:
+            data = json.load(f)
+        
+        relations = data["root"]["program"]["relation"]
+        total_loadtime = 0
+        
+        for relation_name, relation_data in relations.items():
+            if "loadtime" in relation_data:
+                loadtime = relation_data["loadtime"]
+                start_time = loadtime["start"]
+                end_time = loadtime["end"]
+                duration = (end_time - start_time) / 1000000  # Convert to seconds
+                total_loadtime += duration
+        
+        return total_loadtime
+        
+    except (KeyError, FileNotFoundError, json.JSONDecodeError):
+        return None
+
+
 def benchmark_ddlog(program_path, dataset_path, workers, tag, timeout_sec, payload_dir):
     """Benchmark DDLog engine"""
     base_program = Path(program_path).name
@@ -319,7 +378,7 @@ def benchmark_souffle(
             exe
         ), f"Executable {exe} not found after successful compilation"
 
-        cmd = f"./{exe} -F {DATA}/{dataset_path} -D . -j {workers}"
+        cmd = f"./{exe} -F {DATA}/{dataset_path} -D . -j {workers} -p $tag.profile"
 
     clear_caches()
     start_time = time.time()
@@ -502,9 +561,10 @@ def main():
                 with open(f"{tag}.err", "w") as f:
                     f.write(stderr)
 
-                # Extract dl_out and load_time
+                # Extract dl_out, load_time, and profiler_load_time
                 dl_out = extract_dl_out(engine_variant, key, tag, exit_code)
                 load_time = extract_load_time(engine_variant, tag)
+                profiler_load_time = extract_profiler_load_time(engine_variant, tag)
 
                 # Convert metrics to appropriate types
                 correctness_output = int(dl_out) if dl_out.isdigit() else None
@@ -516,6 +576,7 @@ def main():
                     "correctness_output": correctness_output,
                     "load_time": round(load_time, 2) if load_time is not None else None,
                     "compile_time": round(compile_time, 2) if compile_time is not None else None,
+                    "profiler_load_time": round(profiler_load_time, 2) if profiler_load_time is not None else None,
                 }
 
                 with open(f"{tag}.json", "w") as f:

@@ -5,7 +5,11 @@ import json
 import os
 import argparse
 import re
+import logging
 from pathlib import Path
+
+logging.basicConfig(level=logging.INFO, format='%(message)s')
+logger = logging.getLogger(__name__)
 
 class BenchmarkDB:
     def __init__(self, db_path):
@@ -28,6 +32,7 @@ class BenchmarkDB:
                 runtime REAL,
                 compile_time REAL,
                 load_time REAL,
+                profiler_load_time REAL,
                 result_folder TEXT NOT NULL,
                 PRIMARY KEY (program, plan_set, dataset, threads, engine, result_folder)
             )
@@ -35,12 +40,12 @@ class BenchmarkDB:
         
         conn.commit()
         conn.close()
-        print(f"Database created at {self.db_path}")
+        logger.info(f"Database created at {self.db_path}")
     
     def drop_database(self):
         """Drop the benchmark results table"""
         if not os.path.exists(self.db_path):
-            print(f"Error: Database {self.db_path} does not exist")
+            logger.error(f"Database {self.db_path} does not exist")
             return
             
         conn = sqlite3.connect(self.db_path)
@@ -48,8 +53,9 @@ class BenchmarkDB:
         cursor.execute('DROP TABLE IF EXISTS benchmark_results')
         conn.commit()
         conn.close()
-        print(f"Table dropped from {self.db_path}")
+        logger.info(f"Table dropped from {self.db_path}")
     
+
     def parse_filename(self, filename):
         """Parse benchmark result filename to extract metadata"""
         # Pattern: {program}_{plan_set}_{dataset}_{threads}_{engine}.json
@@ -65,7 +71,7 @@ class BenchmarkDB:
         """Load benchmark data from folder containing JSON files"""
         folder_path = Path(folder_path)
         if not folder_path.exists():
-            print(f"Error: Folder {folder_path} does not exist")
+            logger.error(f"Folder {folder_path} does not exist")
             return
         
         conn = sqlite3.connect(self.db_path)
@@ -80,7 +86,7 @@ class BenchmarkDB:
                 
             program, plan_set, dataset, threads, engine = self.parse_filename(json_file.name)
             if not program:
-                print(f"Skipping {json_file.name}: couldn't parse filename")
+                logger.warning(f"Skipping {json_file.name}: couldn't parse filename")
                 skipped_count += 1
                 continue
             
@@ -88,11 +94,13 @@ class BenchmarkDB:
                 with open(json_file, 'r') as f:
                     data = json.load(f)
                 
+                profiler_load_time = data.get('profiler_load_time')
+                
                 cursor.execute('''
                     INSERT OR REPLACE INTO benchmark_results 
                     (program, plan_set, dataset, threads, engine, status, correctness_output, 
-                     runtime, compile_time, load_time, result_folder)
-                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                     runtime, compile_time, load_time, profiler_load_time, result_folder)
+                    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
                 ''', (
                     program,
                     plan_set,
@@ -104,35 +112,36 @@ class BenchmarkDB:
                     data.get('runtime'),
                     data.get('compile_time'),
                     data.get('load_time'),
+                    profiler_load_time,
                     folder_path.name
                 ))
                 loaded_count += 1
                 
             except (json.JSONDecodeError, KeyError) as e:
-                print(f"Error processing {json_file.name}: {e}")
+                logger.error(f"Error processing {json_file.name}: {e}")
                 skipped_count += 1
         
         conn.commit()
         conn.close()
-        print(f"Loaded {loaded_count} records, skipped {skipped_count} files from {folder_path}")
+        logger.info(f"Loaded {loaded_count} records, skipped {skipped_count} files from {folder_path}")
     
     def show_data(self, sort_by):
         """Display all data in the database table with pretty formatting"""
         if not os.path.exists(self.db_path):
-            print(f"Error: Database {self.db_path} does not exist")
+            logger.error(f"Database {self.db_path} does not exist")
             return
             
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
         if sort_by == 'folder':
-            order_clause = 'ORDER BY result_folder, program, plan_set, dataset, threads, engine'
+            order_clause = 'ORDER BY result_folder, program, dataset, plan_set, threads, engine'
         else:  # sort_by == 'program'
-            order_clause = 'ORDER BY program, plan_set, dataset, threads, engine, result_folder'
+            order_clause = 'ORDER BY program, dataset, plan_set, threads, engine, result_folder'
             
         cursor.execute(f'''
             SELECT program, plan_set, dataset, threads, engine, status, 
-                   correctness_output, runtime, compile_time, load_time, result_folder
+                   correctness_output, runtime, compile_time, load_time, profiler_load_time, result_folder
             FROM benchmark_results {order_clause}
         ''')
         
@@ -140,22 +149,95 @@ class BenchmarkDB:
         conn.close()
         
         if not rows:
-            print("No data found in database")
+            logger.info("No data found in database")
             return
             
         # Print header
-        print(f"{'Program':<12} {'Plan':<4} {'Dataset':<10} {'Threads':<7} {'Engine':<15} {'Status':<6} {'Correct':<8} {'Runtime':<8} {'Compile':<8} {'Load':<8} {'Folder':<20}")
-        print("-" * 120)
+        logger.info(f"{'Program':<12} {'Plan':<4} {'Dataset':<10} {'Threads':<7} {'Engine':<15} {'Status':<6} {'Correct':<8} {'Runtime':<8} {'Compile':<8} {'Load':<8} {'ProfLoad':<8} {'Folder':<20}")
+        logger.info("-" * 128)
         
         # Print data rows
         for row in rows:
-            program, plan_set, dataset, threads, engine, status, correct, runtime, compile_time, load_time, folder = row
+            program, plan_set, dataset, threads, engine, status, correct, runtime, compile_time, load_time, profiler_load_time, folder = row
             correct_str = str(correct) if correct is not None else 'NULL'
             runtime_str = f"{runtime:.2f}" if runtime is not None else 'NULL'
             compile_str = f"{compile_time:.2f}" if compile_time is not None else 'NULL'
             load_str = f"{load_time:.2f}" if load_time is not None else 'NULL'
+            prof_load_str = f"{profiler_load_time:.2f}" if profiler_load_time is not None else 'NULL'
             
-            print(f"{program:<12} {plan_set:<4} {dataset:<10} {threads:<7} {engine:<15} {status:<6} {correct_str:<8} {runtime_str:<8} {compile_str:<8} {load_str:<8} {folder:<20}")
+            logger.info(f"{program:<12} {plan_set:<4} {dataset:<10} {threads:<7} {engine:<15} {status:<6} {correct_str:<8} {runtime_str:<8} {compile_str:<8} {load_str:<8} {prof_load_str:<8} {folder:<20}")
+    
+    def verify_correctness(self):
+        """Verify that all CMP records for the same program-dataset have consistent correctness values"""
+        if not os.path.exists(self.db_path):
+            logger.error(f"Database {self.db_path} does not exist")
+            return
+            
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            SELECT program, dataset, correctness_output, COUNT(*) as count
+            FROM benchmark_results 
+            WHERE status = 'CMP'
+            GROUP BY program, dataset, correctness_output
+            ORDER BY program, dataset
+        ''')
+        
+        results = cursor.fetchall()
+        conn.close()
+        
+        # Group by program-dataset and check for multiple correctness values
+        violations = {}
+        for program, dataset, correctness, count in results:
+            key = (program, dataset)
+            if key not in violations:
+                violations[key] = []
+            violations[key].append((correctness, count))
+        
+        found_violations = False
+        for (program, dataset), correctness_list in violations.items():
+            if len(correctness_list) > 1:
+                found_violations = True
+                correctness_info = ", ".join([f"{correctness}({count})" for correctness, count in correctness_list])
+                logger.error(f"VIOLATION: {program} on {dataset} - {correctness_info}")
+        
+        if not found_violations:
+            logger.info("No correctness violations found. All CMP records have consistent correctness values.")
+    
+    def query(self, sql):
+        """Execute custom SQL query and display results"""
+        if not os.path.exists(self.db_path):
+            logger.error(f"Database {self.db_path} does not exist")
+            return
+            
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        try:
+            cursor.execute(sql)
+            rows = cursor.fetchall()
+            
+            if rows:
+                # Get column names
+                columns = [description[0] for description in cursor.description]
+                
+                # Print header
+                header = " | ".join(f"{col:<15}" for col in columns)
+                logger.info(header)
+                logger.info("-" * len(header))
+                
+                # Print rows
+                for row in rows:
+                    formatted_row = " | ".join(f"{str(val) if val is not None else 'NULL':<15}" for val in row)
+                    logger.info(formatted_row)
+            else:
+                logger.info("No results returned")
+                
+        except sqlite3.Error as e:
+            logger.error(f"SQL error: {e}")
+        finally:
+            conn.close()
 
 def main():
     parser = argparse.ArgumentParser(description='Benchmark Results Database Manager')
@@ -179,6 +261,15 @@ def main():
     show_parser.add_argument('database', help='Path to SQLite database file')
     show_parser.add_argument('--sort-by', choices=['folder', 'program'], default='program', help='Primary sort column (default: program)')
     
+    # Verify correctness command
+    verify_parser = subparsers.add_parser('verify', help='Verify correctness consistency across results')
+    verify_parser.add_argument('database', help='Path to SQLite database file')
+    
+    # Query command
+    query_parser = subparsers.add_parser('query', help='Execute custom SQL query')
+    query_parser.add_argument('database', help='Path to SQLite database file')
+    query_parser.add_argument('sql', help='SQL query to execute')
+    
     args = parser.parse_args()
     
     if not args.command:
@@ -193,11 +284,15 @@ def main():
         db.drop_database()
     elif args.command == 'load':
         if not os.path.exists(args.database):
-            print(f"Error: Database {args.database} does not exist. Create it first.")
+            logger.error(f"Database {args.database} does not exist. Create it first.")
             return
         db.load_folder(args.folder)
     elif args.command == 'show':
         db.show_data(args.sort_by)
+    elif args.command == 'verify':
+        db.verify_correctness()
+    elif args.command == 'query':
+        db.query(args.sql)
 
 if __name__ == '__main__':
     main()
