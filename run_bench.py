@@ -378,7 +378,7 @@ def benchmark_souffle(
             exe
         ), f"Executable {exe} not found after successful compilation"
 
-        cmd = f"./{exe} -F {DATA}/{dataset_path} -D . -j {workers} -p $tag.profile"
+        cmd = f"./{exe} -F {DATA}/{dataset_path} -D . -j {workers}"
 
     clear_caches()
     start_time = time.time()
