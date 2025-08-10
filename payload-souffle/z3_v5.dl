@@ -84,7 +84,7 @@
 .input Jump_table_start(IO="file", filename="Jump_table_start.csv", delimiter=",")
 
 .decl def_used_for_address_0(EA_def:number,Reg:number,Type:number)
-.input def_used_for_address_0(IO="file", filename="def_used_for_address_0.csv", delimiter=",")
+.input def_used_for_address_0(IO="file", filename="Def_used_for_address.csv", delimiter=",")
 
 .decl Stack_def_use_block_last_def(EA:number,EA_def:number,VarReg:number,VarPos:number)
 .input Stack_def_use_block_last_def(IO="file", filename="Stack_def_use_block_last_def.csv", delimiter=",")
