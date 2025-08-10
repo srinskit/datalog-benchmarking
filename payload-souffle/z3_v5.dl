@@ -1,7 +1,7 @@
 
 // -------------------- edbs ------------------- 
 .decl Arch_memory_access(AccessType:number,EA:number,DirectReg:number,BaseReg:number,IndexReg:number,Offset:number)
-.input Arch_memory_access_truncate.csv // cut -f1-2,5-7,9 Arch_memory_access.csv > Arch_memory_access_truncate.csv
+.input Arch_memory_access(IO="file", filename="Arch_memory_access_truncate.csv", delimiter=",") // cut -f1-2,5-7,9 Arch_memory_access.csv > Arch_memory_access_truncate.csv
 
 .decl Arch_reg_reg_arithmetic_operation(EA:number,Dst:number,Src1:number,Src2:number,Mult:number,Offset:number)
 .input Arch_reg_reg_arithmetic_operation(IO="file", filename="Arch_reg_reg_arithmetic_operation.csv", delimiter=",")
@@ -78,7 +78,7 @@
 // .input Stack_def_use_live_var_used_in_block.csv
 
 .decl Stack_def_use_live_var_used(Block:number,LiveVarReg:number,LiveVarPos:number,UsedVarReg:number,UsedVarPos:number,EA_used:number,Index:number,Moves:number) // overridable
-.input Stack_def_use_live_var_used.csv
+.input Stack_def_use_live_var_used(IO="file", filename="Stack_def_use_live_var_used.csv", delimiter=",")
 
 .decl Jump_table_start(EA_jump:number,Size:number,TableStart:number,TableRef:number,Scale:number)
 .input Jump_table_start(IO="file", filename="Jump_table_start.csv", delimiter=",")

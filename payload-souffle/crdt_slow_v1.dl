@@ -26,10 +26,7 @@
 
 .decl currentValue(ElemCtr: number, ElemN: number, Value: number)
 .decl hasValue(ElemCtr: number, ElemN: number)
-.decl valueStep(FromCtr: number, FromN: number, ToCtr: number, ToN: number)
-.decl blankStep(FromCtr: number, FromN: number, ToCtr: number, ToN: number)
-
-.decl value_blank_star(FromCtr: number, FromN: number, ToCtr: number, ToN: number)
+.decl skipBlank(FromCtr: number, FromN: number, ToCtr: number, ToN: number)
 .decl nextVisible(PrevCtr: number, PrevN: number, NextCtr: number, NextN: number)
 
 .decl result(ctr1: number, ctr2: number, value: number)

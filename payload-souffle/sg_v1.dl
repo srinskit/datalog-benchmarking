@@ -1,11 +1,7 @@
- 
 .decl Arc(src: number, dest: number) 
-.input Arc.csv
-
+.input Arc(IO="file", filename="Arc.csv", delimiter=",")
  
 .decl Sg(src: number, dest: number) 
-
-
 
 // Sg(x, y) :- dereference(p, x, z), dereference(p, y, z), !ne(z, z, p), z != p.
 // Sgn(z, z) :- Sg(x, z), Sg(z, z), z == 3, z != x.
