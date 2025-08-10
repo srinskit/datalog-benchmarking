@@ -93,7 +93,7 @@
 		"engines": ["D", "F0", "R", "Sc", "Si", "U"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": false
+		"disabled": true
 	},
 	{
 		"program": "tc",
@@ -129,7 +129,7 @@
 		"engines": ["D", "F0", "R", "Sc", "Si", "U"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": false
+		"disabled": true
 	},
 	{
 		"program": "dyck",
@@ -213,7 +213,7 @@
 		"engines": ["D", "F0", "R", "Sc", "Si", "U"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": false
+		"disabled": true
 	},
 	{
 		"program": "bipartite",
@@ -309,7 +309,7 @@
 		"engines": ["D", "F2", "R", "U"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": false
+		"disabled": true
 	},
 	{
 		"program": "cc",
@@ -345,13 +345,85 @@
 		"engines": ["D", "F0", "R", "Sc", "Si"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "andersen",
 		"dataset": "1000000",
 		"plan_set": 0,
 		"program_path": "andersen",
+		"dataset_path": "pl/andersen/1000000",
+		"output_relation": "PointsTo",
+		"engines": ["D", "F0", "R", "Sc", "Si"],
+		"threads": [64],
+		"timeout": 900,
+		"disabled": true
+	},
+	{
+		"program": "andersen",
+		"dataset": "500000",
+		"plan_set": 1,
+		"program_path": "andersen_v1",
+		"dataset_path": "pl/andersen/500000",
+		"output_relation": "PointsTo",
+		"engines": ["D", "F0", "R", "Sc", "Si"],
+		"threads": [64],
+		"timeout": 900,
+		"disabled": false
+	},
+	{
+		"program": "andersen",
+		"dataset": "1000000",
+		"plan_set": 1,
+		"program_path": "andersen_v1",
+		"dataset_path": "pl/andersen/1000000",
+		"output_relation": "PointsTo",
+		"engines": ["D", "F0", "R", "Sc", "Si"],
+		"threads": [64],
+		"timeout": 900,
+		"disabled": true
+	},
+	{
+		"program": "andersen",
+		"dataset": "500000",
+		"plan_set": 2,
+		"program_path": "andersen_v2",
+		"dataset_path": "pl/andersen/500000",
+		"output_relation": "PointsTo",
+		"engines": ["D", "F0", "R", "Sc", "Si"],
+		"threads": [64],
+		"timeout": 900,
+		"disabled": false
+	},
+	{
+		"program": "andersen",
+		"dataset": "1000000",
+		"plan_set": 2,
+		"program_path": "andersen_v2",
+		"dataset_path": "pl/andersen/1000000",
+		"output_relation": "PointsTo",
+		"engines": ["D", "F0", "R", "Sc", "Si"],
+		"threads": [64],
+		"timeout": 900,
+		"disabled": true
+	},
+	{
+		"program": "andersen",
+		"dataset": "500000",
+		"plan_set": 3,
+		"program_path": "andersen_v3",
+		"dataset_path": "pl/andersen/500000",
+		"output_relation": "PointsTo",
+		"engines": ["D", "F0", "R", "Sc", "Si"],
+		"threads": [64],
+		"timeout": 900,
+		"disabled": false
+	},
+	{
+		"program": "andersen",
+		"dataset": "1000000",
+		"plan_set": 3,
+		"program_path": "andersen_v3",
 		"dataset_path": "pl/andersen/1000000",
 		"output_relation": "PointsTo",
 		"engines": ["D", "F0", "R", "Sc", "Si"],
@@ -369,7 +441,7 @@
 		"engines": ["D", "F0", "R", "Sc", "Si", "U"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": false
+		"disabled": true
 	},
 	{
 		"program": "csda",

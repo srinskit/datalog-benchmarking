@@ -377,10 +377,6 @@ def main():
         for engine_variant in engines_to_test:
 
             for workers in threads:
-                logger.info(
-                    f"program: {target['program']}, dataset: {target['dataset']}, workers: {workers}, engine: {engine_variant}"
-                )
-
                 # Create tag
                 engine_names = {
                     "D": "ddlog",
@@ -398,6 +394,11 @@ def main():
                 program_name = target["program"]
                 dataset_name = target["dataset"]
                 plan_set = target["plan_set"]
+                
+                logger.info(
+                    f"program: {program_name}, plan_set: {plan_set} dataset: {dataset_name}, workers: {workers}, engine: {engine_name}"
+                )
+
                 tag = f"{program_name}_{plan_set}_{dataset_name}_{workers}_{engine_name}"
 
                 # Get payload directory
@@ -463,14 +464,14 @@ def main():
                 # Write JSON file
                 result_data = {
                     "status": get_status_from_exit_code(exit_code),
-                    "runtime": runtime,
+                    "runtime": round(runtime, 2) if runtime is not None else None,
                     "correctness_output": correctness_output,
                     "load_time": (
                         float(load_time)
                         if load_time and load_time.replace(".", "").isdigit()
                         else load_time
                     ),
-                    "compile_time": compile_time,
+                    "compile_time": round(compile_time, 2) if compile_time is not None else None,
                 }
 
                 with open(f"{tag}.json", "w") as f:
