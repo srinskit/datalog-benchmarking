@@ -1,4 +1,4 @@
-.in
+
 .decl DirectSuperclass(class:number, superclass:number)
 .input DirectSuperclass.csv
 
@@ -25,7 +25,7 @@
 .decl Var_Type(var:number, type:number)
 .input Var_Type.csv
 .decl HeapAllocation_Type(heap:number, type:number)
-.input HeapAllocation_Type.csv # modified to be an EDB now
+.input HeapAllocation_Type(IO="file", filename="HeapAllocation_Type.csv", delimiter=",") # modified to be an EDB now
 
 
 # Main schema
@@ -89,7 +89,7 @@
 
 
 # imports
-.in
+
 .decl _ClassType(class:number)
 .input ClassType.csv
 .decl _ArrayType(arrayType:number)
@@ -171,7 +171,7 @@ MethodInvocation_Base(invocation, base) :- SpecialMethodInvocation_Base(invocati
 
 
 
-.in
+
 .decl _StaticMethodInvocation(instruction:number, index:number, signature:number, method:number)
 .input StaticMethodInvocation.csv
 .decl _SpecialMethodInvocation(instruction:number, index:number, signature:number, base:number, method:number)

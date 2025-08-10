@@ -1,5 +1,5 @@
 
-// .in
+// 
 .decl Insert_input(a: number, b: number, c: number, d: number)
 .input Insert_input(IO="file", filename="Insert_input.csv", delimiter=",")
 .decl Remove_input(a: number, b: number)

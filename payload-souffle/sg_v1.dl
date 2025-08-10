@@ -1,8 +1,8 @@
-.in 
+ 
 .decl Arc(src: number, dest: number) 
 .input Arc.csv
 
-.printsize 
+ 
 .decl Sg(src: number, dest: number) 
 
 .rule

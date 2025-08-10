@@ -1,4 +1,4 @@
-.in
+
 .decl Arc(x:number, y:number, l:number)
 .input Arc.csv
 

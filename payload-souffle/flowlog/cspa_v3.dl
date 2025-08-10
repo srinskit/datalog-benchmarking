@@ -1,4 +1,4 @@
-.in
+
 .decl Assign(x: number, y: number)
 .input Assign.csv
 

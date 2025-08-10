@@ -1,36 +1,36 @@
-.in
+
 .decl DirectSuperclass(class:number, superclass:number)
-.input DirectSuperclass.csv
+.input DirectSuperclass(IO="file", filename="DirectSuperclass.csv", delimiter=",")
 
 .decl DirectSuperinterface(ref:number, interface:number)
-.input DirectSuperinterface.csv
+.input DirectSuperinterface(IO="file", filename="DirectSuperinterface.csv", delimiter=",")
 
 .decl MainClass(class:number)
-.input MainClass.csv
+.input MainClass(IO="file", filename="MainClass.csv", delimiter=",")
 
 .decl FormalParam(index:number, method:number, var:number)
-.input FormalParam.csv
+.input FormalParam(IO="file", filename="FormalParam.csv", delimiter=",")
 
 .decl ComponentType(arrayType:number, componentType:number)
-.input ComponentType.csv
+.input ComponentType(IO="file", filename="ComponentType.csv", delimiter=",")
 
 .decl AssignReturnValue(invocation:number, to:number)
-.input AssignReturnValue.csv
+.input AssignReturnValue(IO="file", filename="AssignReturnValue.csv", delimiter=",")
 
 .decl ActualParam(index:number, invocation:number, var:number)
-.input ActualParam.csv
+.input ActualParam(IO="file", filename="ActualParam.csv", delimiter=",")
 
 .decl Method_Modifier(mod:number, method:number)
-.input Method_Modifier.csv
+.input Method_Modifier(IO="file", filename="Method_Modifier.csv", delimiter=",")
 .decl Var_Type(var:number, type:number)
-.input Var_Type.csv
+.input Var_Type(IO="file", filename="Var_Type.csv", delimiter=",")
 .decl HeapAllocation_Type(heap:number, type:number)
-.input HeapAllocation_Type.csv # modified to be an EDB now
+.input HeapAllocation_Type(IO="file", filename="HeapAllocation_Type.csv", delimiter=",") # modified to be an EDB now
 
 
 # Main schema
 # .decl Method_Descriptor(method:number, descriptor:number)
-.printsize
+
 .decl isType(t:number)
 .decl isReferenceType(t:number)
 .decl isArrayType(t:number)
@@ -89,31 +89,31 @@
 
 
 # imports
-.in
+
 .decl _ClassType(class:number)
-.input ClassType.csv
+.input _ClassType(IO="file", filename="_ClassType.csv", delimiter=",")
 .decl _ArrayType(arrayType:number)
-.input ArrayType.csv
+.input _ArrayType(IO="file", filename="_ArrayType.csv", delimiter=",")
 .decl _InterfaceType(interface:number)
-.input InterfaceType.csv
+.input _InterfaceType(IO="file", filename="_InterfaceType.csv", delimiter=",")
 .decl _Var_DeclaringMethod(var:number, method:number)
 .input Var_DeclaringMethod.csv 
 .decl _ApplicationClass(type:number)
-.input ApplicationClass.csv
+.input _ApplicationClass(IO="file", filename="_ApplicationClass.csv", delimiter=",")
 .decl _ThisVar(method:number, var:number)
-.input ThisVar.csv
+.input _ThisVar(IO="file", filename="_ThisVar.csv", delimiter=",")
 .decl _NormalHeap(id:number, type:number)
-.input NormalHeap.csv
+.input _NormalHeap(IO="file", filename="_NormalHeap.csv", delimiter=",")
 .decl _StringConstant(id:number)
-.input StringConstant.csv
+.input _StringConstant(IO="file", filename="_StringConstant.csv", delimiter=",")
 .decl _AssignHeapAllocation(instruction:number, index:number, heap:number, to:number, inmethod:number, linenumber:number)
-.input AssignHeapAllocation.csv
+.input _AssignHeapAllocation(IO="file", filename="_AssignHeapAllocation.csv", delimiter=",")
 .decl _AssignLocal(instruction:number, index:number, from:number, to:number, inmethod:number)
-.input AssignLocal.csv
+.input _AssignLocal(IO="file", filename="_AssignLocal.csv", delimiter=",")
 .decl _AssignCast(instruction:number, index:number, from:number, to:number, type:number, inmethod:number)
-.input AssignCast.csv
+.input _AssignCast(IO="file", filename="_AssignCast.csv", delimiter=",")
 .decl _Field(signature:number, declaringClass:number, simplename:number, type:number)
-.input Field.csv
+.input _Field(IO="file", filename="_Field.csv", delimiter=",")
 
 .rule
 isType(class) :- _ClassType(class).
@@ -171,31 +171,31 @@ MethodInvocation_Base(invocation, base) :- SpecialMethodInvocation_Base(invocati
 
 
 
-.in
+
 .decl _StaticMethodInvocation(instruction:number, index:number, signature:number, method:number)
-.input StaticMethodInvocation.csv
+.input _StaticMethodInvocation(IO="file", filename="_StaticMethodInvocation.csv", delimiter=",")
 .decl _SpecialMethodInvocation(instruction:number, index:number, signature:number, base:number, method:number)
-.input SpecialMethodInvocation.csv
+.input _SpecialMethodInvocation(IO="file", filename="_SpecialMethodInvocation.csv", delimiter=",")
 .decl _VirtualMethodInvocation(instruction:number, index:number, signature:number, base:number, method:number)
-.input VirtualMethodInvocation.csv
+.input _VirtualMethodInvocation(IO="file", filename="_VirtualMethodInvocation.csv", delimiter=",")
 .decl _Method(method:number, simplename:number, params:number, declaringType:number, returnType:number, jvmDescriptor:number, arity:number)
-.input Method.csv
+.input _Method(IO="file", filename="_Method.csv", delimiter=",")
 .decl Method_Descriptor(method:number, descriptor:number)
-.input Method_Descriptor.csv
+.input Method_Descriptor(IO="file", filename="Method_Descriptor.csv", delimiter=",")
 .decl _StoreInstanceField(instruction:number, index:number, from:number, base:number, signature:number, method:number)
-.input StoreInstanceField.csv
+.input _StoreInstanceField(IO="file", filename="_StoreInstanceField.csv", delimiter=",")
 .decl _LoadInstanceField(instruction:number, index:number, to:number, base:number, signature:number, method:number)
-.input LoadInstanceField.csv
+.input _LoadInstanceField(IO="file", filename="_LoadInstanceField.csv", delimiter=",")
 .decl _StoreStaticField(instruction:number, index:number, from:number, signature:number, method:number)
-.input StoreStaticField.csv
+.input _StoreStaticField(IO="file", filename="_StoreStaticField.csv", delimiter=",")
 .decl _LoadStaticField(instruction:number, index:number, to:number, signature:number, method:number)
-.input LoadStaticField.csv
+.input _LoadStaticField(IO="file", filename="_LoadStaticField.csv", delimiter=",")
 .decl _StoreArrayIndex(instruction:number, index:number, from:number, base:number, method:number)
-.input StoreArrayIndex.csv
+.input _StoreArrayIndex(IO="file", filename="_StoreArrayIndex.csv", delimiter=",")
 .decl _LoadArrayIndex(instruction:number, index:number, to:number, base:number, method:number)
-.input LoadArrayIndex.csv
+.input _LoadArrayIndex(IO="file", filename="_LoadArrayIndex.csv", delimiter=",")
 .decl _Return(instruction:number, index:number, var:number, method:number)
-.input Return.csv
+.input _Return(IO="file", filename="_Return.csv", delimiter=",")
 
 .rule
 Instruction_Method(instruction, method) :-
@@ -353,7 +353,7 @@ VirtualMethodInvocation_Descriptor(invocation, descriptor) :-
   
 # Basic (type-based) analysis
 # .comp Basic {
-.printsize
+
 .decl MethodLookup(simplename:number, descriptor:number, type:number, method:number)
 .decl MethodImplemented(simplename:number, descriptor:number, type:number, method:number)
 .decl DirectSubclass(a:number, c:number)
@@ -480,7 +480,7 @@ SubtypeOfDifferent(s, t) :-
 
 
 # class initialization
-.printsize
+
 .decl ClassInitializer(type:number, method:number)
 .decl InitializedClass(classOrInterface:number)
 
@@ -524,7 +524,7 @@ Reachable(clinit) :-
 
 # Main (value-based) analysis
 # basic.MethodImplemented, basic.MainMethodDeclaration, basic.SupertypeOf, basic.MethodLookup
-.printsize
+
 .decl Assign(to:number, from:number)
 .decl VarPointsTo(heap:number, var:number)
 .decl InstanceFieldPointsTo(heap:number , fld:number, baseheap:number)

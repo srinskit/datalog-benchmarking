@@ -1,8 +1,8 @@
-.in
-.decl Arc(x:number, y:number, l:number)
-.input Arc.csv
 
-.printsize
+.decl Arc(x:number, y:number, l:number)
+.input Arc(IO="file", filename="Arc.csv", delimiter=",")
+
+
 .decl Zero(x:number, y:number)
 .decl One(x:number, y:number)
 .decl Dyck(x:number, y:number)

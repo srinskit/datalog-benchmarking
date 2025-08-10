@@ -1,4 +1,4 @@
-.in 
+ 
 .decl Arc(src: number, dest: number) 
 .input Arc.csv
 

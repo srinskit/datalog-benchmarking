@@ -1,8 +1,8 @@
-.in
-.decl Arc(a: number, b: number)
-.input Arc.csv
 
-.printsize
+.decl Arc(a: number, b: number)
+.input Arc(IO="file", filename="Arc.csv", delimiter=",")
+
+
 .decl CC2(cc: number)
 .decl CC(node: number, cc: number)
 

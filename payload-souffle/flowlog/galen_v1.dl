@@ -1,4 +1,4 @@
-.in
+
 .decl P(X: number, Z: number)
 .input P.csv
 

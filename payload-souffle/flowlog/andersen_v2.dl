@@ -1,4 +1,4 @@
-.in 
+ 
 .decl AddressOf(y: number, x: number)
 .input addressOf.csv
 

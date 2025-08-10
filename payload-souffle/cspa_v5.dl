@@ -1,17 +1,17 @@
-.in
+
 .decl Assign(x: number, y: number)
-.input Assign.csv
+.input Assign(IO="file", filename="Assign.csv", delimiter=",")
 
 .decl Dereference(x: number, y: number)
-.input Dereference.csv
+.input Dereference(IO="file", filename="Dereference.csv", delimiter=",")
 
-.printsize 
+ 
 .decl ValueFlow(x: number, y: number)
 
-.printsize 
+ 
 .decl MemoryAlias(x: number, y: number)
 
-.printsize 
+ 
 .decl ValueAlias(x: number, y: number)
 
 .rule

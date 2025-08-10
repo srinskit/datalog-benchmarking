@@ -1,4 +1,4 @@
-// .in
+// 
 .decl DirectSuperclass(class:number, superclass:number)
 .input DirectSuperclass(IO="file", filename="DirectSuperclass.csv", delimiter=",")
 .decl DirectSuperinterface(ref:number, interface:number)
@@ -82,7 +82,7 @@
 
 
 // imports
-// .in
+// 
 .decl _ClassType(class:number)
 .input _ClassType(IO="file", filename="ClassType.csv", delimiter=",")
 .decl _ArrayType(arrayType:number)
@@ -164,7 +164,7 @@ MethodInvocation_Base(invocation, base) :- SpecialMethodInvocation_Base(invocati
 
 
 
-// .in
+// 
 .decl _StaticMethodInvocation(instruction:number, index:number, signature:number, method:number)
 .input _StaticMethodInvocation(IO="file", filename="StaticMethodInvocation.csv", delimiter=",")
 .decl _SpecialMethodInvocation(instruction:number, index:number, signature:number, base:number, method:number)

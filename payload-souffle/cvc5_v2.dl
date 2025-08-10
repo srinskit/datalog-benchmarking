@@ -1,76 +1,76 @@
-.in
+
 # -------------------- edbs ------------------- 
 .decl Arch_memory_access(AccessType:number,EA:number,DirectReg:number,BaseReg:number,IndexReg:number,Offset:number)
 .input Arch_memory_access_truncate.csv # cut -f1-2,5-7,9 Arch_memory_access.csv > Arch_memory_access_truncate.csv
 
 .decl Arch_reg_reg_arithmetic_operation(EA:number,Dst:number,Src1:number,Src2:number,Mult:number,Offset:number)
-.input Arch_reg_reg_arithmetic_operation.csv
+.input Arch_reg_reg_arithmetic_operation(IO="file", filename="Arch_reg_reg_arithmetic_operation.csv", delimiter=",")
 
 .decl Arch_return_reg(Reg:number)
-.input Arch_return_reg.csv
+.input Arch_return_reg(IO="file", filename="Arch_return_reg.csv", delimiter=",")
 
 .decl Block_next(Block:number,BlockEnd:number,NextBlock:number)
-.input Block_next.csv
+.input Block_next(IO="file", filename="Block_next.csv", delimiter=",")
 
 .decl Block_last_instruction(Block:number,EA:number)
-.input Block_last_instruction.csv
+.input Block_last_instruction(IO="file", filename="Block_last_instruction.csv", delimiter=",")
 
 .decl Code_in_block(EA:number,Block:number)
-.input Code_in_block.csv
+.input Code_in_block(IO="file", filename="Code_in_block.csv", delimiter=",")
 
 .decl Direct_call(EA:number,Dest:number)
-.input Direct_call.csv
+.input Direct_call(IO="file", filename="Direct_call.csv", delimiter=",")
 
 .decl May_fallthrough(o:number,d:number)
-.input May_fallthrough.csv
+.input May_fallthrough(IO="file", filename="May_fallthrough.csv", delimiter=",")
 
 .decl Reg_def_use_block_last_def(EA:number,EA_def:number,Var:number)
-.input Reg_def_use_block_last_def.csv
+.input Reg_def_use_block_last_def(IO="file", filename="Reg_def_use_block_last_def.csv", delimiter=",")
 
 .decl Reg_def_use_defined_in_block(Block:number,Var:number)
-.input Reg_def_use_defined_in_block.csv
+.input Reg_def_use_defined_in_block(IO="file", filename="Reg_def_use_defined_in_block.csv", delimiter=",")
 
 .decl Reg_def_use_flow_def(EA:number,Var:number,EA_next:number,Value:number)
-.input Reg_def_use_flow_def.csv
+.input Reg_def_use_flow_def(IO="file", filename="Reg_def_use_flow_def.csv", delimiter=",")
 
 .decl Reg_def_use_live_var_def(Block:number,VarIdentity:number,LiveVar:number,EA_def:number)
-.input Reg_def_use_live_var_def.csv
+.input Reg_def_use_live_var_def(IO="file", filename="Reg_def_use_live_var_def.csv", delimiter=",")
 
 .decl Reg_def_use_ref_in_block(Block:number,Var:number)
-.input Reg_def_use_ref_in_block.csv
+.input Reg_def_use_ref_in_block(IO="file", filename="Reg_def_use_ref_in_block.csv", delimiter=",")
 
 .decl Reg_def_use_return_block_end(Callee:number,CalleeEnd:number,Block:number,BlockEnd:number)
-.input Reg_def_use_return_block_end.csv
+.input Reg_def_use_return_block_end(IO="file", filename="Reg_def_use_return_block_end.csv", delimiter=",")
 
 .decl Reg_def_use_used(EA:number,Var:number,Index:number)
-.input Reg_def_use_used.csv
+.input Reg_def_use_used(IO="file", filename="Reg_def_use_used.csv", delimiter=",")
 
 .decl Reg_def_use_used_in_block(Block:number,EA_used:number,Var:number,Index:number)
-.input Reg_def_use_used_in_block.csv
+.input Reg_def_use_used_in_block(IO="file", filename="Reg_def_use_used_in_block.csv", delimiter=",")
 
 .decl Reg_used_for(EA:number,Reg:number,Type:number)
-.input Reg_used_for.csv
+.input Reg_used_for(IO="file", filename="Reg_used_for.csv", delimiter=",")
 
 .decl Relative_jump_table_entry_candidate(EA:number,TableStart:number,Size:number,Reference:number,Dest:number,Scale:number,Offset:number)
-.input Relative_jump_table_entry_candidate.csv
+.input Relative_jump_table_entry_candidate(IO="file", filename="Relative_jump_table_entry_candidate.csv", delimiter=",")
 
 .decl Stack_def_use_def(EA:number,VarReg:number,VarPos:number)
-.input Stack_def_use_def.csv
+.input Stack_def_use_def(IO="file", filename="Stack_def_use_def.csv", delimiter=",")
 
 .decl Stack_def_use_defined_in_block(Block:number,VarReg:number,VarPos:number)
-.input Stack_def_use_defined_in_block.csv
+.input Stack_def_use_defined_in_block(IO="file", filename="Stack_def_use_defined_in_block.csv", delimiter=",")
 
 .decl Stack_def_use_live_var_def(Block:number,VarIdentityReg:number,VarIdentityPos:number,LiveVarReg:number,LiveVarPos:number,EA_def:number)
-.input Stack_def_use_live_var_def.csv
+.input Stack_def_use_live_var_def(IO="file", filename="Stack_def_use_live_var_def.csv", delimiter=",")
 
 .decl Stack_def_use_ref_in_block(Block:number,VarReg:number,VarPos:number)
-.input Stack_def_use_ref_in_block.csv
+.input Stack_def_use_ref_in_block(IO="file", filename="Stack_def_use_ref_in_block.csv", delimiter=",")
 
 .decl Stack_def_use_used_in_block(Block:number,EA_used:number,VarReg:number,VarPos:number,Index:number)
-.input Stack_def_use_used_in_block.csv
+.input Stack_def_use_used_in_block(IO="file", filename="Stack_def_use_used_in_block.csv", delimiter=",")
 
 .decl Stack_def_use_used(EA:number,VarReg:number,VarPos:number,Index:number)
-.input Stack_def_use_used.csv
+.input Stack_def_use_used(IO="file", filename="Stack_def_use_used.csv", delimiter=",")
 
 
 # -------------------- fake edbs ------------------- */
@@ -81,37 +81,37 @@
 .input Stack_def_use_live_var_used.csv
 
 .decl Jump_table_start(EA_jump:number,Size:number,TableStart:number,TableRef:number,Scale:number)
-.input Jump_table_start.csv
+.input Jump_table_start(IO="file", filename="Jump_table_start.csv", delimiter=",")
 
 .decl def_used_for_address_0(EA_def:number,Reg:number,Type:number)
-.input Def_used_for_address.csv
+.input def_used_for_address_0(IO="file", filename="def_used_for_address_0.csv", delimiter=",")
 
 .decl Stack_def_use_block_last_def(EA:number,EA_def:number,VarReg:number,VarPos:number)
-.input Stack_def_use_block_last_def.csv
+.input Stack_def_use_block_last_def(IO="file", filename="Stack_def_use_block_last_def.csv", delimiter=",")
 
 
 # -------------------- idbs ------------------- 
-.printsize
+
 .decl Stack_def_use_def_used(EA_def:number,VarDefReg:number,VarDefPos:number,EA_used:number,VarUsedReg:number,VarUsedPos:number)
-.printsize
+
 .decl Reg_def_use_return_val_used(EA_call:number,Callee:number,Reg:number,EA_used:number,Index_used:number)
-.printsize
+
 .decl Reg_def_use_live_var_used(Block:number,LiveVar:number,EA_used:number,Index:number) # overridable
-.printsize
+
 .decl Jump_table_target(EA:number,Dest:number)
-.printsize
+
 .decl Reg_def_use_def_used(EA_def:number,Var:number,EA_used:number,Index_used:number)
-.printsize
+
 .decl Reg_def_use_live_var_at_prior_used(EA_used:number,BlockUsed:number,Var:number)
-.printsize
+
 .decl Reg_def_use_live_var_at_block_end(Block:number,BlockUsed:number,Var:number)
-.printsize
+
 .decl Reg_reg_arithmetic_operation_defs(EA:number,Reg_def:number,EA_def1:number,Reg1:number,EA_def2:number,Reg2:number,Mult:number,Offset:number)
-.printsize
+
 .decl Def_used_for_address(EA_def:number,Reg:number,Type:number)
-.printsize
+
 .decl Stack_def_use_live_var_at_block_end(Block:number,BlockUsed:number,VarReg:number,VarPos:number)
-.printsize
+
 .decl Stack_def_use_live_var_at_prior_used(EA_used:number,BlockUsed:number,VarReg:number,VarPos:number)
 
 

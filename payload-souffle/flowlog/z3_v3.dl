@@ -1,4 +1,4 @@
-.in
+
 # -------------------- edbs ------------------- 
 .decl Arch_memory_access(AccessType:number,EA:number,DirectReg:number,BaseReg:number,IndexReg:number,Offset:number)
 .input Arch_memory_access_truncate.csv # cut -f1-2,5-7,9 Arch_memory_access.csv > Arch_memory_access_truncate.csv

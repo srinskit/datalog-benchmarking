@@ -1,11 +1,11 @@
 
-.in
-.decl Insert_input(a: number, b: number, c: number, d: number)
-.input Insert_input.csv
-.decl Remove_input(a: number, b: number)
-.input Remove_input.csv
 
-.printsize
+.decl Insert_input(a: number, b: number, c: number, d: number)
+.input Insert_input(IO="file", filename="Insert_input.csv", delimiter=",")
+.decl Remove_input(a: number, b: number)
+.input Remove_input(IO="file", filename="Remove_input.csv", delimiter=",")
+
+
 
 # definition of insertion into an ordered list (defines nextElem):
 .decl insert(a: number, b: number, c: number, d: number)

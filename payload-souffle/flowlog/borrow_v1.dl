@@ -21,7 +21,7 @@
 # .input use_of_var_derefs_origin
 # // .input placeholder
 
-.in
+
 .decl subset_base(x:number, y:number, z:number)
 .decl cfg_edge(x:number, y:number)
 .decl loan_issued_at(x:number, y:number, z:number)

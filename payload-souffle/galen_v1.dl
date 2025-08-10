@@ -1,26 +1,26 @@
-.in
+
 .decl P(X: number, Z: number)
-.input P.csv
+.input P(IO="file", filename="P.csv", delimiter=",")
 
 .decl Q(X: number, Y: number, Z: number)
-.input Q.csv
+.input Q(IO="file", filename="Q.csv", delimiter=",")
 
 .decl R(R: number, P: number, E: number)
-.input R.csv
+.input R(IO="file", filename="R.csv", delimiter=",")
 
 .decl C(Y: number, Z: number, W: number)
-.input C.csv
+.input C(IO="file", filename="C.csv", delimiter=",")
 
 .decl U(R: number, Z: number, W: number)
-.input U.csv
+.input U(IO="file", filename="U.csv", delimiter=",")
 
 .decl S(R: number, P: number)
-.input S.csv
+.input S(IO="file", filename="S.csv", delimiter=",")
 
-.printsize 
+ 
 .decl OutP(X: number, Z: number)
 
-.printsize
+
 .decl OutQ(X: number, Y: number, Z: number)
 
 .rule

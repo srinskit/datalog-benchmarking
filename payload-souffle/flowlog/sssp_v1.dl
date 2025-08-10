@@ -1,4 +1,4 @@
-.in 
+ 
 .decl arc(src: number, dest: number, weight: number) 
 .input Arc.csv
 .decl id(src: number)
