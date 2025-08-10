@@ -12,3 +12,5 @@
 NullNode(x, y) :- NullEdge(x, y).
 # Reordered: moved Edge(w, y) before NullNode(x, w) to change join order
 NullNode(x, y) :- Edge(w, y), NullNode(x, w).
+
+.printsize NullNode

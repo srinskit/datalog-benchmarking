@@ -21,3 +21,7 @@ Zero(x) :- Arc(x, y), One(y).
 
 # Reordered: moved Zero(x) before One(x) in BipartiteViolation rule
 BipartiteViolation(x) :- Zero(x), One(x).
+
+.printsize BipartiteViolation
+.printsize Zero
+.printsize One

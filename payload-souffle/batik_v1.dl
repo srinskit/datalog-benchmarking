@@ -682,3 +682,22 @@ Reachable(method) :-
 # souffle -o doop ./doop.dl -j 16
 # time ./doop -F./doop-data -D./idbs/ -j 16
 
+.printsize MethodLookup
+.printsize MethodImplemented
+.printsize DirectSubclass
+.printsize Subclass
+.printsize Superclass
+.printsize Superinterface
+.printsize SubtypeOf
+.printsize SupertypeOf
+.printsize SubtypeOfDifferent
+.printsize MainMethodDeclaration
+.printsize ClassInitializer
+.printsize InitializedClass
+.printsize Assign
+.printsize VarPointsTo
+.printsize InstanceFieldPointsTo
+.printsize StaticFieldPointsTo
+.printsize CallGraphEdge
+.printsize ArrayIndexPointsTo
+.printsize Reachable

@@ -25,3 +25,7 @@ ValueFlow(x, x) :- Assign(x, y).
 ValueFlow(x, x) :- Assign(y, x).
 MemoryAlias(x, x) :- Assign(y, x).
 MemoryAlias(x, x) :- Assign(x, y).
+
+.printsize ValueFlow
+.printsize MemoryAlias
+.printsize ValueAlias

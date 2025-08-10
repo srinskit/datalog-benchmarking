@@ -37,3 +37,6 @@ OutP(x,z) :- C(y,w,z), OutP(x,y), OutP(x,w).
 OutQ(x,q,z) :- S(r,q), OutQ(x,r,z).
 # Reordered: moved OutQ(z,u,o) to first position, R(y,u,e) second, OutQ(x,y,z) last
 OutQ(x,e,o) :- OutQ(z,u,o), R(y,u,e), OutQ(x,y,z).
+
+.printsize OutP
+.printsize OutQ

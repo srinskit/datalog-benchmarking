@@ -12,3 +12,5 @@
 
 Sg(x, y) :- Arc(a, y), Arc(a, x), x != y.           # Reordered: swapped Arc(a, x) and Arc(a, y) positions
 Sg(x, y) :- Arc(a, x), Sg(a, b), Arc(b, y).
+
+.printsize Sg

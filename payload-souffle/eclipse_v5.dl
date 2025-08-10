@@ -679,3 +679,22 @@ Reachable(method) :-
 
 # ./target/release/executing -p /users/hangdong/xalan/xalan.dl -f /users/hangdong/xalan -c ./examples/csvs -d $'\t' -w 8
 
+.printsize MethodLookup
+.printsize MethodImplemented
+.printsize DirectSubclass
+.printsize Subclass
+.printsize Superclass
+.printsize Superinterface
+.printsize SubtypeOf
+.printsize SupertypeOf
+.printsize SubtypeOfDifferent
+.printsize MainMethodDeclaration
+.printsize ClassInitializer
+.printsize InitializedClass
+.printsize Assign
+.printsize VarPointsTo
+.printsize InstanceFieldPointsTo
+.printsize StaticFieldPointsTo
+.printsize CallGraphEdge
+.printsize ArrayIndexPointsTo
+.printsize Reachable

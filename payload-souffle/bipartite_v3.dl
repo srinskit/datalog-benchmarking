@@ -21,3 +21,7 @@ Zero(y) :- Arc(x, y), One(x).
 Zero(x) :- Arc(x, y), One(y).
 
 BipartiteViolation(x) :- One(x), Zero(x).
+
+.printsize BipartiteViolation
+.printsize Zero
+.printsize One

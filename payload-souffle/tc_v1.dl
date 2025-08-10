@@ -8,3 +8,5 @@
 .rule
 Tc(x, y) :- Arc(x, y).
 Tc(x, y) :- Tc(x, z), Arc(z, y).            # Reordered: moved Tc(x, z) before Arc(z, y) to change join order
+
+.printsize Tc

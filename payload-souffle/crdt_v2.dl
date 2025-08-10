@@ -114,3 +114,17 @@ nextVisible(PrevCtr, PrevN, NextCtr, NextN) :-
 result(ctr1, ctr2, value) :- 
     nextVisible(ctr1, _, ctr2, N2), 
     currentValue(ctr2, N2, value).
+
+.printsize nextSiblingAnc
+.printsize currentValue
+.printsize hasValue
+.printsize valueStep
+.printsize blankStep
+.printsize value_blank_star
+.printsize nextVisible
+.printsize result
+.printsize result
+.printsize nextVisible
+.printsize value_blank_star
+.printsize blankStep
+.printsize valueStep
