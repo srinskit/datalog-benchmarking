@@ -1,0 +1,27 @@
+\begin{subfigure}{0.3\textwidth}
+        \resizebox{\linewidth}{!}{\input{figures/ddisasm_plan_variability.pgf}}
+        \caption{DDISASM (z3) on 30 orders}
+    \end{subfigure}
+    \begin{subfigure}{0.3\textwidth}
+        \resizebox{\linewidth}{!}{\input{figures/doop_plan_variability.pgf}}
+        \caption{DOOP (batik) on 43 orders}
+    \end{subfigure}
+    \begin{subfigure}{0.3\textwidth}
+        \resizebox{\linewidth}{!}{\input{figures/galen_plan_variability.pgf}}
+        \caption{Galen (galen) on 18 orders}
+    \end{subfigure}
+    
+    
+      
+    \begin{subfigure}{0.3\textwidth}
+        \resizebox{\linewidth}{!}{\input{figures/Bipartite_netflix_4t.pgf}}
+        \caption{Bipartite (netflix), 4 threads}
+    \end{subfigure}
+    \begin{subfigure}{0.3\textwidth}
+        \resizebox{\linewidth}{!}{\input{figures/Galen_Galen_64t.pgf}}
+        \caption{Galen (galen), 64 threads}
+    \end{subfigure}
+    \begin{subfigure}{0.3\textwidth}
+        \resizebox{\linewidth}{!}{\input{figures/DOOP_biojava_64t.pgf}}
+        \caption{DOOP (biojava), 64 threads}
+    \end{subfigure}
