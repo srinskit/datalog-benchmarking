@@ -1,8 +1,6 @@
 **/*.log
 **/*.out
 **/*.info
-**/*.zip
-**/*.txt
 *.png
 
 payload-*/*.sh
@@ -14,3 +12,5 @@ payload-*/*.sh
 .env
 
 *.db
+
+!plot-scripts/**/*.log

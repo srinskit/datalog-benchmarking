@@ -2,25 +2,63 @@
 # python plot.py Bipartite_netflix_4* Galen_Galen_64* DOOP_biojava_64*
 
 import matplotlib
+import pandas as pd
+import re
+import argparse
+import shutil
+import sys
+
+# =============================================================================
+# DISPLAY PARAMETERS - Modify these to customize the plot appearance
+# =============================================================================
+
+# Figure settings
+FIG_SIZES = [34, 10]  # [width, height] in inches
+METRICS = "cm"  # "c"=CPU, "m"=Memory, "r"=IO Reads
+
+# Font sizes
+FONT_LABEL = 36
+FONT_TICK = 30
+FONT_LEGEND = 28
+FONT_CAPTION = 32
+
+# Line settings
+LINE_WIDTH = 7
+
+# Data processing
+INTERVALS = [2, 3, 2]  # Time interval grouping per benchmark
+TIMECLIPS = [-1, 80, -1]  # Max time to display (-1 = no limit)
+MEMCLIPS = None  # Max memory to display (None = no limit)
+SKIP_ENGINES = "i"  # Engine keys to skip ("i" = souffle-intptr)
+NO_LEGEND = False
+
+# Captions for each benchmark
+CAPTIONS = [
+    "Bipartite (netflix), 4 threads",
+    "Galen (galen), 64 threads",
+    "DOOP (biojava), 64 threads",
+]
+
+# =============================================================================
+
+# Require LaTeX to be available
+if not shutil.which("pdflatex"):
+    print("Error: pdflatex not found. Please install LaTeX.")
+    sys.exit(1)
 
 matplotlib.use("pgf")
 
 import matplotlib.pyplot as plt
 
-# Optional: Configure global settings for LaTeX look
+# Configure LaTeX settings
 plt.rcParams.update(
     {
-        "pgf.texsystem": "pdflatex",  # or "xelatex", "lualatex"
-        "font.family": "serif",  # use serif fonts
-        "text.usetex": True,  # use LaTeX for all text
-        "pgf.rcfonts": False,  # do not setup fonts from rc parameters
+        "pgf.texsystem": "pdflatex",
+        "font.family": "serif",
+        "text.usetex": True,
+        "pgf.rcfonts": False,
     }
 )
-
-import pandas as pd
-import re
-import argparse
-
 
 def pretty_parse(log_files):
     seq = [
@@ -93,17 +131,18 @@ def plot_run():
     args = parser.parse_args()
     files = args.logs
 
-    metrics = "cm"
-    intervals = [2, 3, 2]
+    # Use parameters from top of file
+    metrics = METRICS
+    intervals = INTERVALS
     pretty = True
-    memclips = None
-    timeclips = [-1, 80, -1]
-    skip_engines = "i"
-    no_legend = False
-    fig_sizes = [34, 10]
+    memclips = MEMCLIPS
+    timeclips = TIMECLIPS
+    skip_engines = SKIP_ENGINES
+    no_legend = NO_LEGEND
+    fig_sizes = FIG_SIZES
 
-    font_label, font_tick, font_legend, font_caption = [36, 30, 28, 32]
-    line_width = 7
+    font_label, font_tick, font_legend, font_caption = [FONT_LABEL, FONT_TICK, FONT_LEGEND, FONT_CAPTION]
+    line_width = LINE_WIDTH
 
     # Organize given log files by programs
     run_organizer = {}
@@ -134,11 +173,7 @@ def plot_run():
     # Transpose to one run's chart per row
     run_graphs = [[run_graphs[j][i] for j in range(chart_cnt)] for i in range(run_cnt)]
 
-    captions = [
-        "Bipartite (netflix), 4 threads",
-        "Galen (galen), 64 threads",
-        "DOOP (biojava), 64 threads",
-    ]
+    captions = CAPTIONS
 
     for run_id, (group, graph_ax) in enumerate(zip(run_organizer, run_graphs)):
         log_files = run_organizer[group]
@@ -287,8 +322,10 @@ def plot_run():
         ax = run_graphs[-1][-1]
         ax.legend(handles=handles, labels=labels, fontsize=font_legend)
 
-    plt.savefig("liveplot.png", bbox_inches="tight", pad_inches=0.2)
-    plt.savefig("liveplot.pgf", bbox_inches='tight', pad_inches=0.2)
+    plt.savefig("liveplot.pgf", bbox_inches="tight")
+    plt.savefig("liveplot.png", bbox_inches="tight")
+    print("Saved: liveplot.pgf")
+    print("Saved: liveplot.png")
 
-
-plot_run()
+if __name__ == "__main__":
+    plot_run()
