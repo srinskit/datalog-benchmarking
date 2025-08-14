@@ -65,9 +65,9 @@ hasNextSibling(SibCtr1, SibN1) :- laterSibling(SibCtr1, SibN1, _, _).
 
 nextSiblingAnc(StartCtr, StartN, NextCtr, NextN) :- nextSibling(StartCtr, StartN, NextCtr, NextN).
 nextSiblingAnc(StartCtr, StartN, NextCtr, NextN) :- 
+    nextSiblingAnc(ParentCtr, ParentN, NextCtr, NextN),
     !hasNextSibling(StartCtr, StartN), 
-    m_insert(StartCtr, StartN, ParentCtr, ParentN), 
-    nextSiblingAnc(ParentCtr, ParentN, NextCtr, NextN).
+    m_insert(StartCtr, StartN, ParentCtr, ParentN).
 
 nextElem(PrevCtr, PrevN, NextCtr, NextN) :- firstChild(PrevCtr, PrevN, NextCtr, NextN).
 nextElem(PrevCtr, PrevN, NextCtr, NextN) :- !hasChild(PrevCtr, PrevN), nextSiblingAnc(PrevCtr, PrevN, NextCtr, NextN).

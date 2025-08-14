@@ -84,9 +84,9 @@ value_blank_star(FromCtr, FromN, ToCtr, ToN) :- valueStep(FromCtr, FromN, ToCtr,
 value_blank_star(FromCtr, FromN, ToCtr, ToN) :- value_blank_star(FromCtr, FromN, ViaCtr, ViaN), blankStep(ViaCtr, ViaN, ToCtr, ToN).
 
 nextVisible(PrevCtr, PrevN, NextCtr, NextN) :- 
-  value_blank_star(PrevCtr, PrevN, NextCtr, NextN), 
-  hasValue(NextCtr, NextN).
+  hasValue(NextCtr, NextN), 
+  value_blank_star(PrevCtr, PrevN, NextCtr, NextN).
 
 result(ctr1, ctr2, value) :- 
-    nextVisible(ctr1, _, ctr2, N2), 
-    currentValue(ctr2, N2, value).
+    currentValue(ctr2, N2, value),
+    nextVisible(ctr1, _, ctr2, N2).

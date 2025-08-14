@@ -5,5 +5,5 @@ IDB_DECL:
 Sg(src int, dest int)
 
 RULE_DECL:
-Sg(x, y) :- Arc(a, x), Arc(a, y), x != y.
+Sg(x, y) :- Arc(a, y), Arc(a, x), x != y.
 Sg(x, y) :- Arc(a, x), Sg(a, b), Arc(b, y).

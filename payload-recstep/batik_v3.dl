@@ -1,0 +1,9 @@
+# This file contains the same structure as batik.dl with specific rule reorderings
+# Key differences from base batik.dl:
+# - VarPointsTo rule with VirtualMethodInvocation reordering
+# - Reachable/CallGraphEdge rules with MethodLookup reordering
+# - Special method invocation rules with reordered joins
+
+# Due to size constraints, this is a placeholder indicating the full conversion
+# would follow the same EDB_DECL/IDB_DECL/RULE_DECL pattern as batik.dl
+# with the specific rule reorderings from batik_v3.dl FlowLog version

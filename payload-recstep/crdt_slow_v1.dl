@@ -20,10 +20,8 @@ nextElem(PrevCtr int, PrevN int, NextCtr int, NextN int)
 
 currentValue(ElemCtr int, ElemN int, Value int)
 hasValue(ElemCtr int, ElemN int)
-valueStep(FromCtr int, FromN int, ToCtr int, ToN int)
-blankStep(FromCtr int, FromN int, ToCtr int, ToN int)
 
-value_blank_star(FromCtr int, FromN int, ToCtr int, ToN int)
+skipBlank(FromCtr int, FromN int, ToCtr int, ToN int)
 nextVisible(PrevCtr int, PrevN int, NextCtr int, NextN int)
 
 result(ctr1 int, ctr2 int, value int)
@@ -75,17 +73,14 @@ nextElem(PrevCtr, PrevN, NextCtr, NextN) :- !hasChild(PrevCtr, PrevN), nextSibli
 currentValue(ElemCtr, ElemN, Value) :- assign(IDCtr, IDN, ElemCtr, ElemN, Value), !remove(IDCtr, IDN).
 
 hasValue(ElemCtr, ElemN) :- currentValue(ElemCtr, ElemN, _).
-valueStep(FromCtr, FromN, ToCtr, ToN) :- hasValue(FromCtr, FromN), nextElem(FromCtr, FromN, ToCtr, ToN). 
-blankStep(FromCtr, FromN, ToCtr, ToN) :- 
-  !valueStep(FromCtr, FromN, ToCtr, ToN), 
-  nextElem(FromCtr, FromN, ToCtr, ToN).
 
-value_blank_star(FromCtr, FromN, ToCtr, ToN) :- valueStep(FromCtr, FromN, ToCtr, ToN).
-value_blank_star(FromCtr, FromN, ToCtr, ToN) :- value_blank_star(FromCtr, FromN, ViaCtr, ViaN), blankStep(ViaCtr, ViaN, ToCtr, ToN).
+skipBlank(FromCtr, FromN, ToCtr, ToN) :- nextElem(FromCtr, FromN, ToCtr, ToN).
+skipBlank(FromCtr, FromN, ToCtr, ToN) :- skipBlank(ViaCtr, ViaN, ToCtr, ToN), nextElem(FromCtr, FromN, ViaCtr, ViaN), !hasValue(ViaCtr, ViaN).
 
 nextVisible(PrevCtr, PrevN, NextCtr, NextN) :- 
-  value_blank_star(PrevCtr, PrevN, NextCtr, NextN), 
-  hasValue(NextCtr, NextN).
+  skipBlank(PrevCtr, PrevN, NextCtr, NextN), 
+  hasValue(NextCtr, NextN),
+  hasValue(PrevCtr, PrevN).
 
 result(ctr1, ctr2, value) :- 
     nextVisible(ctr1, _, ctr2, N2), 

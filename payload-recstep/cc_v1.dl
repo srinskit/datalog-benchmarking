@@ -7,5 +7,5 @@ CC(node int, cc int)
 
 RULE_DECL:
 CC(node, MIN(node)) :- Arc(node, _).
-CC(node, MIN(cc)) :- Arc(other, node), CC(other, cc).
+CC(node, MIN(cc)) :- CC(other, cc), Arc(other, node).
 CC2(node, MIN(cc)) :- CC(node, cc).

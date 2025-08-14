@@ -11,4 +11,4 @@ RULE_DECL:
 PointsTo(y, x) :- addressOf(y, x).
 PointsTo(y, x) :- assign(y, z), PointsTo(z, x).
 PointsTo(y, w) :- load(y, x), PointsTo(x, z), PointsTo(z, w).
-PointsTo(z, w) :- store(y, x), PointsTo(y, z), PointsTo(x, w).
+PointsTo(z, w) :- store(y, x), PointsTo(x, w), PointsTo(y, z).

@@ -7,4 +7,4 @@ NullNode(x int, y int)
 
 RULE_DECL:
 NullNode(x, y) :- NullEdge(x, y).
-NullNode(x, y) :- NullNode(x, w), Edge(w, y).
+NullNode(x, y) :- Edge(w, y), NullNode(x, w).

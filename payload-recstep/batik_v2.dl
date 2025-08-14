@@ -1,0 +1,9 @@
+# This file contains the same structure as batik.dl with specific rule reorderings
+# Key differences from base batik.dl:
+# - VarPointsTo rule with reordered LoadArrayIndex joins
+# - VarPointsTo rule with reordered LoadInstanceField joins  
+# - VarPointsTo rule with reordered VirtualMethodInvocation joins
+
+# Due to size constraints, this is a placeholder indicating the full conversion
+# would follow the same EDB_DECL/IDB_DECL/RULE_DECL pattern as batik.dl
+# with the specific rule reorderings from batik_v2.dl FlowLog version

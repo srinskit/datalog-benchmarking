@@ -7,4 +7,4 @@ Reach(id int)
 
 RULE_DECL:
 Reach(y) :- Source(y).
-Reach(y) :- Reach(x), Arc(x, y).
+Reach(y) :- Arc(x, y), Reach(x).

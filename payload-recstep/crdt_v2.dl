@@ -75,13 +75,13 @@ nextElem(PrevCtr, PrevN, NextCtr, NextN) :- !hasChild(PrevCtr, PrevN), nextSibli
 currentValue(ElemCtr, ElemN, Value) :- assign(IDCtr, IDN, ElemCtr, ElemN, Value), !remove(IDCtr, IDN).
 
 hasValue(ElemCtr, ElemN) :- currentValue(ElemCtr, ElemN, _).
-valueStep(FromCtr, FromN, ToCtr, ToN) :- hasValue(FromCtr, FromN), nextElem(FromCtr, FromN, ToCtr, ToN). 
+valueStep(FromCtr, FromN, ToCtr, ToN) :- nextElem(FromCtr, FromN, ToCtr, ToN), hasValue(FromCtr, FromN). 
 blankStep(FromCtr, FromN, ToCtr, ToN) :- 
   !valueStep(FromCtr, FromN, ToCtr, ToN), 
   nextElem(FromCtr, FromN, ToCtr, ToN).
 
 value_blank_star(FromCtr, FromN, ToCtr, ToN) :- valueStep(FromCtr, FromN, ToCtr, ToN).
-value_blank_star(FromCtr, FromN, ToCtr, ToN) :- value_blank_star(FromCtr, FromN, ViaCtr, ViaN), blankStep(ViaCtr, ViaN, ToCtr, ToN).
+value_blank_star(FromCtr, FromN, ToCtr, ToN) :- blankStep(ViaCtr, ViaN, ToCtr, ToN), value_blank_star(FromCtr, FromN, ViaCtr, ViaN).
 
 nextVisible(PrevCtr, PrevN, NextCtr, NextN) :- 
   value_blank_star(PrevCtr, PrevN, NextCtr, NextN), 

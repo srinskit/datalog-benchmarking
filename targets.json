@@ -582,7 +582,7 @@
 		"program_path": "batik_v1",
 		"dataset_path": "pl/doop/batik",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -594,7 +594,7 @@
 		"program_path": "batik_v2",
 		"dataset_path": "pl/doop/batik",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -606,7 +606,7 @@
 		"program_path": "batik_v3",
 		"dataset_path": "pl/doop/batik",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -618,7 +618,7 @@
 		"program_path": "batik_v4",
 		"dataset_path": "pl/doop/batik",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -630,7 +630,7 @@
 		"program_path": "batik_v5",
 		"dataset_path": "pl/doop/batik",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -642,7 +642,7 @@
 		"program_path": "biojava_v1",
 		"dataset_path": "pl/doop/biojava",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -654,7 +654,7 @@
 		"program_path": "biojava_v2",
 		"dataset_path": "pl/doop/biojava",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -666,7 +666,7 @@
 		"program_path": "biojava_v3",
 		"dataset_path": "pl/doop/biojava",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -678,7 +678,7 @@
 		"program_path": "biojava_v4",
 		"dataset_path": "pl/doop/biojava",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -690,7 +690,7 @@
 		"program_path": "biojava_v5",
 		"dataset_path": "pl/doop/biojava",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -702,7 +702,7 @@
 		"program_path": "bipartite_v1",
 		"dataset_path": "graph-reach/yelp",
 		"output_relation": "Zero",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -714,7 +714,7 @@
 		"program_path": "bipartite_v2",
 		"dataset_path": "graph-reach/yelp",
 		"output_relation": "Zero",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -726,7 +726,7 @@
 		"program_path": "bipartite_v3",
 		"dataset_path": "graph-reach/yelp",
 		"output_relation": "Zero",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -738,7 +738,7 @@
 		"program_path": "borrow_v1",
 		"dataset_path": "pl/borrow",
 		"output_relation": "path_maybe_initialized_on_exit",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -750,7 +750,7 @@
 		"program_path": "borrow_v2",
 		"dataset_path": "pl/borrow",
 		"output_relation": "path_maybe_initialized_on_exit",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -762,7 +762,7 @@
 		"program_path": "borrow_v3",
 		"dataset_path": "pl/borrow",
 		"output_relation": "path_maybe_initialized_on_exit",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -774,7 +774,7 @@
 		"program_path": "cc_v1",
 		"dataset_path": "graph-traverse/livejournal",
 		"output_relation": "CC",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -786,7 +786,7 @@
 		"program_path": "crdt_v1",
 		"dataset_path": "pl/crdt",
 		"output_relation": "nextSiblingAnc",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -798,7 +798,7 @@
 		"program_path": "crdt_v2",
 		"dataset_path": "pl/crdt",
 		"output_relation": "nextSiblingAnc",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -810,7 +810,7 @@
 		"program_path": "crdt_v3",
 		"dataset_path": "pl/crdt",
 		"output_relation": "nextSiblingAnc",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -822,7 +822,7 @@
 		"program_path": "crdt_slow_v1",
 		"dataset_path": "pl/crdt",
 		"output_relation": "nextSiblingAnc",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -834,7 +834,7 @@
 		"program_path": "csda_v1",
 		"dataset_path": "pl/csda/httpd",
 		"output_relation": "NullNode",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -846,7 +846,7 @@
 		"program_path": "cspa_v1",
 		"dataset_path": "pl/cspa/httpd",
 		"output_relation": "ValueFlow",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -858,7 +858,7 @@
 		"program_path": "cspa_v2",
 		"dataset_path": "pl/cspa/httpd",
 		"output_relation": "ValueFlow",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -870,7 +870,7 @@
 		"program_path": "cspa_v3",
 		"dataset_path": "pl/cspa/httpd",
 		"output_relation": "ValueFlow",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -882,7 +882,7 @@
 		"program_path": "cspa_v4",
 		"dataset_path": "pl/cspa/httpd",
 		"output_relation": "ValueFlow",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -894,7 +894,7 @@
 		"program_path": "cspa_v5",
 		"dataset_path": "pl/cspa/httpd",
 		"output_relation": "ValueFlow",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -906,7 +906,7 @@
 		"program_path": "cvc5_v1",
 		"dataset_path": "pl/cvc5",
 		"output_relation": "Stack_def_use_live_var_at_block_end",
-		"engines": ["Si"],
+		"engines": ["Si", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": false
@@ -918,7 +918,7 @@
 		"program_path": "cvc5_v2",
 		"dataset_path": "pl/cvc5",
 		"output_relation": "Stack_def_use_live_var_at_block_end",
-		"engines": ["Si"],
+		"engines": ["Si", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": false
@@ -930,7 +930,7 @@
 		"program_path": "cvc5_v3",
 		"dataset_path": "pl/cvc5",
 		"output_relation": "Stack_def_use_live_var_at_block_end",
-		"engines": ["Si"],
+		"engines": ["Si", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": false
@@ -942,7 +942,7 @@
 		"program_path": "cvc5_v4",
 		"dataset_path": "pl/cvc5",
 		"output_relation": "Stack_def_use_live_var_at_block_end",
-		"engines": ["Si"],
+		"engines": ["Si", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": false
@@ -954,7 +954,7 @@
 		"program_path": "cvc5_v5",
 		"dataset_path": "pl/cvc5",
 		"output_relation": "Stack_def_use_live_var_at_block_end",
-		"engines": ["Si"],
+		"engines": ["Si", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": false
@@ -966,7 +966,7 @@
 		"program_path": "dyck_v1",
 		"dataset_path": "graph-traverse/kernel",
 		"output_relation": "Dyck",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -978,7 +978,7 @@
 		"program_path": "dyck_v2",
 		"dataset_path": "graph-traverse/kernel",
 		"output_relation": "Dyck",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -990,7 +990,7 @@
 		"program_path": "dyck_v3",
 		"dataset_path": "graph-traverse/kernel",
 		"output_relation": "Dyck",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1002,7 +1002,7 @@
 		"program_path": "eclipse_v1",
 		"dataset_path": "pl/doop/eclipse",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1014,7 +1014,7 @@
 		"program_path": "eclipse_v2",
 		"dataset_path": "pl/doop/eclipse",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1026,7 +1026,7 @@
 		"program_path": "eclipse_v3",
 		"dataset_path": "pl/doop/eclipse",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1038,7 +1038,7 @@
 		"program_path": "eclipse_v4",
 		"dataset_path": "pl/doop/eclipse",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1050,7 +1050,7 @@
 		"program_path": "eclipse_v5",
 		"dataset_path": "pl/doop/eclipse",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1062,7 +1062,7 @@
 		"program_path": "galen_v1",
 		"dataset_path": "misc/galen",
 		"output_relation": "OutP",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1074,7 +1074,7 @@
 		"program_path": "galen_v2",
 		"dataset_path": "misc/galen",
 		"output_relation": "OutP",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1086,7 +1086,7 @@
 		"program_path": "galen_v3",
 		"dataset_path": "misc/galen",
 		"output_relation": "OutP",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1098,7 +1098,7 @@
 		"program_path": "galen_v4",
 		"dataset_path": "misc/galen",
 		"output_relation": "OutP",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1110,7 +1110,7 @@
 		"program_path": "reach_v1",
 		"dataset_path": "graph-reach/arabic",
 		"output_relation": "Reach",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1122,7 +1122,7 @@
 		"program_path": "sg_v1",
 		"dataset_path": "graph-traverse/G10K-0.001",
 		"output_relation": "Sg",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1134,7 +1134,7 @@
 		"program_path": "sg_v2",
 		"dataset_path": "graph-traverse/G10K-0.001",
 		"output_relation": "Sg",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1146,7 +1146,7 @@
 		"program_path": "sssp_v1",
 		"dataset_path": "graph-traverse/G10K-0.001",
 		"output_relation": "Sssp",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1158,7 +1158,7 @@
 		"program_path": "tc_v1",
 		"dataset_path": "graph-traverse/G10K-0.001",
 		"output_relation": "Tc",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1170,7 +1170,7 @@
 		"program_path": "xalan_v1",
 		"dataset_path": "pl/doop/xalan",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1182,7 +1182,7 @@
 		"program_path": "xalan_v2",
 		"dataset_path": "pl/doop/xalan",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1194,7 +1194,7 @@
 		"program_path": "xalan_v3",
 		"dataset_path": "pl/doop/xalan",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1206,7 +1206,7 @@
 		"program_path": "xalan_v4",
 		"dataset_path": "pl/doop/xalan",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1218,7 +1218,7 @@
 		"program_path": "xalan_v5",
 		"dataset_path": "pl/doop/xalan",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1230,7 +1230,7 @@
 		"program_path": "z3_v1",
 		"dataset_path": "pl/z3",
 		"output_relation": "Stack_def_use_live_var_at_block_end",
-		"engines": ["Si"],
+		"engines": ["Si", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": false
@@ -1242,7 +1242,7 @@
 		"program_path": "z3_v2",
 		"dataset_path": "pl/z3",
 		"output_relation": "Stack_def_use_live_var_at_block_end",
-		"engines": ["Si"],
+		"engines": ["Si", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": false
@@ -1254,7 +1254,7 @@
 		"program_path": "z3_v3",
 		"dataset_path": "pl/z3",
 		"output_relation": "Stack_def_use_live_var_at_block_end",
-		"engines": ["Si"],
+		"engines": ["Si", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": false
@@ -1266,7 +1266,7 @@
 		"program_path": "z3_v4",
 		"dataset_path": "pl/z3",
 		"output_relation": "Stack_def_use_live_var_at_block_end",
-		"engines": ["Si"],
+		"engines": ["Si", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": false
@@ -1278,7 +1278,7 @@
 		"program_path": "z3_v5",
 		"dataset_path": "pl/z3",
 		"output_relation": "Stack_def_use_live_var_at_block_end",
-		"engines": ["Si"],
+		"engines": ["Si", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": false
@@ -1290,7 +1290,7 @@
 		"program_path": "zxing_v1",
 		"dataset_path": "pl/doop/zxing",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1302,7 +1302,7 @@
 		"program_path": "zxing_v2",
 		"dataset_path": "pl/doop/zxing",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1314,7 +1314,7 @@
 		"program_path": "zxing_v3",
 		"dataset_path": "pl/doop/zxing",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1326,7 +1326,7 @@
 		"program_path": "zxing_v4",
 		"dataset_path": "pl/doop/zxing",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
@@ -1338,7 +1338,7 @@
 		"program_path": "zxing_v5",
 		"dataset_path": "pl/doop/zxing",
 		"output_relation": "SubtypeOf",
-		"engines": ["Si", "Sc"],
+		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
 		"disabled": true
