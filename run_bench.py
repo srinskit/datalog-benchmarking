@@ -38,12 +38,12 @@ def get_payload_dir(engine_variant):
     return engine_to_payload.get(engine_variant, ".")
 
 
-def load_targets():
-    """Load benchmark targets from targets.json"""
+def load_targets(targets_file="targets.json"):
+    """Load benchmark targets from specified file"""
     required_fields = ["program", "dataset", "output_relation", "engines", "threads"]
 
     try:
-        with open("targets.json", "r") as f:
+        with open(targets_file, "r") as f:
             targets = json.load(f)
 
         valid_targets = []
@@ -60,7 +60,7 @@ def load_targets():
 
         return valid_targets
     except FileNotFoundError:
-        logger.error("targets.json not found")
+        logger.error(f"{targets_file} not found")
         sys.exit(1)
 
 
@@ -452,6 +452,9 @@ def main():
     parser.add_argument(
         "engines", help="Comma-separated engine list (e.g., D,F0,Si,Sc,U)"
     )
+    parser.add_argument(
+        "--targets", default="targets.json", help="Targets file (default: targets.json)"
+    )
     args = parser.parse_args()
 
     # Parse CLI engines from comma-separated string
@@ -464,7 +467,7 @@ def main():
     subprocess.run("docker pull umbradb/umbra:25.07.1", shell=True)
 
     # Load targets
-    targets = load_targets()
+    targets = load_targets(args.targets)
 
     for target in targets:
         program_path = target["program_path"]

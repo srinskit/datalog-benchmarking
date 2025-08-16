@@ -205,6 +205,57 @@ class BenchmarkDB:
         if not found_violations:
             logger.info("No correctness violations found. All CMP records have consistent correctness values.")
     
+    def summary(self):
+        """Print median runtime summary for each program, dataset, engine, and worker count"""
+        if not os.path.exists(self.db_path):
+            logger.error(f"Database {self.db_path} does not exist")
+            return
+            
+        conn = sqlite3.connect(self.db_path)
+        cursor = conn.cursor()
+        
+        cursor.execute('''
+            SELECT program, dataset, engine, threads, runtime
+            FROM benchmark_results 
+            WHERE status = 'CMP'
+            ORDER BY program, dataset, engine, threads
+        ''')
+        
+        rows = cursor.fetchall()
+        conn.close()
+        
+        if not rows:
+            logger.info("No completed runtime data found")
+            return
+        
+        # Assert runtime is never null for CMP status
+        for program, dataset, engine, threads, runtime in rows:
+            assert runtime is not None, f"Runtime is null for CMP record: {program}, {dataset}, {engine}, {threads}"
+        
+        # Group by (program, dataset, engine, threads) and calculate median
+        from collections import defaultdict
+        import statistics
+        
+        groups = defaultdict(list)
+        for program, dataset, engine, threads, runtime in rows:
+            key = (program, dataset, engine, threads)
+            groups[key].append(runtime)
+        
+        # Calculate medians and sort
+        results = []
+        for (program, dataset, engine, threads), runtimes in groups.items():
+            median_runtime = statistics.median(runtimes)
+            results.append((program, dataset, engine, threads, median_runtime))
+        
+        results.sort(key=lambda x: (x[0], x[1], x[2], x[3]))
+        
+        # Print results
+        logger.info(f"{'Program':<12} {'Dataset':<10} {'Engine':<15} {'Workers':<7} {'Median Runtime':<15}")
+        logger.info("-" * 70)
+        
+        for program, dataset, engine, threads, median_runtime in results:
+            logger.info(f"{program:<12} {dataset:<10} {engine:<15} {threads:<7} {median_runtime:<15.2f}")
+    
     def query(self, sql):
         """Execute custom SQL query and display results"""
         if not os.path.exists(self.db_path):
@@ -265,6 +316,10 @@ def main():
     verify_parser = subparsers.add_parser('verify', help='Verify correctness consistency across results')
     verify_parser.add_argument('database', help='Path to SQLite database file')
     
+    # Summary command
+    summary_parser = subparsers.add_parser('summary', help='Print median runtime summary')
+    summary_parser.add_argument('database', help='Path to SQLite database file')
+    
     # Query command
     query_parser = subparsers.add_parser('query', help='Execute custom SQL query')
     query_parser.add_argument('database', help='Path to SQLite database file')
@@ -291,6 +346,8 @@ def main():
         db.show_data(args.sort_by)
     elif args.command == 'verify':
         db.verify_correctness()
+    elif args.command == 'summary':
+        db.summary()
     elif args.command == 'query':
         db.query(args.sql)
 

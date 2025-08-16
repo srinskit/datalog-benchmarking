@@ -369,7 +369,7 @@
 		"engines": ["D", "F0", "R", "Sc", "Si"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "andersen",
@@ -381,7 +381,7 @@
 		"engines": ["D", "F0", "R", "Sc", "Si"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "andersen",
@@ -393,7 +393,7 @@
 		"engines": ["D", "F0", "R", "Sc", "Si"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "andersen",
@@ -405,7 +405,7 @@
 		"engines": ["D", "F0", "R", "Sc", "Si"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "andersen",
@@ -417,7 +417,7 @@
 		"engines": ["D", "F0", "R", "Sc", "Si"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "andersen",
@@ -429,7 +429,7 @@
 		"engines": ["D", "F0", "R", "Sc", "Si"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "csda",
@@ -585,7 +585,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -597,7 +597,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -609,7 +609,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -621,7 +621,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -633,7 +633,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -645,7 +645,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -657,7 +657,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -669,7 +669,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -681,7 +681,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -693,7 +693,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "bipartite",
@@ -705,7 +705,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "bipartite",
@@ -717,7 +717,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "bipartite",
@@ -729,7 +729,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "borrow",
@@ -741,7 +741,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "borrow",
@@ -753,7 +753,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "borrow",
@@ -765,7 +765,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "cc",
@@ -777,7 +777,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "crdt",
@@ -789,7 +789,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "crdt",
@@ -801,7 +801,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "crdt",
@@ -813,7 +813,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "crdtslow",
@@ -825,7 +825,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "csda",
@@ -837,7 +837,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "cspa",
@@ -849,7 +849,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "cspa",
@@ -861,7 +861,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "cspa",
@@ -873,7 +873,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "cspa",
@@ -885,7 +885,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "cspa",
@@ -897,7 +897,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "ddisasm",
@@ -969,7 +969,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "dyck",
@@ -981,7 +981,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "dyck",
@@ -993,7 +993,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -1005,7 +1005,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -1017,7 +1017,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -1029,7 +1029,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -1041,7 +1041,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -1053,7 +1053,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "galen",
@@ -1065,7 +1065,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "galen",
@@ -1077,7 +1077,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "galen",
@@ -1089,7 +1089,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "galen",
@@ -1101,7 +1101,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "reach",
@@ -1113,7 +1113,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "sg",
@@ -1125,7 +1125,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "sg",
@@ -1137,7 +1137,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "sssp",
@@ -1149,7 +1149,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "tc",
@@ -1161,7 +1161,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -1173,7 +1173,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -1185,7 +1185,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -1197,7 +1197,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -1209,7 +1209,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -1221,7 +1221,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "ddisasm",
@@ -1293,7 +1293,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -1305,7 +1305,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -1317,7 +1317,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -1329,7 +1329,7 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	},
 	{
 		"program": "doop",
@@ -1341,6 +1341,6 @@
 		"engines": ["Si", "Sc", "R"],
 		"threads": [64],
 		"timeout": 900,
-		"disabled": true
+		"disabled": false
 	}
 ]
