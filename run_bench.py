@@ -10,7 +10,9 @@ import time
 import argparse
 import logging
 import csv
+import shutil
 from pathlib import Path
+from typing import Optional
 
 # Setup logging
 logging.basicConfig(
@@ -198,9 +200,9 @@ def find_rate_drop_time(rows, threshold):
     return None
 
 
-def extract_load_time(engine_variant, tag):
+def extract_load_time(engine_variant, tag) -> Optional[float]:
     """Extract load_time metric for all engines"""
-    if engine_variant in ["Si", "Sc", "F0", "F1", "F2"]:
+    if engine_variant in ["Si", "Sc", "F0", "F1", "F2", "D"]:
         # For both Souffle and FlowLog, use IO rate drop technique from .log file
         log_file = f"{tag}.log"
         threshold = 1000  # bytes/s threshold
@@ -213,6 +215,24 @@ def extract_load_time(engine_variant, tag):
             return find_rate_drop_time(rows, threshold)
         except (FileNotFoundError, KeyError, ValueError):
             return None
+    
+    elif engine_variant == "R":
+        # Find log files with date format in log folder
+        log_files = glob.glob("log/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*")
+
+        if len(log_files) != 1:
+            logger.error(f"Expected exactly 1 log file with date format, found {len(log_files)}: {log_files}")
+            return None
+        
+        try:
+            with open(log_files[0], "r") as f:
+                for line in f:
+                    match = re.search(r"INFO:root:Time: ([0-9.]+)", line)
+                    if match:
+                        return float(match.group(1))
+        except (FileNotFoundError, ValueError):
+            return None
+        return None
     
     elif engine_variant == "U":
         for file_path in glob.glob(f"{tag}*.out"):
@@ -293,21 +313,24 @@ def _get_souffle_loadtime(profile_file_path):
 
 def benchmark_ddlog(program_path, dataset_path, workers, tag, timeout_sec, payload_dir):
     """Benchmark DDLog engine"""
+    ddcomp_path = Path("ddcomp")
+    if ddcomp_path.exists():
+        shutil.rmtree(ddcomp_path)
+
     base_program = Path(program_path).name
     compile_time = 0
 
-    # Build program if needed
-    exe = f"{payload_dir}/{base_program}_ddlog/target/release/{base_program}_cli"
-    if not os.path.exists(exe):
-        start_time = time.time()
-        subprocess.run(f"ddlog -i {payload_dir}/{program_path}.dl", shell=True)
-        subprocess.run(
-            f"RUSTFLAGS=-Awarnings cargo build --release --quiet",
-            shell=True,
-            cwd=f"{payload_dir}/{base_program}_ddlog",
-        )
-        compile_time = time.time() - start_time
+    # Build program
+    start_time = time.time()
+    subprocess.run(f"ddlog -i {payload_dir}/{program_path}.dl -o ddcomp", shell=True)
+    subprocess.run(
+        f"RUSTFLAGS=-Awarnings cargo +1.76 build --release --quiet -j $(nproc)",
+        shell=True,
+        cwd=f"ddcomp/{base_program}_ddlog",
+    )
+    compile_time = time.time() - start_time
 
+    exe = f"ddcomp/{base_program}_ddlog/target/release/{base_program}_cli"
     cmd = f"{exe} -w {workers} < {DATA}/{dataset_path}/data.ddin"
 
     clear_caches()
@@ -398,6 +421,11 @@ def benchmark_recstep(program_path, dataset_path, workers, tag, timeout_sec, pay
     run_command(cmd, 5)
 
     clear_caches()
+
+    # Remove log folder before benchmarking
+    if os.path.exists("log"):
+        shutil.rmtree("log")
+
     start_time = time.time()
     dlbench_cmd = f'dlbench run "{cmd}" "{tag}" --monitor quickstep_cli_shell'
     exit_code, stdout, stderr = run_command(dlbench_cmd, timeout_sec)
