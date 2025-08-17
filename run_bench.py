@@ -131,14 +131,18 @@ def extract_dl_out(engine_variant, key, tag, exit_code):
             == 0
         ):
             time.sleep(1)
+
         # Query quickstep for results
         SRC = "/opt"
+        shutil.copy(f"{SRC}/RecStep/Config.json", ".")
+
         for k in key.split(","):
             query_cmd = f"python3 {SRC}/RecStep/quickstep_shell.py --mode interactive"
             query_input = f"select '{k}' as Rel, count(*) from {k};"
             result = subprocess.run(
                 query_cmd, input=query_input, shell=True, capture_output=True, text=True
             )
+
             match = re.search(rf"\|\s*{k}\s*\|\s*(\d+)\s*\|", result.stdout)
             if match:
                 return match.group(1)
@@ -227,7 +231,7 @@ def extract_load_time(engine_variant, tag) -> Optional[float]:
         try:
             with open(log_files[0], "r") as f:
                 for line in f:
-                    match = re.search(r"INFO:root:Time: ([0-9.]+)", line)
+                    match = re.search(r"EDB population completed in ([0-9.]+) seconds", line)
                     if match:
                         return float(match.group(1))
         except (FileNotFoundError, ValueError):
@@ -414,13 +418,15 @@ def benchmark_souffle(
 
 def benchmark_recstep(program_path, dataset_path, workers, tag, timeout_sec, payload_dir):
     """Benchmark RecStep engine"""
+    SRC = "/opt"
+    shutil.copy(f"{SRC}/RecStep/Config.json", ".")
 
     cmd = f"recstep --program {payload_dir}/{program_path}.dl --input {DATA}/{dataset_path} --jobs {workers}"
 
+    clear_caches()
+
     # Prime the benchmark
     run_command(cmd, 5)
-
-    clear_caches()
 
     # Remove log folder before benchmarking
     if os.path.exists("log"):
