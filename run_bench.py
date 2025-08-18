@@ -79,8 +79,13 @@ def run_command(cmd, timeout_sec=None):
 
 def clear_caches():
     """Clear system caches for consistent benchmarking"""
-    subprocess.run("sync", shell=True)
-    subprocess.run("sysctl vm.drop_caches=3", shell=True)
+    logger.debug("Clearing system caches")
+    result = subprocess.run("sync", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if result.returncode != 0:
+        logger.warning("sync command failed")
+    result = subprocess.run("sysctl vm.drop_caches=3", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    if result.returncode != 0:
+        logger.warning("drop_caches command failed")
 
 
 def get_benchmark_status(exit_code, correctness_output=None):
