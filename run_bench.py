@@ -83,19 +83,21 @@ def clear_caches():
     subprocess.run("sysctl vm.drop_caches=3", shell=True)
 
 
-def get_status_from_exit_code(exit_code):
-    """Map exit codes to status strings"""
-    if exit_code == 0:
-        return "CMP"
-    elif exit_code == 124:
+def get_benchmark_status(exit_code, correctness_output=None):
+    """Determine benchmark status from exit code and correctness output"""
+    if exit_code == 124:
         return "TOUT"
     elif exit_code == 137:
         return "OOM"
-    else:
+    elif exit_code != 0:
         return "DNF"
+    elif correctness_output is None:
+        return "DNF"
+    else:
+        return "CMP"
 
 
-def extract_metric_regex(pattern, files, case_insensitive=True):
+def extract_metric_regex(pattern, files, case_insensitive=True) -> Optional[float]:
     """Extract metric from files using regex pattern"""
     flags = re.IGNORECASE if case_insensitive else 0
     for file_path in glob.glob(files):
@@ -104,13 +106,13 @@ def extract_metric_regex(pattern, files, case_insensitive=True):
                 content = f.read()
             match = re.search(pattern, content, flags)
             if match:
-                return match.group(1) if match.groups() else match.group(0)
+                return int(match.group(1) if match.groups() else match.group(0))
         except FileNotFoundError:
             continue
-    return ""
+    return None
 
 
-def extract_dl_out(engine_variant, key, tag, exit_code):
+def extract_correctness_output(engine_variant, key, tag, exit_code):
     """Extract dl_out metric for all engines"""
     if engine_variant == "D":
         return extract_metric_regex(rf"{key}\", .size = (\d+)", f"{tag}*.out")
@@ -122,7 +124,7 @@ def extract_dl_out(engine_variant, key, tag, exit_code):
         return extract_metric_regex(rf"{key}\s+(\d+)", f"{tag}*.out")
     elif engine_variant == "R":
         if exit_code != 0:
-            return ""
+            return None
         # Wait for quickstep to exit
         while (
             subprocess.run(
@@ -145,8 +147,7 @@ def extract_dl_out(engine_variant, key, tag, exit_code):
 
             match = re.search(rf"\|\s*{k}\s*\|\s*(\d+)\s*\|", result.stdout)
             if match:
-                return match.group(1)
-        return ""
+                return int(match.group(1))
     elif engine_variant == "Q":
         for file_path in glob.glob(f"{tag}*.out"):
             try:
@@ -157,10 +158,9 @@ def extract_dl_out(engine_variant, key, tag, exit_code):
                     if key in line and i + 3 < len(lines):
                         match = re.search(r"\d+", lines[i + 3])
                         if match:
-                            return match.group(0)
+                            return int(match.group(0))
             except FileNotFoundError:
                 continue
-        return ""
     elif engine_variant == "U":
         for file_path in glob.glob(f"{tag}*.out"):
             try:
@@ -168,18 +168,17 @@ def extract_dl_out(engine_variant, key, tag, exit_code):
                     lines = f.readlines()
                 for i, line in enumerate(lines):
                     if key.lower() in line.lower() and i + 1 < len(lines):
-                        return lines[i + 1].strip()
+                        return int(lines[i + 1].strip())
             except FileNotFoundError:
                 continue
-        return ""
-    return ""
+    return None
 
 
 def find_rate_drop_time(rows, threshold):
     """Find the earliest time when IO rate drops below the threshold, starting from the latest time."""
     if not rows:
         return None
-    
+
     rates = []
     prev_time = 0.0
     prev_io = 0
@@ -188,7 +187,7 @@ def find_rate_drop_time(rows, threshold):
         time_val = float(row["Time"])
         io_reads = int(row["IO Reads"])
 
-        time_diff_s = (time_val - prev_time)
+        time_diff_s = time_val - prev_time
         io_rate_s = (io_reads - prev_io) / time_diff_s if time_diff_s > 0 else 0
         rates.append((time_val, io_rate_s))
 
@@ -210,34 +209,38 @@ def extract_load_time(engine_variant, tag) -> Optional[float]:
         # For both Souffle and FlowLog, use IO rate drop technique from .log file
         log_file = f"{tag}.log"
         threshold = 1000  # bytes/s threshold
-        
+
         try:
             with open(log_file, "r") as f:
                 csv_reader = csv.DictReader(f)
                 rows = list(csv_reader)
-            
+
             return find_rate_drop_time(rows, threshold)
         except (FileNotFoundError, KeyError, ValueError):
             return None
-    
+
     elif engine_variant == "R":
         # Find log files with date format in log folder
         log_files = glob.glob("log/[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]*")
 
         if len(log_files) != 1:
-            logger.error(f"Expected exactly 1 log file with date format, found {len(log_files)}: {log_files}")
+            logger.error(
+                f"Expected exactly 1 log file with date format, found {len(log_files)}: {log_files}"
+            )
             return None
-        
+
         try:
             with open(log_files[0], "r") as f:
                 for line in f:
-                    match = re.search(r"EDB population completed in ([0-9.]+) seconds", line)
+                    match = re.search(
+                        r"EDB population completed in ([0-9.]+) seconds", line
+                    )
                     if match:
                         return float(match.group(1))
         except (FileNotFoundError, ValueError):
             return None
         return None
-    
+
     elif engine_variant == "U":
         for file_path in glob.glob(f"{tag}*.out"):
             try:
@@ -252,7 +255,7 @@ def extract_load_time(engine_variant, tag) -> Optional[float]:
             except FileNotFoundError:
                 continue
         return None
-    
+
     return None
 
 
@@ -269,10 +272,10 @@ def _get_flowlog_loadtime(out_file_path):
     """Extract load time from FlowLog .out file"""
     if not os.path.exists(out_file_path):
         return None
-        
+
     last_timestamp = None
     pattern = re.compile(r"(\d+\.\d+)(ms|s):\s*Data loaded for")
-    
+
     try:
         with open(out_file_path, "r") as f:
             for line in f:
@@ -285,7 +288,7 @@ def _get_flowlog_loadtime(out_file_path):
                     last_timestamp = value
     except (FileNotFoundError, ValueError):
         return None
-        
+
     return last_timestamp
 
 
@@ -293,14 +296,14 @@ def _get_souffle_loadtime(profile_file_path):
     """Extract load time from Souffle .profile file"""
     if not os.path.exists(profile_file_path):
         return None
-        
+
     try:
-        with open(profile_file_path, 'r') as f:
+        with open(profile_file_path, "r") as f:
             data = json.load(f)
-        
+
         relations = data["root"]["program"]["relation"]
         total_loadtime = 0
-        
+
         for relation_name, relation_data in relations.items():
             if "loadtime" in relation_data:
                 loadtime = relation_data["loadtime"]
@@ -308,14 +311,16 @@ def _get_souffle_loadtime(profile_file_path):
                 end_time = loadtime["end"]
                 duration = (end_time - start_time) / 1000000  # Convert to seconds
                 total_loadtime += duration
-        
+
         return total_loadtime
-        
+
     except (KeyError, FileNotFoundError, json.JSONDecodeError):
         return None
 
 
-def benchmark_ddlog(program_path, dataset_path, workers, tag, timeout_sec, payload_dir):
+def benchmark_ddlog(
+    program_path, dataset_path, workers, tag, timeout_sec, payload_dir, key
+):
     """Benchmark DDLog engine"""
     ddcomp_path = Path("ddcomp")
     if ddcomp_path.exists():
@@ -343,11 +348,35 @@ def benchmark_ddlog(program_path, dataset_path, workers, tag, timeout_sec, paylo
     exit_code, stdout, stderr = run_command(dlbench_cmd, timeout_sec)
     runtime = time.time() - start_time
 
-    return exit_code, stderr, compile_time, runtime
+    # Write stderr to tag.err file
+    with open(f"{tag}.err", "w") as f:
+        f.write(stderr)
+
+    # Extract metrics
+    correctness_output = extract_correctness_output("D", key, tag, exit_code)
+    load_time = extract_load_time("D", tag)
+    profiler_load_time = extract_profiler_load_time("D", tag)
+    status = get_benchmark_status(exit_code, correctness_output)
+
+    return (
+        status,
+        compile_time,
+        runtime,
+        correctness_output,
+        load_time,
+        profiler_load_time,
+    )
 
 
 def benchmark_flowlog(
-    program_path, dataset_path, workers, tag, timeout_sec, payload_dir, variant="F0"
+    program_path,
+    dataset_path,
+    workers,
+    tag,
+    timeout_sec,
+    payload_dir,
+    variant="F0",
+    key=None,
 ):
     """Benchmark FlowLog engine"""
 
@@ -366,11 +395,30 @@ def benchmark_flowlog(
     exit_code, stdout, stderr = run_command(dlbench_cmd, timeout_sec)
     runtime = time.time() - start_time
 
-    return exit_code, stderr, None, runtime
+    # Write stderr to tag.err file
+    with open(f"{tag}.err", "w") as f:
+        f.write(stderr)
+
+    # Extract metrics
+    correctness_output = (
+        extract_correctness_output(variant, key, tag, exit_code) if key else None
+    )
+    load_time = extract_load_time(variant, tag)
+    profiler_load_time = extract_profiler_load_time(variant, tag)
+    status = get_benchmark_status(exit_code, correctness_output)
+
+    return status, None, runtime, correctness_output, load_time, profiler_load_time
 
 
 def benchmark_souffle(
-    program_path, dataset_path, workers, tag, timeout_sec, payload_dir, variant
+    program_path,
+    dataset_path,
+    workers,
+    tag,
+    timeout_sec,
+    payload_dir,
+    variant,
+    key=None,
 ):
     """Benchmark Souffle engine"""
     assert variant in ["Si", "Sc"], f"Invalid variant: {variant}"
@@ -399,7 +447,14 @@ def benchmark_souffle(
             logger.error(
                 f"Souffle compilation failed with return code {result.returncode}: {result.stderr}"
             )
-            return result.returncode, result.stderr, compile_time, runtime
+            return (
+                get_benchmark_status(result.returncode),
+                compile_time,
+                runtime,
+                None,
+                None,
+                None,
+            )
 
         assert os.path.exists(
             exe
@@ -413,13 +468,32 @@ def benchmark_souffle(
     exit_code, stdout, stderr = run_command(dlbench_cmd, timeout_sec)
     runtime = time.time() - start_time
 
-    return exit_code, stderr, compile_time, runtime
+    # Write stderr to tag.err file
+    with open(f"{tag}.err", "w") as f:
+        f.write(stderr)
+
+    # Extract metrics
+    correctness_output = (
+        extract_correctness_output(variant, key, tag, exit_code) if key else None
+    )
+    load_time = extract_load_time(variant, tag)
+    profiler_load_time = extract_profiler_load_time(variant, tag)
+    status = get_benchmark_status(exit_code, correctness_output)
+
+    return (
+        status,
+        compile_time,
+        runtime,
+        correctness_output,
+        load_time,
+        profiler_load_time,
+    )
 
 
-def benchmark_recstep(program_path, dataset_path, workers, tag, timeout_sec, payload_dir):
+def benchmark_recstep(
+    program_path, dataset_path, workers, tag, timeout_sec, payload_dir, key=None
+):
     """Benchmark RecStep engine"""
-    SRC = "/opt"
-    shutil.copy(f"{SRC}/RecStep/Config.json", ".")
 
     cmd = f"recstep --program {payload_dir}/{program_path}.dl --input {DATA}/{dataset_path} --jobs {workers}"
 
@@ -432,15 +506,39 @@ def benchmark_recstep(program_path, dataset_path, workers, tag, timeout_sec, pay
     if os.path.exists("log"):
         shutil.rmtree("log")
 
+    if os.path.exists("qsstor"):
+        shutil.rmtree("qsstor")
+
     start_time = time.time()
     dlbench_cmd = f'dlbench run "{cmd}" "{tag}" --monitor quickstep_cli_shell'
     exit_code, stdout, stderr = run_command(dlbench_cmd, timeout_sec)
     runtime = time.time() - start_time
 
-    return exit_code, stderr, None, runtime
+    # Write stderr to tag.err file
+    with open(f"{tag}.err", "w") as f:
+        f.write(stderr)
+
+    # Extract metrics
+    correctness_output = (
+        extract_correctness_output("R", key, tag, exit_code) if key else None
+    )
+    load_time = extract_load_time("R", tag)
+    profiler_load_time = None
+    status = get_benchmark_status(exit_code, correctness_output)
+
+    # Remove log folder after benchmarking
+    if os.path.exists("log"):
+        shutil.rmtree("log")
+
+    if os.path.exists("qsstor"):
+        shutil.rmtree("qsstor")
+
+    return status, None, runtime, correctness_output, load_time, profiler_load_time
 
 
-def benchmark_duckdb(program_path, dataset_path, workers, tag, timeout_sec, payload_dir):
+def benchmark_duckdb(
+    program_path, dataset_path, workers, tag, timeout_sec, payload_dir, key=None
+):
     """Benchmark DuckDB engine"""
     DB = "test.db"
 
@@ -457,10 +555,24 @@ def benchmark_duckdb(program_path, dataset_path, workers, tag, timeout_sec, payl
     exit_code, stdout, stderr = run_command(dlbench_cmd, timeout_sec)
     runtime = time.time() - start_time
 
-    return exit_code, stderr, None, runtime
+    # Write stderr to tag.err file
+    with open(f"{tag}.err", "w") as f:
+        f.write(stderr)
+
+    # Extract metrics
+    correctness_output = (
+        extract_correctness_output("Q", key, tag, exit_code) if key else None
+    )
+    load_time = extract_load_time("Q", tag)
+    profiler_load_time = extract_profiler_load_time("Q", tag)
+    status = get_benchmark_status(exit_code, correctness_output)
+
+    return status, None, runtime, correctness_output, load_time, profiler_load_time
 
 
-def benchmark_umbra(program_path, dataset_path, workers, tag, timeout_sec, payload_dir):
+def benchmark_umbra(
+    program_path, dataset_path, workers, tag, timeout_sec, payload_dir, key=None
+):
     """Benchmark Umbra engine"""
 
     cmd = f"""docker run \\
@@ -478,7 +590,19 @@ def benchmark_umbra(program_path, dataset_path, workers, tag, timeout_sec, paylo
     exit_code, stdout, stderr = run_command(dlbench_cmd, timeout_sec)
     runtime = time.time() - start_time
 
-    return exit_code, stderr, None, runtime
+    # Write stderr to tag.err file
+    with open(f"{tag}.err", "w") as f:
+        f.write(stderr)
+
+    # Extract metrics
+    correctness_output = (
+        extract_correctness_output("U", key, tag, exit_code) if key else None
+    )
+    load_time = extract_load_time("U", tag)
+    profiler_load_time = extract_profiler_load_time("U", tag)
+    status = get_benchmark_status(exit_code, correctness_output)
+
+    return status, None, runtime, correctness_output, load_time, profiler_load_time
 
 
 def main():
@@ -538,25 +662,50 @@ def main():
                 program_name = target["program"]
                 dataset_name = target["dataset"]
                 plan_set = target["plan_set"]
-                
+
                 logger.info(
                     f"program: {program_name}, plan_set: {plan_set} dataset: {dataset_name}, workers: {workers}, engine: {engine_name}"
                 )
 
-                tag = f"{program_name}_{plan_set}_{dataset_name}_{workers}_{engine_name}"
+                tag = (
+                    f"{program_name}_{plan_set}_{dataset_name}_{workers}_{engine_name}"
+                )
 
                 # Get payload directory
                 payload_dir = get_payload_dir(engine_variant)
 
                 # Run appropriate benchmark
                 compile_time = None
+                correctness_output = None
+                load_time = None
+                profiler_load_time = None
                 try:
                     if engine_variant == "D":
-                        exit_code, stderr, compile_time, runtime = benchmark_ddlog(
-                            program_path, dataset_path, workers, tag, timeout_sec, payload_dir
+                        (
+                            status,
+                            compile_time,
+                            runtime,
+                            correctness_output,
+                            load_time,
+                            profiler_load_time,
+                        ) = benchmark_ddlog(
+                            program_path,
+                            dataset_path,
+                            workers,
+                            tag,
+                            timeout_sec,
+                            payload_dir,
+                            key,
                         )
                     elif engine_variant in ["F0", "F1", "F2"]:
-                        exit_code, stderr, compile_time, runtime = benchmark_flowlog(
+                        (
+                            status,
+                            compile_time,
+                            runtime,
+                            correctness_output,
+                            load_time,
+                            profiler_load_time,
+                        ) = benchmark_flowlog(
                             program_path,
                             dataset_path,
                             workers,
@@ -564,9 +713,17 @@ def main():
                             timeout_sec,
                             payload_dir,
                             engine_variant,
+                            key,
                         )
                     elif engine_variant in ["Si", "Sc"]:
-                        exit_code, stderr, compile_time, runtime = benchmark_souffle(
+                        (
+                            status,
+                            compile_time,
+                            runtime,
+                            correctness_output,
+                            load_time,
+                            profiler_load_time,
+                        ) = benchmark_souffle(
                             program_path,
                             dataset_path,
                             workers,
@@ -574,46 +731,84 @@ def main():
                             timeout_sec,
                             payload_dir,
                             engine_variant,
+                            key,
                         )
                     elif engine_variant == "R":
-                        exit_code, stderr, compile_time, runtime = benchmark_recstep(
-                            program_path, dataset_path, workers, tag, timeout_sec, payload_dir
+                        (
+                            status,
+                            compile_time,
+                            runtime,
+                            correctness_output,
+                            load_time,
+                            profiler_load_time,
+                        ) = benchmark_recstep(
+                            program_path,
+                            dataset_path,
+                            workers,
+                            tag,
+                            timeout_sec,
+                            payload_dir,
+                            key,
                         )
                     elif engine_variant == "Q":
-                        exit_code, stderr, compile_time, runtime = benchmark_duckdb(
-                            program_path, dataset_path, workers, tag, timeout_sec, payload_dir
+                        (
+                            status,
+                            compile_time,
+                            runtime,
+                            correctness_output,
+                            load_time,
+                            profiler_load_time,
+                        ) = benchmark_duckdb(
+                            program_path,
+                            dataset_path,
+                            workers,
+                            tag,
+                            timeout_sec,
+                            payload_dir,
+                            key,
                         )
                     elif engine_variant == "U":
-                        exit_code, stderr, compile_time, runtime = benchmark_umbra(
-                            program_path, dataset_path, workers, tag, timeout_sec, payload_dir
+                        (
+                            status,
+                            compile_time,
+                            runtime,
+                            correctness_output,
+                            load_time,
+                            profiler_load_time,
+                        ) = benchmark_umbra(
+                            program_path,
+                            dataset_path,
+                            workers,
+                            tag,
+                            timeout_sec,
+                            payload_dir,
+                            key,
                         )
                     else:
+                        logger.error(f"Unknown engine variant: {engine_variant}")
                         continue
 
                 except Exception as e:
                     logger.error(f"Error running {engine_variant} benchmark: {e}")
                     continue
 
-                # Write stderr to tag.err file
-                with open(f"{tag}.err", "w") as f:
-                    f.write(stderr)
-
-                # Extract dl_out, load_time, and profiler_load_time
-                dl_out = extract_dl_out(engine_variant, key, tag, exit_code)
-                load_time = extract_load_time(engine_variant, tag)
-                profiler_load_time = extract_profiler_load_time(engine_variant, tag)
-
-                # Convert metrics to appropriate types
-                correctness_output = int(dl_out) if dl_out.isdigit() else None
+                # Log execution results
+                logger.info(f"Completed: status={status}, runtime={runtime:.2f}s")
 
                 # Write JSON file
                 result_data = {
-                    "status": get_status_from_exit_code(exit_code),
+                    "status": status,
                     "runtime": round(runtime, 2) if runtime is not None else None,
                     "correctness_output": correctness_output,
                     "load_time": round(load_time, 2) if load_time is not None else None,
-                    "compile_time": round(compile_time, 2) if compile_time is not None else None,
-                    "profiler_load_time": round(profiler_load_time, 2) if profiler_load_time is not None else None,
+                    "compile_time": (
+                        round(compile_time, 2) if compile_time is not None else None
+                    ),
+                    "profiler_load_time": (
+                        round(profiler_load_time, 2)
+                        if profiler_load_time is not None
+                        else None
+                    ),
                 }
 
                 with open(f"{tag}.json", "w") as f:
