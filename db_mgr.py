@@ -7,6 +7,7 @@ import argparse
 import re
 import logging
 from pathlib import Path
+import sys
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 logger = logging.getLogger(__name__)
@@ -186,7 +187,6 @@ class BenchmarkDB:
         ''')
         
         results = cursor.fetchall()
-        conn.close()
         
         # Group by program-dataset and check for multiple correctness values
         violations = {}
@@ -203,9 +203,25 @@ class BenchmarkDB:
                 correctness_info = ", ".join([f"{correctness}({count})" for correctness, count in correctness_list])
                 logger.error(f"VIOLATION: {program} on {dataset} - {correctness_info}")
         
+        # Find any runs where the status is TOUT but runtime is not 900.0
+        cursor.execute('''
+            SELECT result_folder, program, dataset, runtime
+            FROM benchmark_results
+            WHERE status = 'TOUT' AND runtime < 900.0
+        ''')
+        
+        results = cursor.fetchall()
+        
+        if len(results) > 0:
+            found_violations = True
+            for result_folder, program, dataset, runtime in results:
+                logger.error(f"TOUT VIOLATION: {program} on {dataset} in {result_folder} - runtime {runtime} is not 900.0")
+        
         if not found_violations:
-            logger.info("No correctness violations found. All CMP records have consistent correctness values.")
-    
+            logger.info("No correctness violations found.")
+
+        conn.close()
+
     def summary(self):
         """Print median runtime summary for each program, dataset, engine, and worker count"""
         if not os.path.exists(self.db_path):
@@ -216,9 +232,9 @@ class BenchmarkDB:
         cursor = conn.cursor()
         
         cursor.execute('''
-            SELECT program, dataset, engine, threads, runtime
+            SELECT program, dataset, engine, threads, runtime, status
             FROM benchmark_results 
-            WHERE status = 'CMP'
+            WHERE status = 'CMP' or status = 'TOUT'
             ORDER BY program, dataset, engine, threads
         ''')
         
@@ -229,34 +245,32 @@ class BenchmarkDB:
             logger.info("No completed runtime data found")
             return
         
-        # Assert runtime is never null for CMP status
-        for program, dataset, engine, threads, runtime in rows:
-            assert runtime is not None, f"Runtime is null for CMP record: {program}, {dataset}, {engine}, {threads}"
-        
         # Group by (program, dataset, engine, threads) and calculate median
         from collections import defaultdict
         import statistics
         
         groups = defaultdict(list)
-        for program, dataset, engine, threads, runtime in rows:
+        for program, dataset, engine, threads, runtime, status in rows:
+            # Assert runtime is never null for CMP / TOUT status
+            assert runtime is not None, f"Runtime is null for CMP/TOUT record: {program}, {dataset}, {engine}, {threads}"
             key = (program, dataset, engine, threads)
-            groups[key].append(runtime)
+            groups[key].append(runtime if status == "CMP" else sys.maxsize)
         
         # Calculate medians and sort
         results = []
         for (program, dataset, engine, threads), runtimes in groups.items():
             median_runtime = statistics.median(runtimes)
-            results.append((program, dataset, engine, threads, median_runtime))
+            results.append((program, dataset, engine, threads, median_runtime, len(runtimes)))
         
         results.sort(key=lambda x: (x[0], x[1], x[2], x[3]))
         
         # Print results
-        logger.info(f"{'Program':<12} {'Dataset':<10} {'Engine':<15} {'Workers':<7} {'Median Runtime':<15}")
-        logger.info("-" * 70)
-        
-        for program, dataset, engine, threads, median_runtime in results:
-            logger.info(f"{program:<12} {dataset:<10} {engine:<15} {threads:<7} {median_runtime:<15.2f}")
-    
+        logger.info(f"{'Program':<12} {'Dataset':<10} {'Engine':<15} {'Workers':<7} {'Median Runtime':<15} {'Sample Size':<7}")
+        logger.info("-" * 80)
+
+        for program, dataset, engine, threads, median_runtime, sample_size in results:
+            logger.info(f"{program:<12} {dataset:<10} {engine:<15} {threads:<7} {median_runtime:<15.2f} {sample_size:<7}")
+
     def query(self, sql):
         """Execute custom SQL query and display results"""
         if not os.path.exists(self.db_path):
