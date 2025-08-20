@@ -26,7 +26,10 @@ mkscreen inst: (validate) (push inst)
 	ssh -A -t {{node}} "mkdir -p "{{inst}}/cloudlab-auto"; cd "{{inst}}/cloudlab-auto"; screen -S {{inst}};"
 
 chscreen inst: (validate)
-	ssh -A -t {{node}} "screen -r {{inst}};"
+	ssh -A -t {{node}} "screen -r -d {{inst}};"
+
+lsscreen: (validate)
+	ssh -A -t {{node}} "screen -list;"
 
 push inst: (validate)
 	rsync -ah --exclude="{{result_dir}}" $PWD {{node}}:~/{{inst}}/
