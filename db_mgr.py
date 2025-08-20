@@ -79,6 +79,7 @@ class BenchmarkDB:
         
         loaded_count = 0
         skipped_count = 0
+        duplicate_count = 0
         
         for json_file in folder_path.glob("*.json"):
             if json_file.name == "targets.json":
@@ -97,7 +98,7 @@ class BenchmarkDB:
                 profiler_load_time = data.get('profiler_load_time')
                 
                 cursor.execute('''
-                    INSERT OR REPLACE INTO benchmark_results 
+                    INSERT OR IGNORE INTO benchmark_results 
                     (program, plan_set, dataset, threads, engine, status, correctness_output, 
                      runtime, compile_time, load_time, profiler_load_time, result_folder)
                     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -115,7 +116,11 @@ class BenchmarkDB:
                     profiler_load_time,
                     folder_path.name
                 ))
-                loaded_count += 1
+                
+                if cursor.rowcount == 0:
+                    duplicate_count += 1
+                else:
+                    loaded_count += 1
                 
             except (json.JSONDecodeError, KeyError) as e:
                 logger.error(f"Error processing {json_file.name}: {e}")
@@ -123,9 +128,9 @@ class BenchmarkDB:
         
         conn.commit()
         conn.close()
-        logger.info(f"Loaded {loaded_count} records, skipped {skipped_count} files from {folder_path}")
+        logger.info(f"Loaded {loaded_count} records, skipped {skipped_count} files, found {duplicate_count} duplicates from {folder_path}")
     
-    def show_data(self, sort_by):
+    def show_data(self):
         """Display all data in the database table with pretty formatting"""
         if not os.path.exists(self.db_path):
             logger.error(f"Database {self.db_path} does not exist")
@@ -134,15 +139,11 @@ class BenchmarkDB:
         conn = sqlite3.connect(self.db_path)
         cursor = conn.cursor()
         
-        if sort_by == 'folder':
-            order_clause = 'ORDER BY result_folder, program, dataset, plan_set, threads, engine'
-        else:  # sort_by == 'program'
-            order_clause = 'ORDER BY program, dataset, plan_set, threads, engine, result_folder'
-            
-        cursor.execute(f'''
+        cursor.execute('''
             SELECT program, plan_set, dataset, threads, engine, status, 
                    correctness_output, runtime, compile_time, load_time, profiler_load_time, result_folder
-            FROM benchmark_results {order_clause}
+            FROM benchmark_results 
+            ORDER BY result_folder, program, dataset, plan_set, threads, engine
         ''')
         
         rows = cursor.fetchall()
@@ -303,14 +304,18 @@ def main():
     drop_parser.add_argument('database', help='Path to SQLite database file')
     
     # Load data command
-    load_parser = subparsers.add_parser('load', help='Load benchmark data from folder')
+    load_parser = subparsers.add_parser('load', help='Load benchmark data from folder(s)')
     load_parser.add_argument('database', help='Path to SQLite database file')
-    load_parser.add_argument('folder', help='Path to folder containing JSON result files')
+    load_parser.add_argument('folders', nargs='+', help='Path(s) or bash pattern(s) to folder(s) containing JSON result files')
+
+    # Load latest data command
+    load_latest_parser = subparsers.add_parser('load-latest', help='Load benchmark data from latest subfolder')
+    load_latest_parser.add_argument('database', help='Path to SQLite database file')
+    load_latest_parser.add_argument('folder', help='Path to parent folder containing subfolders')
     
     # Show data command
     show_parser = subparsers.add_parser('show', help='Display all data in the database')
     show_parser.add_argument('database', help='Path to SQLite database file')
-    show_parser.add_argument('--sort-by', choices=['folder', 'program'], default='program', help='Primary sort column (default: program)')
     
     # Verify correctness command
     verify_parser = subparsers.add_parser('verify', help='Verify correctness consistency across results')
@@ -341,9 +346,40 @@ def main():
         if not os.path.exists(args.database):
             logger.error(f"Database {args.database} does not exist. Create it first.")
             return
-        db.load_folder(args.folder)
+        import glob
+        folders = []
+        for pattern in args.folders:
+            folders.extend([f for f in glob.glob(pattern) if os.path.isdir(f)])
+        if not folders:
+            logger.error("No valid folders found for the given patterns.")
+            return
+        for folder in folders:
+            db.load_folder(folder)
+    elif args.command == 'load-latest':
+        if not os.path.exists(args.database):
+            logger.error(f"Database {args.database} does not exist. Create it first.")
+            return
+        
+        # Find latest subfolder
+        if not os.path.exists(args.folder):
+            logger.error(f"Folder {args.folder} does not exist")
+            return
+            
+        subfolders = [d for d in os.listdir(args.folder) 
+                     if os.path.isdir(os.path.join(args.folder, d))]
+        
+        if not subfolders:
+            logger.error(f"No subfolders found in {args.folder}")
+            return
+            
+        latest_folder = max(subfolders, 
+                           key=lambda d: os.path.getctime(os.path.join(args.folder, d)))
+        latest_path = os.path.join(args.folder, latest_folder)
+        
+        logger.info(f"Loading from latest subfolder: {latest_path}")
+        db.load_folder(latest_path)
     elif args.command == 'show':
-        db.show_data(args.sort_by)
+        db.show_data()
     elif args.command == 'verify':
         db.verify_correctness()
     elif args.command == 'summary':
