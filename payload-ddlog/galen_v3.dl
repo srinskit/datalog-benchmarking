@@ -1,15 +1,15 @@
-typedef TId = signed<32>
+typedef node = signed<32>
 
-input relation P(X: TId, Z: TId)
-input relation Q(X: TId, Y: TId, Z: TId)
-input relation R(R: TId, P: TId, E: TId)
-input relation C(Y: TId, Z: TId, W: TId)
-input relation U(R: TId, Z: TId, W: TId)
-input relation S(R: TId, P: TId)
+input relation P(X: node, Z: node)
+input relation Q(X: node, Y: node, Z: node)
+input relation R(R: node, P: node, E: node)
+input relation C(Y: node, Z: node, W: node)
+input relation U(R: node, Z: node, W: node)
+input relation S(R: node, P: node)
 
-output relation OutP(X: TId, Z: TId)
-output relation OutQ(X: TId, Y: TId, Z: TId)
-output relation RelationSizes(relation_name: string, size: signed<32>)
+output relation OutP(X: node, Z: node)
+output relation OutQ(X: node, Y: node, Z: node)
+output relation RelationSizes(relation_name: string, size: bit<64>)
 
 OutP(x,y) :- P(x,y).
 OutQ(x,y,z) :- Q(x,y,z).

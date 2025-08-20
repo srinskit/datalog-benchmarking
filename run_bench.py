@@ -59,6 +59,9 @@ def load_targets(targets_file="targets.json"):
                 continue
 
             valid_targets.append(target)
+            
+        # Sort targets by program_path to promote caching of any compilation
+        valid_targets.sort(key=lambda x: x["program_path"])
 
         return valid_targets
     except FileNotFoundError:
@@ -322,21 +325,34 @@ def _get_souffle_loadtime(profile_file_path):
     except (KeyError, FileNotFoundError, json.JSONDecodeError):
         return None
 
+_previous_ddlog_program_path = None
+_previous_ddlog_program_compile_time = None
+_previous_ddlog_program_executable = None
 
-def benchmark_ddlog(
-    program_path, dataset_path, workers, tag, timeout_sec, payload_dir, key
-):
-    """Benchmark DDLog engine"""
+def build_ddlog_program(program_path):
+    """Build the DDLog program if it has changed since the last run, and return the executable path and compile time."""
+    global _previous_ddlog_program_path
+    global _previous_ddlog_program_compile_time
+    global _previous_ddlog_program_executable
+    base_program = Path(program_path).stem
+    exe = f"ddcomp/{base_program}_ddlog/target/release/{base_program}_cli"
+
+    if program_path == _previous_ddlog_program_path and os.path.exists(exe):
+        logger.info("DDLog program has not changed, skipping build")
+        return _previous_ddlog_program_executable, _previous_ddlog_program_compile_time
+
+    # Reset previous build state
+    _previous_ddlog_program_path = None
+    _previous_ddlog_program_compile_time = None
+    _previous_ddlog_program_executable = None
     ddcomp_path = Path("ddcomp")
+
     if ddcomp_path.exists():
         shutil.rmtree(ddcomp_path)
 
-    base_program = Path(program_path).name
-    compile_time = 0
-
     # Build program
     start_time = time.time()
-    subprocess.run(f"ddlog -i {payload_dir}/{program_path}.dl -o ddcomp", shell=True)
+    subprocess.run(f"ddlog -i {program_path} -o ddcomp", shell=True)
     subprocess.run(
         f"RUSTFLAGS=-Awarnings cargo +1.76 build --release --quiet -j $(nproc)",
         shell=True,
@@ -344,7 +360,22 @@ def benchmark_ddlog(
     )
     compile_time = time.time() - start_time
 
-    exe = f"ddcomp/{base_program}_ddlog/target/release/{base_program}_cli"
+    if not os.path.exists(exe):
+        raise FileNotFoundError(f"Executable {exe} not found after compilation")
+
+    _previous_ddlog_program_compile_time = compile_time
+    _previous_ddlog_program_executable = exe
+    _previous_ddlog_program_path = program_path
+    return exe, compile_time
+
+
+def benchmark_ddlog(
+    program_path, dataset_path, workers, tag, timeout_sec, payload_dir, key
+):
+    """Benchmark DDLog engine"""
+
+    # Build program
+    exe, compile_time = build_ddlog_program(f"{payload_dir}/{program_path}.dl")
     cmd = f"{exe} -w {workers} < {DATA}/{dataset_path}/data.ddin"
 
     clear_caches()
@@ -631,6 +662,7 @@ def main():
 
     # Load targets
     targets = load_targets(args.targets)
+    logger.info(f"Found {len(targets)} active benchmark targets")
 
     for target in targets:
         program_path = target["program_path"]

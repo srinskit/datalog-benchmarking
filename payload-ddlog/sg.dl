@@ -6,5 +6,5 @@ output relation Sg(x: int, y: int)
 Sg(x, y) :- Arc(a, x), Arc(a, y), x != y.
 Sg(x, y) :- Arc(a, x), Sg(a, b), Arc(b, y).
 
-output relation RelationSizes(rel: string, size:bit<64>)
+output relation RelationSizes(rel: string, size: bit<64>)
 RelationSizes("Sg", size) :- Sg(x, y),  var size = (x, y).group_by(()).count_distinct().

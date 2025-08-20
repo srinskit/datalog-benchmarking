@@ -7,5 +7,5 @@ output relation Sg(src: node, dest: node)
 Sg(x, y) :- Arc(a, y), Arc(a, x), x != y.
 Sg(x, y) :- Arc(a, x), Sg(a, b), Arc(b, y).
 
-output relation RelationSizes(rel: string, size:bit<64>)
+output relation RelationSizes(rel: string, size: bit<64>)
 RelationSizes("Sg", size) :- Sg(src, dest),  var size = (src, dest).group_by(()).count_distinct().

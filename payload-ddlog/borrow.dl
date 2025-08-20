@@ -187,7 +187,7 @@ Move_error(path, target_node) :-
     Cfg_edge(source_node, target_node).
 
 // Print
-output relation RelationSizes(rel: string, size:bit<64>)
+output relation RelationSizes(rel: string, size: bit<64>)
 
 RelationSizes("Subset", size) :- Subset(x, y, z),  var size = (x, y, z).group_by(()).count_distinct().
 RelationSizes("Origin_live_on_entry", size) :- Origin_live_on_entry(x, y),  var size = (x, y).group_by(()).count_distinct().

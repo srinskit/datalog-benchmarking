@@ -104,7 +104,7 @@ ResultP(ctr1, ctr2, value) :-
     CurrentValue(ctr2, n2, value).
 
 
-output relation RelationSizes(rel: string, size:bit<64>)
+output relation RelationSizes(rel: string, size: bit<64>)
 
 RelationSizes("Insert", size) :- Insert(a, b, c, d),  var size = (a, b, c, d).group_by(()).count_distinct().
 RelationSizes("Remove", size) :- Remove(idctr, idn),  var size = (idctr, idn).group_by(()).count_distinct().

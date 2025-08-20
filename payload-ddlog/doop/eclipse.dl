@@ -643,7 +643,7 @@ Reachable(method) :-
 // output relation (\w+)(.*)
 // RelationSizes("$1", size) :- $1$2,  var size = $2.group_by(()).count_distinct().
 
-output relation RelationSizes(rel: string, size:bit<64>)
+output relation RelationSizes(rel: string, size: bit<64>)
 
 RelationSizes("IsType", size) :- IsType(t),  var size = (t).group_by(()).count_distinct().
 RelationSizes("IsReferenceType", size) :- IsReferenceType(t),  var size = (t).group_by(()).count_distinct().

@@ -233,7 +233,7 @@ Stack_def_use_live_var_at_prior_used(ea_used,block_used,inlined_BaseReg_375,inli
    not Stack_def_use_defined_in_block(block,inlined_BaseReg_375,inlined_StackPos_375).
 ////////// end of Stack_def_use_live_var_at_prior_used (1/1)
 
-output relation RelationSizes(rel: string, size:bit<64>)
+output relation RelationSizes(rel: string, size: bit<64>)
 
 RelationSizes("Stack_def_use_def_used", size) :- Stack_def_use_def_used(ea_def,var_def_reg,var_def_pos,ea_used,var_used_reg,var_used_pos), var size = (ea_def,var_def_reg,var_def_pos,ea_used,var_used_reg,var_used_pos).group_by(()).count_distinct().
 RelationSizes("Reg_def_use_return_val_used", size) :- Reg_def_use_return_val_used(ea_call,callee,reg,ea_used,index_used), var size = (ea_call,callee,reg,ea_used,index_used).group_by(()).count_distinct().

@@ -12,5 +12,5 @@ PointsTo(y, x) :- Assign(y, z), PointsTo(z, x).
 PointsTo(y, w) :- PointsTo(x, z), PointsTo(z, w), Load(y, x).
 PointsTo(z, w) :- Store(y, x), PointsTo(y, z), PointsTo(x, w).
 
-output relation RelationSizes(rel: string, size:bit<64>)
+output relation RelationSizes(rel: string, size: bit<64>)
 RelationSizes("PointsTo", size) :- PointsTo(y, x),  var size = (y, x).group_by(()).count_distinct().
