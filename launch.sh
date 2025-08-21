@@ -22,14 +22,13 @@ mkdir -p $folder
 
 # Copy dataset from remote to local
 echo "[launch] Setting up local dataset"
-/usr/bin/time -f "Local dataset setup took: %E" ssh -A $HOST "sudo cp -an /remote/. /data/"
+/usr/bin/time -f "Local dataset setup took: %E" ssh -A $HOST "sudo $RSYNC --rsync-path='sudo rsync' /remote/. /data/"
 
 ssh -A $HOST "sudo swapoff -a; sudo rm -rf /opt/grpc"
 
 echo
 echo "[launch] sync: local ---> host"
-ssh -A $HOST "sudo rm -rf $WORK_DIR/$PAYLOAD_DIR"
-$RSYNC --rsync-path="sudo rsync" --include="targets"  --include="targets/*" --include="run_bench.py" --include="payload-*/" --include="payload-*/**" --exclude="*" . $HOST:$WORK_DIR/$PAYLOAD_DIR
+$RSYNC --rsync-path='sudo rsync' --include="targets"  --include="targets/*" --include="run_bench.py" --include="payload-*/" --include="payload-*/**" --exclude="*" . $HOST:$WORK_DIR/$PAYLOAD_DIR
 ssh -A $HOST "sudo chmod -R a-w $WORK_DIR/$PAYLOAD_DIR/payload-*"
 
 # Allow script to continue with copy to local if benchmark is interrupted
@@ -40,4 +39,4 @@ ssh -A $HOST "cd $WORK_DIR/$PAYLOAD_DIR; sudo bash -c 'source $SRC/rust_env && s
 
 # Sync results back from host
 echo "[launch] sync: local <--- host"
-$RSYNC --rsync-path="sudo rsync" --include="*.log" --include="*.profile" --include="*.err" --include="*.out" --include="*.json" --exclude="*" $HOST:$WORK_DIR/$PAYLOAD_DIR/ $folder
+$RSYNC --rsync-path='sudo rsync' --include="*.log" --include="*.profile" --include="*.err" --include="*.out" --include="*.json" --exclude="*" $HOST:$WORK_DIR/$PAYLOAD_DIR/ $folder
