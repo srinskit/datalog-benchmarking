@@ -9,5 +9,5 @@ CC(node, min_node) :- Arc(node, _), var min_node = Aggregate((node), group_min(n
 CC(node, min_cc) :- CC(other, cc), Arc(other, node), var min_cc = Aggregate((node), group_min(cc)).
 CC2(min_cc) :- CC(node, cc), var min_cc = Aggregate((node), group_min(cc)).
 
-output relation RelationSizes(rel: string, size: bit<64>)
-RelationSizes("CC", size) :- CC(node, cc),  var size = (node, cc).group_by(()).count_distinct().
+output relation RelationSizes(rel: string, size:bit<64>)
+RelationSizes("CC", size) :- CC2(x),  var size = (x).group_by(()).count_distinct().
