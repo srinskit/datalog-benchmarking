@@ -42,7 +42,7 @@ def get_payload_dir(engine_variant):
 
 def load_targets(targets_file="targets.json"):
     """Load benchmark targets from specified file"""
-    required_fields = ["program", "dataset", "output_relation", "engines", "threads"]
+    required_fields = ["program", "dataset", "dataset_path", "output_relation", "engines", "threads"]
 
     try:
         with open(targets_file, "r") as f:
@@ -59,7 +59,7 @@ def load_targets(targets_file="targets.json"):
                 continue
 
             valid_targets.append(target)
-            
+
         # Sort targets by program_path to promote caching of any compilation
         valid_targets.sort(key=lambda x: x["program_path"])
 
@@ -67,6 +67,37 @@ def load_targets(targets_file="targets.json"):
     except FileNotFoundError:
         logger.error(f"{targets_file} not found")
         sys.exit(1)
+
+
+def load_datasets(targets):
+    """
+    Collect unique dataset paths from loaded targets and copy them from
+    /remote/input to /data/input using rsync-like behavior.
+
+    Args:
+        targets (List[Dict]): List of benchmark target configurations.
+    """
+    dataset_paths = {target["dataset_path"] for target in targets}
+
+    for dset in dataset_paths:
+        remote_path = os.path.join("/remote/input", dset)
+        local_path = os.path.join("/data/input", dset)
+
+        # Ensure local parent directory exists
+        os.makedirs(os.path.dirname(local_path), exist_ok=True)
+
+        # Use rsync to copy only updated/new files
+        try:
+            subprocess.run(
+                ["rsync", "-a", "--update", "--inplace", "--progress", remote_path, os.path.dirname(local_path)],
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
+            logger.info(f"Synced {remote_path} -> {local_path}")
+        except subprocess.CalledProcessError as e:
+            logger.error(f"Failed to sync {remote_path}: {e.stderr.decode()}")
+            sys.exit(1)
 
 
 def run_command(cmd, timeout_sec=None):
@@ -83,10 +114,17 @@ def run_command(cmd, timeout_sec=None):
 def clear_caches():
     """Clear system caches for consistent benchmarking"""
     logger.debug("Clearing system caches")
-    result = subprocess.run("sync", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    result = subprocess.run(
+        "sync", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL
+    )
     if result.returncode != 0:
         logger.warning("sync command failed")
-    result = subprocess.run("sysctl vm.drop_caches=3", shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    result = subprocess.run(
+        "sysctl vm.drop_caches=3",
+        shell=True,
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
     if result.returncode != 0:
         logger.warning("drop_caches command failed")
 
@@ -325,9 +363,11 @@ def _get_souffle_loadtime(profile_file_path):
     except (KeyError, FileNotFoundError, json.JSONDecodeError):
         return None
 
+
 _previous_ddlog_program_path = None
 _previous_ddlog_program_compile_time = None
 _previous_ddlog_program_executable = None
+
 
 def build_ddlog_program(program_path):
     """Build the DDLog program if it has changed since the last run, and return the executable path and compile time."""
@@ -352,12 +392,26 @@ def build_ddlog_program(program_path):
 
     # Build program
     start_time = time.time()
-    subprocess.run(f"ddlog -i {program_path} -o ddcomp", shell=True)
-    subprocess.run(
+    result = subprocess.run(f"ddlog -i {program_path} -o ddcomp", shell=True)
+
+    if result.returncode != 0:
+        logger.error(
+            f"DDLog compilation failed with return code {result.returncode}: {result.stderr}"
+        )
+        raise RuntimeError("DDLog compilation failed")
+
+    result = subprocess.run(
         f"RUSTFLAGS=-Awarnings cargo +1.76 build --release --quiet -j $(nproc)",
         shell=True,
         cwd=f"ddcomp/{base_program}_ddlog",
     )
+
+    if result.returncode != 0:
+        logger.error(
+            f"DDLog compilation failed with return code {result.returncode}: {result.stderr}"
+        )
+        raise RuntimeError("DDLog compilation failed")
+
     compile_time = time.time() - start_time
 
     if not os.path.exists(exe):
@@ -533,7 +587,7 @@ def benchmark_recstep(
 
     cmd = f"recstep --program {payload_dir}/{program_path}.dl --input {DATA}/{dataset_path} --jobs {workers}"
 
-    clear_caches()
+    # clear_caches()
 
     # Prime the benchmark
     run_command(cmd, 5)
@@ -663,6 +717,10 @@ def main():
     # Load targets
     targets = load_targets(args.targets)
     logger.info(f"Found {len(targets)} active benchmark targets")
+
+    # Load datasets
+    load_datasets(targets)
+    logger.info("Datasets loaded")
 
     for target in targets:
         program_path = target["program_path"]
@@ -829,9 +887,6 @@ def main():
                     logger.error(f"Error running {engine_variant} benchmark: {e}")
                     continue
 
-                # Log execution results
-                logger.info(f"Completed: status={status}, runtime={runtime:.2f}s")
-
                 # Write JSON file
                 result_data = {
                     "status": status,
@@ -847,6 +902,9 @@ def main():
                         else None
                     ),
                 }
+
+                # Log results to console
+                logger.info(f"Results for {tag}: {result_data}")
 
                 with open(f"{tag}.json", "w") as f:
                     json.dump(result_data, f, indent=2)

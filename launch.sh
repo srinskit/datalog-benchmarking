@@ -5,6 +5,8 @@
 # Exit script on error
 set -e
 
+source .env
+
 WORK_DIR="~"
 SRC=/opt
 PAYLOAD_DIR="cloudlab-auto"
@@ -21,8 +23,8 @@ folder="$resultdir/result$ts"
 mkdir -p $folder
 
 # Copy dataset from remote to local
-echo "[launch] Setting up local dataset"
-/usr/bin/time -f "Local dataset setup took: %E" ssh -A $HOST "sudo $RSYNC --rsync-path='sudo rsync' /remote/. /data/"
+echo "[launch] Setting up programs from remote"
+/usr/bin/time -f "Local program setup took: %E" ssh -A $HOST "sudo $RSYNC --rsync-path='sudo rsync' /remote/quickstep /data/"
 
 ssh -A $HOST "sudo swapoff -a; sudo rm -rf /opt/grpc"
 

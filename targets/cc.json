@@ -7,19 +7,7 @@
 		"dataset_path": "graph-traverse/livejournal",
 		"output_relation": "CC",
 		"engines": ["R"],
-		"threads": [64, 4],
-		"timeout": 900,
-		"disabled": false
-	},
-	{
-		"program": "cc",
-		"dataset": "livejournal",
-		"plan_set": 1,
-		"program_path": "cc_v1",
-		"dataset_path": "graph-traverse/livejournal",
-		"output_relation": "CC",
-		"engines": ["R"],
-		"threads": [64, 4],
+		"threads": [64],
 		"timeout": 900,
 		"disabled": false
 	},
@@ -31,21 +19,9 @@
 		"dataset_path": "graph-traverse/orkut",
 		"output_relation": "CC",
 		"engines": ["R"],
-		"threads": [64, 4],
+		"threads": [64],
 		"timeout": 900,
-		"disabled": false
-	},
-	{
-		"program": "cc",
-		"dataset": "orkut",
-		"plan_set": 1,
-		"program_path": "cc_v1",
-		"dataset_path": "graph-traverse/orkut",
-		"output_relation": "CC",
-		"engines": ["R"],
-		"threads": [64, 4],
-		"timeout": 900,
-		"disabled": false
+		"disabled": true
 	},
 	{
 		"program": "cc",
@@ -55,21 +31,9 @@
 		"dataset_path": "graph-traverse/arabic",
 		"output_relation": "CC",
 		"engines": ["R"],
-		"threads": [64, 4],
+		"threads": [64],
 		"timeout": 900,
-		"disabled": false
-	},
-	{
-		"program": "cc",
-		"dataset": "arabic",
-		"plan_set": 1,
-		"program_path": "cc_v1",
-		"dataset_path": "graph-traverse/arabic",
-		"output_relation": "CC",
-		"engines": ["R"],
-		"threads": [64, 4],
-		"timeout": 900,
-		"disabled": false
+		"disabled": true
 	},
 	{
 		"program": "cc",
@@ -79,20 +43,8 @@
 		"dataset_path": "graph-traverse/twitter",
 		"output_relation": "CC",
 		"engines": ["R"],
-		"threads": [64, 4],
+		"threads": [64],
 		"timeout": 900,
-		"disabled": false
-	},
-	{
-		"program": "cc",
-		"dataset": "twitter",
-		"plan_set": 1,
-		"program_path": "cc_v1",
-		"dataset_path": "graph-traverse/twitter",
-		"output_relation": "CC",
-		"engines": ["R"],
-		"threads": [64, 4],
-		"timeout": 900,
-		"disabled": false
+		"disabled": true
 	}
 ]

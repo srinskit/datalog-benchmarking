@@ -1,0 +1,98 @@
+[
+	{
+		"program": "dyck",
+		"dataset": "kernel",
+		"plan_set": 0,
+		"program_path": "dyck",
+		"dataset_path": "graph-traverse/kernel",
+		"output_relation": "Dyck",
+		"engines": ["Sc", "R", "D"],
+		"threads": [64, 4],
+		"timeout": 900,
+		"disabled": false
+	},
+	{
+		"program": "dyck",
+		"dataset": "kernel",
+		"plan_set": 1,
+		"program_path": "dyck_v1",
+		"dataset_path": "graph-traverse/kernel",
+		"output_relation": "Dyck",
+		"engines": ["Sc", "R", "D"],
+		"threads": [64, 4],
+		"timeout": 900,
+		"disabled": false
+	},
+	{
+		"program": "dyck",
+		"dataset": "kernel",
+		"plan_set": 2,
+		"program_path": "dyck_v2",
+		"dataset_path": "graph-traverse/kernel",
+		"output_relation": "Dyck",
+		"engines": ["Sc", "R", "D"],
+		"threads": [64, 4],
+		"timeout": 900,
+		"disabled": false
+	},
+	{
+		"program": "dyck",
+		"dataset": "kernel",
+		"plan_set": 3,
+		"program_path": "dyck_v3",
+		"dataset_path": "graph-traverse/kernel",
+		"output_relation": "Dyck",
+		"engines": ["Sc", "R", "D"],
+		"threads": [64, 4],
+		"timeout": 900,
+		"disabled": false
+	},
+	{
+		"program": "dyck",
+		"dataset": "postgresql",
+		"plan_set": 0,
+		"program_path": "dyck",
+		"dataset_path": "graph-traverse/postgresql",
+		"output_relation": "Dyck",
+		"engines": ["Sc", "R", "D"],
+		"threads": [64, 4],
+		"timeout": 900,
+		"disabled": false
+	},
+	{
+		"program": "dyck",
+		"dataset": "postgresql",
+		"plan_set": 1,
+		"program_path": "dyck_v1",
+		"dataset_path": "graph-traverse/postgresql",
+		"output_relation": "Dyck",
+		"engines": ["Sc", "R", "D"],
+		"threads": [64, 4],
+		"timeout": 900,
+		"disabled": false
+	},
+	{
+		"program": "dyck",
+		"dataset": "postgresql",
+		"plan_set": 2,
+		"program_path": "dyck_v2",
+		"dataset_path": "graph-traverse/postgresql",
+		"output_relation": "Dyck",
+		"engines": ["Sc", "R", "D"],
+		"threads": [64, 4],
+		"timeout": 900,
+		"disabled": false
+	},
+	{
+		"program": "dyck",
+		"dataset": "postgresql",
+		"plan_set": 3,
+		"program_path": "dyck_v3",
+		"dataset_path": "graph-traverse/postgresql",
+		"output_relation": "Dyck",
+		"engines": ["Sc", "R", "D"],
+		"threads": [64, 4],
+		"timeout": 900,
+		"disabled": false
+	}
+]

@@ -1,0 +1,50 @@
+[
+	{
+		"program": "bipartite",
+		"dataset": "mag",
+		"plan_set": 0,
+		"program_path": "bipartite",
+		"dataset_path": "graph-reach/mag",
+		"output_relation": "Zero",
+		"engines": ["R", "D"],
+		"threads": [4, 64],
+		"timeout": 900,
+		"disabled": false
+	},
+	{
+		"program": "bipartite",
+		"dataset": "mag",
+		"plan_set": 1,
+		"program_path": "bipartite_v1",
+		"dataset_path": "graph-reach/mag",
+		"output_relation": "Zero",
+		"engines": ["R", "D"],
+		"threads": [4, 64],
+		"timeout": 900,
+		"disabled": false
+	},
+	{
+		"program": "bipartite",
+		"dataset": "mag",
+		"plan_set": 2,
+		"program_path": "bipartite_v2",
+		"dataset_path": "graph-reach/mag",
+		"output_relation": "Zero",
+		"engines": ["R", "D"],
+		"threads": [4, 64],
+		"timeout": 900,
+		"disabled": false
+	},
+	{
+		"program": "bipartite",
+		"dataset": "mag",
+		"plan_set": 3,
+		"program_path": "bipartite_v3",
+		"dataset_path": "graph-reach/mag",
+		"output_relation": "Zero",
+		"engines": ["R", "D"],
+		"threads": [4, 64],
+		"timeout": 900,
+		"disabled": false
+	}
+]

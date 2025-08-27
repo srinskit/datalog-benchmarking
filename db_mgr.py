@@ -14,6 +14,8 @@ import statistics
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
 
+TIMEOUT_TIME = 900.0  # Default timeout for benchmark runs in seconds
+
 
 class BenchmarkDB:
     def __init__(self, db_path):
@@ -64,7 +66,7 @@ class BenchmarkDB:
     def parse_filename(self, filename):
         """Parse benchmark result filename to extract metadata"""
         # Pattern: {program}_{plan_set}_{dataset}_{threads}_{engine}.json
-        pattern = r'^(.+?)_(\d+)_(.+?)_(\d+)_(.+?)\.json$'
+        pattern = r"^(.+?)_(\d+)_(.+?)_(\d+)_(.+?)\.json$"
         match = re.match(pattern, filename)
 
         if match:
@@ -278,6 +280,60 @@ class BenchmarkDB:
 
         cursor.execute(
             """
+            SELECT 
+                program,
+                dataset,
+                engine,
+                threads,
+                SUM(CASE WHEN status = 'CMP'  THEN 1 ELSE 0 END) AS CMP,
+                SUM(CASE WHEN status = 'TOUT' THEN 1 ELSE 0 END) AS TOUT,
+                SUM(CASE WHEN status = 'OOM'  THEN 1 ELSE 0 END) AS OOM,
+                SUM(CASE WHEN status = 'DNF'  THEN 1 ELSE 0 END) AS DNF,
+                COUNT(*) AS total
+            FROM benchmark_results
+            GROUP BY program, dataset, engine, threads;
+            """
+        )
+
+        status_rows = cursor.fetchall()
+
+        # Compute program status summary
+        program_status_agg = defaultdict(str)
+
+        for (
+            program,
+            dataset,
+            engine,
+            threads,
+            cmp_count,
+            tout_count,
+            oom_count,
+            dnf_count,
+            total,
+        ) in status_rows:
+            # Assert that total is the sum of all status counts
+            assert (
+                cmp_count + tout_count + oom_count + dnf_count == total
+            ), f"Total count mismatch for {program}, {dataset}, {engine}, {threads}"
+
+            key = program, dataset, engine, threads
+            status = None
+            
+            if cmp_count > 0:
+                status = "CMP"
+            elif tout_count > 0:
+                status = "TOUT"
+            elif oom_count > 0:
+                status = "OOM"
+            elif dnf_count > 0:
+                status = "DNF"
+            else:
+                status = None
+
+            program_status_agg[key] = status
+
+        cursor.execute(
+            """
             SELECT program, dataset, engine, threads, runtime, status, plan_set
             FROM benchmark_results 
             WHERE status = 'CMP' or status = 'TOUT'
@@ -295,6 +351,7 @@ class BenchmarkDB:
         # Group by (program, dataset, engine, threads) and organize runtimes and plan sets
         _plans = defaultdict(set)
         _samples = defaultdict(int)
+        _overall_runtimes = defaultdict(list)
         program_runtimes = defaultdict(lambda: defaultdict(list))
         for program, dataset, engine, threads, runtime, status, plan_set in rows:
             # Assert runtime is never null for CMP / TOUT status
@@ -304,10 +361,11 @@ class BenchmarkDB:
             key = (program, dataset, engine, threads)
             adjusted_runtime = runtime if status == "CMP" else sys.maxsize
             program_runtimes[key][plan_set].append(adjusted_runtime)
-            
+
             # Collect sample size information
             _plans[key].add(plan_set)
             _samples[key] += 1
+            _overall_runtimes[key].append(adjusted_runtime)
 
         # Calculate median runtimes for each plan set
         agg_program_runtimes = defaultdict(list)
@@ -329,20 +387,64 @@ class BenchmarkDB:
                 len(_plans[key]),
             )
 
-        # Print results
+        # Calculate standard deviation of runtimes
+        std_deviations = defaultdict(float)
+        for key, runtimes in _overall_runtimes.items():
+            # If median runtime is -2, we skip std deviation calculation
+            if reduced_program_runtimes[key][0] == -2:
+                std_deviations[key] = -2
+            elif len(runtimes) > 1:
+                std_deviations[key] = statistics.stdev(runtimes)
+            else:
+                std_deviations[key] = -1  # Not enough data for std deviation
+                logger.info(f"Not enough data for standard deviation for {key}")
+
+        # Print results and save as csv
         logger.info(
-            f"{'Program':<12} {'Dataset':<15} {'Engine':<15} {'Workers':<7} {'M Runtime':<15} {'Sample Size':<15} {'Plan Count':<7}"
+            f"{'Program':<12} {'Dataset':<15} {'Engine':<15} {'Workers':<7} {'Status':<7} {'M Runtime':<15} {'Std Dev':<15} {'Sample':<7} {'Plan':<7}"
         )
         logger.info("-" * 100)
 
-        for (program, dataset, engine, threads), (
-            median_runtime,
-            sample_size,
-            plan_count,
-        ) in reduced_program_runtimes.items():
-            logger.info(
-                f"{program:<12} {dataset:<15} {engine:<15} {threads:<7} {median_runtime:<15.2f} {sample_size:<15} {plan_count:<7}"
-            )
+        import csv
+
+        csv_rows = []
+        csv_header = [
+            "Program", "Dataset", "Engine", "Workers", "Status",
+            "Median_Runtime", "Std_Dev", "Sample", "Plan"
+        ]
+
+        for key, status in program_status_agg.items():
+            assert (status is not None), f"Status is None for {key}"
+            
+            # If status is CMP, print statistics, else print empty statistics
+            if status == "CMP":
+                median_runtime, sample_size, plan_count = reduced_program_runtimes[key]
+                std_dev = std_deviations[key]
+                logger.info(
+                    f"{key[0]:<12} {key[1]:<15} {key[2]:<15} {key[3]:<7} {status:<7} "
+                    f"{median_runtime:<15.2f} {std_dev:<15.2f} {sample_size:<7} {plan_count:<7}"
+                )
+                csv_rows.append([
+                    key[0], key[1], key[2], key[3], status,
+                    f"{median_runtime:.2f}", f"{std_dev:.2f}", sample_size, plan_count
+                ])
+            else:
+                logger.info(
+                    f"{key[0]:<12} {key[1]:<15} {key[2]:<15} {key[3]:<7} {status:<7} "
+                    f"{'':<15} {'':<15} {'':<7} {'':<7}"
+                )
+                csv_rows.append([
+                    key[0], key[1], key[2], key[3], status,
+                    "", "", "", ""
+                ])
+
+        # Save summary as CSV
+        csv_path = "summary.csv"
+        with open(csv_path, "w", newline="") as csvfile:
+            writer = csv.writer(csvfile)
+            writer.writerow(csv_header)
+            writer.writerows(csv_rows)
+        logger.info(f"Summary saved to {csv_path}")
 
     def query(self, sql):
         """Execute custom SQL query and display results"""

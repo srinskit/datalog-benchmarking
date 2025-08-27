@@ -1,14 +1,14 @@
  
 .decl Arc(src: number, dest: number, weight: number) 
 .input Arc.csv
-.decl Src(src: number)
-.input Src(IO="file", filename="Src.csv", delimiter=",")
+.decl Source(src: number)
+.input Source(IO="file", filename="Source.csv", delimiter=",")
 
  
 .decl sssp2(x: number, y: number)
 .decl sssp(x: number, y: number)
 
 
-sssp2(x, min(0)) :- Src(x).
+sssp2(x, min(0)) :- Source(x).
 sssp2(y, min(d1 + d2)) :- Arc(x, y, d2), sssp2(x, d1).          // Reordered: switch join order
 sssp(x, min(d)) :- sssp2(x, d).
